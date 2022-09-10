@@ -75,6 +75,7 @@ export default function handler(req, res) {
     try {
         videoURL = getVideoURL(req.url);
     } catch (e) {
+        //console.log(e);
         // res.redirect(301, PROJECT_URL);
         res.send("Under construction");
         return;
@@ -86,13 +87,14 @@ export default function handler(req, res) {
         getVideoData(id)
         .then(data => sendTemplate(res, "template.html", data, "An error ocurred while rendering the embed"))
         .catch(e => {
+            // console.log(e);
             res
                 .status(500)
                 .send(generateError(500, "An error occurred while retrieving video information", e));
         });
     })
     .catch(e => {
-        console.log(e);
+        //console.log(e);
         // res.redirect(301, PROJECT_URL);
         res.send("Under construction");
     });
