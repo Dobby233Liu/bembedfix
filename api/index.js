@@ -93,8 +93,7 @@ export default function handler(req, res) {
         videoURL = getVideoURL(req.url);
     } catch (e) {
         // console.log(e);
-        // res.redirect(301, PROJECT_URL);
-        res.send("Under construction");
+        res.redirect(301, PROJECT_URL);
         return;
     }
 
@@ -113,7 +112,6 @@ export default function handler(req, res) {
     })
     .catch(e => {
         // console.log(e);
-        // res.redirect(301, PROJECT_URL);
-        res.send("Under construction");
+        res.redirect(301, PROJECT_URL);
     });
 };
