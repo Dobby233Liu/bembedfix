@@ -1,6 +1,6 @@
 import { render, renderFile } from "ejs";
 import { join } from "path";
-import fetch from "node-fetch";
+import fetch from "fetch";
 
 const ERROR_TEMPLATE = `
 <!DOCTYPE HTML>
@@ -68,7 +68,7 @@ async function getVideoData(id) {
   return {};
 }
 
-module.exports = function (req, res) {
+export default function handler(req, res) {
     let videoURL;
     try {
         videoURL = getVideoURL(path);
