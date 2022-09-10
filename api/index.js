@@ -1,6 +1,6 @@
-import { render, renderFile } from "ejs";
-import { join } from "path";
-import fetch from "node-fetch";
+import { render, renderFile } from 'ejs';
+import { join } from 'path';
+import fetch from 'node-fetch';
 
 const ERROR_TEMPLATE = `
 <!DOCTYPE HTML>
