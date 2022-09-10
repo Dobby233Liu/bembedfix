@@ -16,6 +16,7 @@ const ERROR_TEMPLATE = `
 </body>
 </html>
 `;
+const PROJECT_URL = "https://github.com/Dobby233Liu/bembedfix";
 
 function generateError(code, message, data) {
     return render(ERROR_TEMPLATE, { code: code, message: message, data: data });
@@ -33,29 +34,62 @@ function sendTemplate(res, file, data, errorMessage) {
 }
 
 function getVideoURL(path) {
-    var url = new URL(path, "https://b23.tv");
+    let url = new URL(path, "https://b23.tv");
     if (url.pathname.startsWith("/video/"))
         url.host = "www.bilibili.com";
     return url;
 }
 
-function checkVideoValidity(url) {
+async function checkVideoAndGetId(url) {
     if (url.pathname == "/")
-        return false;
-    // TODO
-    return;
+        throw new Error("Not a video");
+
+    let isBilibili = u => u.host.endsWith("bilibili.com") && u.pathname.startsWith("/video/");
+    let getID = u => u.pathname.substring("/video/".length, u.pathname.length);
+
+    if (isBilibili(url))
+    {
+        return getID(url);
+    }
+
+    let response = await fetch(url);
+    if (!response.ok)
+        throw new Error("Got error while retrieving " + url + ": " + response.status);
+
+    if (isBilibili(response.url))
+    {
+        return getID(response.url);
+    }
+    throw new Error("Not a video, got URL " + response.url);
+}
+
+async function getVideoData(id) {
+  // TODO
+  return {};
 }
 
 module.exports = function (req, res) {
-    var videoURL, videoAID;
+    let videoURL;
     try {
         videoURL = getVideoURL(path);
-        if (!checkVideoValidity(videoURL))
-            throw new Error("Not a video");
     } catch (e) {
-        // res.redirect(301, "https://github.com/Dobby233Liu/bembedfix");
+        // res.redirect(301, PROJECT_URL);
         res.send("Under construction");
         return;
     }
-    sendTemplate(res, "template.html", {}, "An error ocurred while rendering the embed");
+
+    let videoID;
+    checkVideoAndGetId(videoURL)
+    .catch(e => {
+        // res.redirect(301, PROJECT_URL);
+        res.send("Under construction");
+    });
+    .then(getVideoData)
+    .catch(e => {
+        console.error(e);
+        res
+            .status(500)
+            .send(generateError(500, "An error occurred while retrieving video information", e));
+    });
+    .then(data => sendTemplate(res, "template.html", data, "An error ocurred while rendering the embed"));
 };
