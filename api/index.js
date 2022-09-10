@@ -1,3 +1,10 @@
+import { renderFile } from "ejs";
+
 module.exports = function (req, res) {
-  res.send('Hello!');
+    renderFile("../template.html")
+    .catch(function (err) {
+        console.error(err);
+        res.status(500).send(err);
+    })
+    .then(data => res.send(data));
 };
