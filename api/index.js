@@ -36,16 +36,15 @@ function sendTemplate(res, file, data, errorMessage) {
 function getVideoURL(path) {
     let url = new URL(path, "https://b23.tv");
     if (url.pathname.startsWith("/video/"))
-        url.host = "www.bilibili.com";
+        url.hostname = "www.bilibili.com";
     return url;
 }
 
 async function checkVideoAndGetId(url) {
-    console.log(url);
     if (url.pathname == "/")
         throw new Error("Not a video");
 
-    let isBilibili = u => u.host.endsWith("bilibili.com") && u.pathname.startsWith("/video/");
+    let isBilibili = u => u.hostname.endsWith("bilibili.com") && u.pathname.startsWith("/video/");
     let getID = u => u.pathname.substring("/video/".length, u.pathname.length);
 
     if (isBilibili(url))
@@ -82,14 +81,12 @@ export default function handler(req, res) {
     let videoID;
     checkVideoAndGetId(videoURL)
     .catch(e => {
-        console.error(e);
         // res.redirect(301, PROJECT_URL);
         res.send("Under construction");
         Promise.break;
     })
     .then(getVideoData)
     .catch(e => {
-        console.error(e);
         res
             .status(500)
             .send(generateError(500, "An error occurred while retrieving video information", e));
