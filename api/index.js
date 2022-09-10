@@ -3,8 +3,8 @@ import { render, renderFile } from "ejs";
 const ERROR_TEMPLATE = `
 <!DOCTYPE HTML>
 <head>
-    <title>bembedfix - Error: <%= message %></title>
-    <meta property="og:title" content="<%= code %> - <%= message %>" />
+    <title>bembedfix - Error <%= code %>: <%= message %></title>
+    <meta property="og:title" content="bembedfix - Error <%= code %>: <%= message %>" />
     <meta name="theme-color" content="#FF0000">
 </head>
 <body>
@@ -18,7 +18,7 @@ function generateError(code, message, data) {
 }
 
 module.exports = function (req, res) {
-    renderFile("../template.html")
+    renderFile("template.html")
     .catch(function (err) {
         console.error(err);
         res
