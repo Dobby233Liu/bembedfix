@@ -1,6 +1,6 @@
-const { render, renderFile } = require("ejs");
-const { join } = require("path");
-const fetch = require("node-fetch");
+import { render, renderFile } from "ejs";
+import { join } from "path";
+import fetch from "node-fetch";
 
 const ERROR_TEMPLATE = `
 <!DOCTYPE HTML>
@@ -83,13 +83,13 @@ module.exports = function (req, res) {
     .catch(e => {
         // res.redirect(301, PROJECT_URL);
         res.send("Under construction");
-    });
+    })
     .then(getVideoData)
     .catch(e => {
         console.error(e);
         res
             .status(500)
             .send(generateError(500, "An error occurred while retrieving video information", e));
-    });
+    })
     .then(data => sendTemplate(res, "template.html", data, "An error ocurred while rendering the embed"));
 };
