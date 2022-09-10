@@ -74,7 +74,7 @@ export default function handler(req, res) {
         videoURL = getVideoURL(path);
     } catch (e) {
         // res.redirect(301, PROJECT_URL);
-        res.send("Under construction");
+        res.send(e);//"Under construction");
         return;
     }
 
@@ -82,7 +82,7 @@ export default function handler(req, res) {
     checkVideoAndGetId(videoURL)
     .catch(e => {
         // res.redirect(301, PROJECT_URL);
-        res.send("Under construction");
+        res.send(e);//"Under construction");
     })
     .then(getVideoData)
     .catch(e => {
