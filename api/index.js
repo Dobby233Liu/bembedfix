@@ -20,7 +20,7 @@ function generateError(code, message, data) {
 }
 
 module.exports = function (req, res) {
-    renderFile("../public/template.html")
+    renderFile("files/template.html")
     .catch(function (err) {
         console.error(err);
         res
