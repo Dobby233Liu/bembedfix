@@ -1,8 +1,6 @@
 import { render, renderFile } from "ejs";
 import { join } from "path";
 import fetch from "node-fetch";
-// DEBUG
-import { readdirSync } from "node:fs";
 
 const ERROR_TEMPLATE = `
 <!DOCTYPE HTML>
@@ -28,7 +26,6 @@ function sendTemplate(res, file, data, errorMessage) {
     renderFile(join(process.cwd(), file))
     .catch(function (err) {
         console.error(err);
-        console.log(readdirSync(process.cwd()));
         res
             .status(500)
             .send(generateError(500, errorMessage, err));
@@ -107,7 +104,7 @@ export default function handler(req, res) {
     checkVideoAndGetId(videoURL)
     .then(id => {
         getVideoData(id)
-        .then(data => sendTemplate(res, "public/template.html", data, "An error ocurred while rendering the embed"))
+        .then(data => sendTemplate(res, "template.html", data, "An error ocurred while rendering the embed"))
         .catch(e => {
             // console.log(e);
             res
