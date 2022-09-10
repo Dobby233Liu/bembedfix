@@ -2,8 +2,7 @@ import { render, renderFile } from "ejs";
 import { join } from "path";
 import fetch from "node-fetch";
 
-const ERROR_TEMPLATE = `
-<!DOCTYPE HTML>
+const ERROR_TEMPLATE = `<!DOCTYPE HTML>
 <html>
 <head>
     <title>bembedfix - Error <%= code %>: <%= message %></title>
@@ -73,7 +72,7 @@ async function getVideoData(id) {
         throw new Error(data);
   
     return {
-        url: "https://www.bilibili.com/video/BV" + data.data.bvid,
+        url: "https://www.bilibili.com/video/" + data.data.bvid,
         title: data.data.title,
         author: data.data.owner.name,
         upload_date: new Date(data.data.ctime).toISOString(),
