@@ -99,7 +99,7 @@ export default function handler(req, res) {
     checkVideoAndGetId(videoURL)
     .then(id => {
         getVideoData(id)
-        .then(data => sendTemplate(res, "template.html", data, "An error ocurred while rendering the embed"))
+        .then(data => sendTemplate(res, "public/template.html", data, "An error ocurred while rendering the embed"))
         .catch(e => {
             // console.log(e);
             res
