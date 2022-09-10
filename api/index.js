@@ -56,16 +56,18 @@ async function checkVideoAndGetId(url) {
     if (!response.ok)
         throw new Error("Got error while retrieving " + url + ": " + response.status);
 
-    if (isBilibili(response.url))
+    var resUrlObj = new URL(response.url);
+    if (isBilibili(resUrlObj))
     {
-        return getID(response.url);
+        return getID(resUrlObj);
     }
     throw new Error("Not a video, got URL " + response.url);
 }
 
 async function getVideoData(id) {
-  // TODO
-  return {};
+    throw new Error("Work in progress");
+    // TODO
+    return {};
 }
 
 export default function handler(req, res) {
