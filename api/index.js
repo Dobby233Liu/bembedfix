@@ -55,7 +55,7 @@ async function checkVideoAndGetId(url) {
     if (!response.ok)
         throw new Error("Got error while retrieving " + url + ": " + response.status);
 
-    var resUrlObj = new URL(response.url);
+    let resUrlObj = new URL(response.url);
     if (isBilibili(resUrlObj)) {
         return getID(resUrlObj);
     }
@@ -63,10 +63,16 @@ async function checkVideoAndGetId(url) {
 }
 
 async function getVideoData(id) {
-    throw new Error("Work in progress");
-    // TODO: load info
-    // construct url -> add queries -> fetch -> parse content / error with content
-    /*return {
+    let requestUrl = new URL("http://api.bilibili.com/x/web-interface/view");
+    let idType = id.startsWith("BV") ? "bvid" : "aid";
+    requestUrl.searchParams.append(idType, id.substring(2, id.length));
+
+    let response = await fetch(requestUrl);
+    let data = await response.json();
+    if (!response.ok || data.code < 0)
+        throw new Error(data);
+  
+    return {
         url: "https://www.bilibili.com/video/BV" + data.bvid,
         title: data.title,
         author: data.owner.name,
@@ -74,7 +80,7 @@ async function getVideoData(id) {
         release_date: new Date(data.pubdate).toISOString(),
         thumbnail: data.pic,
         description: data.desc,
-    };*/
+    };
 }
 
 export default function handler(req, res) {
