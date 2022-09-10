@@ -65,6 +65,7 @@ async function checkVideoAndGetId(url) {
 async function getVideoData(id) {
     throw new Error("Work in progress");
     // TODO: load info
+    // construct url -> add queries -> fetch -> parse content / error with content
     /*return {
         url: "https://www.bilibili.com/video/BV" + data.bvid,
         title: data.title,
