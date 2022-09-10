@@ -1,5 +1,6 @@
 import { render, renderFile } from "ejs";
 import { join } from 'path';
+import fetch from 'node-fetch';
 
 const ERROR_TEMPLATE = `
 <!DOCTYPE HTML>
@@ -31,10 +32,29 @@ function sendTemplate(res, file, data, errorMessage) {
     .then(data => res.send(data));
 }
 
+function getVideoURL(path) {
+    var url = new URL(path, "https://b23.tv");
+    if (url.pathname.startsWith("/video/"))
+        url.host = "www.bilibili.com";
+    return url;
+}
+
+function checkVideoValidity(url) {
+    if (url.pathname == "/")
+        return false;
+    // TODO
+    return;
+}
+
 module.exports = function (req, res) {
-    var redirLoc = new URL(req.url, "https://totally-exists.example").pathname.trim();
-    if (redirLoc == "/") {
-        res.send("e");
+    var videoURL, videoAID;
+    try {
+        videoURL = getVideoURL(path);
+        if (!checkVideoValidity(videoURL))
+            throw new Error("Not a video");
+    } catch (e) {
+        // res.redirect(301, "https://github.com/Dobby233Liu/bembedfix");
+        res.send("Under construction");
         return;
     }
     sendTemplate(res, "template.html", {}, "An error ocurred while rendering the embed");
