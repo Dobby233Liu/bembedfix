@@ -73,13 +73,13 @@ async function getVideoData(id) {
         throw new Error(data);
   
     return {
-        url: "https://www.bilibili.com/video/BV" + data.bvid,
-        title: data.title,
-        author: data.owner.name,
-        upload_date: new Date(data.ctime).toISOString(),
-        release_date: new Date(data.pubdate).toISOString(),
-        thumbnail: data.pic,
-        description: data.desc,
+        url: "https://www.bilibili.com/video/BV" + data.data.bvid,
+        title: data.data.title,
+        author: data.data.owner.name,
+        upload_date: new Date(data.data.ctime).toISOString(),
+        release_date: new Date(data.data.pubdate).toISOString(),
+        thumbnail: data.data.pic,
+        description: data.data.desc,
     };
 }
 
