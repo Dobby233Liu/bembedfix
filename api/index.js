@@ -23,14 +23,14 @@ function generateError(code, message, data) {
 }
 
 function sendTemplate(res, file, data, errorMessage) {
-    renderFile(join(process.cwd(), file))
+    renderFile(join(process.cwd(), file), data)
     .catch(function (err) {
         console.error(err);
         res
             .status(500)
             .send(generateError(500, errorMessage, err));
     })
-    .then(data => res.send(data));
+    .then(out => res.send(out));
 }
 
 function getVideoURL(path) {
