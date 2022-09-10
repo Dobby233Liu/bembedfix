@@ -71,9 +71,8 @@ async function getVideoData(id) {
 export default function handler(req, res) {
     let videoURL;
     try {
-        videoURL = getVideoURL(path);
+        videoURL = getVideoURL(req.url);
     } catch (e) {
-        console.error(e);
         // res.redirect(301, PROJECT_URL);
         res.send("Under construction");
         return;
