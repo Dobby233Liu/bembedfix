@@ -1,4 +1,5 @@
 import { render, renderFile } from "ejs";
+import { join } from 'path';
 
 const ERROR_TEMPLATE = `
 <!DOCTYPE HTML>
@@ -19,13 +20,22 @@ function generateError(code, message, data) {
     return render(ERROR_TEMPLATE, { code: code, message: message, data: data });
 }
 
-module.exports = function (req, res) {
-    renderFile("files/template.html")
+function sendTemplate(res, file, data, errorMessage) {
+    renderFile(join(process.cwd(), file))
     .catch(function (err) {
         console.error(err);
         res
             .status(500)
-            .send(generateError(500, "An error ocurred while rendering the embed" + process.cwd(), err));
+            .send(generateError(500, errorMessage, err));
     })
     .then(data => res.send(data));
+}
+
+module.exports = function (req, res) {
+    var redirLoc = new URL(req.url).path.trim();
+    if (redirLoc == "/") {
+        res.send("e");
+        return;
+    }
+    sendTemplate(res, "template.html", {}, "An error ocurred while rendering the embed");
 };
