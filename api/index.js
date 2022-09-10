@@ -47,8 +47,7 @@ async function checkVideoAndGetId(url) {
     let isBilibili = u => u.hostname.endsWith("bilibili.com") && u.pathname.startsWith("/video/");
     let getID = u => u.pathname.substring("/video/".length, u.pathname.length);
 
-    if (isBilibili(url))
-    {
+    if (isBilibili(url)) {
         return getID(url);
     }
 
@@ -57,8 +56,7 @@ async function checkVideoAndGetId(url) {
         throw new Error("Got error while retrieving " + url + ": " + response.status);
 
     var resUrlObj = new URL(response.url);
-    if (isBilibili(resUrlObj))
-    {
+    if (isBilibili(resUrlObj)) {
         return getID(resUrlObj);
     }
     throw new Error("Not a video, got URL " + response.url);
@@ -66,8 +64,16 @@ async function checkVideoAndGetId(url) {
 
 async function getVideoData(id) {
     throw new Error("Work in progress");
-    // TODO
-    return {};
+    // TODO: load info
+    /*return {
+        url: "https://www.bilibili.com/video/BV" + data.bvid,
+        title: data.title,
+        author: data.owner.name,
+        upload_date: new Date(data.ctime).toISOString(),
+        release_date: new Date(data.pubdate).toISOString(),
+        thumbnail: data.pic,
+        description: data.desc,
+    };*/
 }
 
 export default function handler(req, res) {
@@ -75,13 +81,14 @@ export default function handler(req, res) {
     try {
         videoURL = getVideoURL(req.url);
     } catch (e) {
-        //console.log(e);
+        // console.log(e);
         // res.redirect(301, PROJECT_URL);
         res.send("Under construction");
         return;
     }
 
     let videoID;
+    // FIXME: preserve some queries
     checkVideoAndGetId(videoURL)
     .then(id => {
         getVideoData(id)
@@ -94,7 +101,7 @@ export default function handler(req, res) {
         });
     })
     .catch(e => {
-        //console.log(e);
+        // console.log(e);
         // res.redirect(301, PROJECT_URL);
         res.send("Under construction");
     });
