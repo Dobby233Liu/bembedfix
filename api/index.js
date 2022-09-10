@@ -41,6 +41,7 @@ function getVideoURL(path) {
 }
 
 async function checkVideoAndGetId(url) {
+    console.log(url);
     if (url.pathname == "/")
         throw new Error("Not a video");
 
@@ -84,6 +85,7 @@ export default function handler(req, res) {
         console.error(e);
         // res.redirect(301, PROJECT_URL);
         res.send("Under construction");
+        Promise.break;
     })
     .then(getVideoData)
     .catch(e => {
@@ -91,6 +93,7 @@ export default function handler(req, res) {
         res
             .status(500)
             .send(generateError(500, "An error occurred while retrieving video information", e));
+        Promise.break;
     })
     .then(data => sendTemplate(res, "template.html", data, "An error ocurred while rendering the embed"));
 };
