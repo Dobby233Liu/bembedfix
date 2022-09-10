@@ -2,6 +2,7 @@ import { render, renderFile } from "ejs";
 
 const ERROR_TEMPLATE = `
 <!DOCTYPE HTML>
+<html>
 <head>
     <title>bembedfix - Error <%= code %>: <%= message %></title>
     <meta property="og:title" content="bembedfix - Error <%= code %>: <%= message %>" />
@@ -11,6 +12,7 @@ const ERROR_TEMPLATE = `
     <h1><%= code %> - <%= message %></h1>
     <p><pre><%= data %></pre></p>
 </body>
+</html>
 `;
 
 function generateError(code, message, data) {
@@ -23,7 +25,7 @@ module.exports = function (req, res) {
         console.error(err);
         res
             .status(500)
-            .send(generateError(500, "An error ocurred while rendering the embed", err));
+            .send(generateError(500, "An error ocurred while rendering the embed" + process.cwd(), err));
     })
     .then(data => res.send(data));
 };
