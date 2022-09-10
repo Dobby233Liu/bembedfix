@@ -32,7 +32,7 @@ function sendTemplate(res, file, data, errorMessage) {
 }
 
 module.exports = function (req, res) {
-    var redirLoc = new URL(req.url).path.trim();
+    var redirLoc = new URL(req.url, "https://totally-exists.example").pathname.trim();
     if (redirLoc == "/") {
         res.send("e");
         return;
