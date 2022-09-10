@@ -75,8 +75,8 @@ async function getVideoData(id) {
         url: "https://www.bilibili.com/video/" + data.data.bvid,
         title: data.data.title,
         author: data.data.owner.name,
-        upload_date: new Date(data.data.ctime).toISOString(),
-        release_date: new Date(data.data.pubdate).toISOString(),
+        upload_date: new Date(data.data.ctime * 100).toISOString(),
+        release_date: new Date(data.data.pubdate * 100).toISOString(),
         thumbnail: data.data.pic,
         description: data.data.desc,
     };
