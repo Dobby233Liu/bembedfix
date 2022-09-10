@@ -28,6 +28,7 @@ function sendTemplate(res, file, data, errorMessage) {
     renderFile(join(process.cwd(), file))
     .catch(function (err) {
         console.error(err);
+        console.log(readdirSync(process.cwd()));
         res
             .status(500)
             .send(generateError(500, errorMessage, err));
@@ -108,7 +109,6 @@ export default function handler(req, res) {
         getVideoData(id)
         .then(data => sendTemplate(res, "public/template.html", data, "An error ocurred while rendering the embed"))
         .catch(e => {
-            console.log(readdirSync(process.cwd()));
             // console.log(e);
             res
                 .status(500)
