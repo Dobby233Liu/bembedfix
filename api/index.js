@@ -80,17 +80,17 @@ export default function handler(req, res) {
 
     let videoID;
     checkVideoAndGetId(videoURL)
+    .then(id => {
+        getVideoData(id)
+        .then(data => sendTemplate(res, "template.html", data, "An error ocurred while rendering the embed"))
+        .catch(e => {
+            res
+                .status(500)
+                .send(generateError(500, "An error occurred while retrieving video information", e));
+        });
+    })
     .catch(e => {
         // res.redirect(301, PROJECT_URL);
         res.send("Under construction");
-        Promise.break;
-    })
-    .then(getVideoData)
-    .catch(e => {
-        res
-            .status(500)
-            .send(generateError(500, "An error occurred while retrieving video information", e));
-        Promise.break;
-    })
-    .then(data => sendTemplate(res, "template.html", data, "An error ocurred while rendering the embed"));
+    });
 };
