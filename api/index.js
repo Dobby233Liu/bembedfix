@@ -1,6 +1,8 @@
 import { render, renderFile } from "ejs";
 import { join } from "path";
 import fetch from "node-fetch";
+// DEBUG
+import { readdirSync } from "node:fs";
 
 const ERROR_TEMPLATE = `
 <!DOCTYPE HTML>
@@ -84,6 +86,11 @@ async function getVideoData(id) {
 }
 
 export default function handler(req, res) {
+    if (req.url == "/favicon.ico") {
+        res.status(404);
+        return;
+    }
+
     let videoURL;
     try {
         videoURL = getVideoURL(req.url);
@@ -101,6 +108,7 @@ export default function handler(req, res) {
         getVideoData(id)
         .then(data => sendTemplate(res, "public/template.html", data, "An error ocurred while rendering the embed"))
         .catch(e => {
+            console.log(readdirSync(process.cwd()));
             // console.log(e);
             res
                 .status(500)
