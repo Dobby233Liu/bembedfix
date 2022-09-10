@@ -3,8 +3,10 @@
 <head>
     <title><%= title %></title>
     <meta property="og:type" content="video" />
+    <meta property="og:site_name" content="哔哩哔哩（bembedfix）" />
     <meta property="og:title" content="<%= title %>" />
     <meta property="og:author" content="<%= author %>" />
+    <meta name="twitter:title" content="<%= author %>" />
     <meta property="og:video:actor" content="<%= author %>"/>
     <meta property="og:video:director" content="<%= author %>"/>
     <meta property="og:release_date" content="<%= upload_date %>"/>
@@ -21,6 +23,6 @@
     <meta name="theme-color" content="#de698c">
 </head>
 <body>
-    <p><a href="<%= url %>">Go to the video</a></p>
+    <p><a href="<%= url %>">正在重定向到 <%= url %></a></p>
 </body>
 </html>
