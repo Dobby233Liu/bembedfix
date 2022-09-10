@@ -90,6 +90,7 @@ export default function handler(req, res) {
         });
     })
     .catch(e => {
+        console.log(e);
         // res.redirect(301, PROJECT_URL);
         res.send("Under construction");
     });
