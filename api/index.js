@@ -6,7 +6,9 @@ const ERROR_TEMPLATE = `<!DOCTYPE HTML>
 <html>
 <head>
     <title>bembedfix - Error <%= code %>: <%= message %></title>
-    <meta property="og:title" content="bembedfix - Error <%= code %>: <%= message %>" />
+    <meta name="twitter:card" content="tweet" />
+    <meta property="og:title" content="bembedfix - Error <%= code %>" />
+    <meta property="og:description" content="<%= message %>" />
     <meta name="theme-color" content="#FF0000">
 </head>
 <body>
@@ -84,7 +86,7 @@ async function getVideoData(id) {
 
 export default function handler(req, res) {
     if (req.url == "/favicon.ico") {
-        res.status(404);
+        res.redirect(301, "https://www.bilibili.com/favicon.ico");
         return;
     }
 
