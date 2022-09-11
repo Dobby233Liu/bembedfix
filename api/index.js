@@ -77,7 +77,11 @@ function makeVideoPage(bvid) {
     return "https://www.bilibili.com/video/" + encodeURI(bvid);
 }
 function makeEmbedPlayer(bvid) {
+    // //player.bilibili.com/player.html?aid=429619610&bvid=BV1GG411b7sc&cid=805522554&page=1
     return "https://player.bilibili.com/player.html?bvid=" + encodeURIComponent(bvid);
+}
+function makeEmbedPlayerHTML(bvid) {
+    return `<iframe src="${makeEmbedPlayer(bvid)}" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>`;
 }
 function makeUserPage(mid) {
     return new URL(encodeURI("/" + mid), "https://space.bilibili.com");
@@ -118,9 +122,12 @@ export default function handler(req, res) {
                 type: req.query.type,
                 title: req.query.title,
                 url: makeVideoPage(req.query.bvid),
-                html: makeEmbedPlayer(req.query.bvid),
+                html: makeEmbedPlayerHTML(req.query.bvid),
                 width: 720,
                 height: 480,
+                thumbnail_url: req.query.pic,
+                thumbnail_width: 720,
+                thumbnail_height: 480,
                 author_name: req.query.author,
                 author_url: makeUserPage(req.query.mid),
                 provider_name: "哔哩哔哩（bembedfix）",
@@ -148,7 +155,7 @@ export default function handler(req, res) {
         getVideoData(id)
         .then(data => {
             data.oembed = new URL("/oembed.json", "https://" + req.headers.host).href;
-            for (let i of ["title", "author", "bvid", "author_url"])
+            for (let i of ["title", "author", "bvid", "thumbnail"])
                 data[i + "_urlencoded"] = encodeURIComponent(data[i]);
             sendTemplate(res, "template.html", data, "An error ocurred while rendering the embed", req)
         })
