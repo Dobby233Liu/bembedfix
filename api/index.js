@@ -5,7 +5,9 @@ import fetch from "node-fetch";
 const ERROR_TEMPLATE = `<!DOCTYPE HTML>
 <html>
 <head>
+    <meta charset="UTF-8" />
     <title>bembedfix - Error <%= code %>: <%= message %></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta property="og:site_name" content="bembedfix" />
     <meta name="twitter:card" content="summary" />
     <meta property="og:url" content="<%= here %>" />
