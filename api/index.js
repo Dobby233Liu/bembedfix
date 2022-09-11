@@ -117,10 +117,15 @@ async function getVideoData(id) {
 
 export default function handler(req, res) {
     let parsableURL = new URL(req.url, "https://" + req.headers.host);
+
     if (parsableURL.pathname == "/favicon.ico") {
+        res.setHeader("Cache-Control", "max-age=86400, s-maxage=86400");
         res.redirect(301, "https://www.bilibili.com/favicon.ico");
         return;
     }
+
+    res.setHeader("Cache-Control", "s-maxage=5, stale-while-revalidate");
+
     if (parsableURL.pathname == "/oembed.json") {
         try {
             res.json({
