@@ -94,11 +94,11 @@ async function getVideoData(id) {
 
 export default function handler(req, res) {
     let parsableURL = new URL(req.url, "https://" + req.headers.host);
-    if (parsableURL.path == "/favicon.ico") {
+    if (parsableURL.pathname == "/favicon.ico") {
         res.redirect(301, "https://www.bilibili.com/favicon.ico");
         return;
     }
-    if (parsableURL.path == "/oembed.json") {
+    if (parsableURL.pathname == "/oembed.json") {
         try {
             res.json({
                 version: "1.0",
