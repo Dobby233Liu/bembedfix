@@ -126,7 +126,6 @@ export default function handler(req, res) {
             res.json({
                 version: "1.0",
                 type: req.query.type,
-                title: req.query.title,
                 url: makeVideoPage(req.query.bvid),
                 html: makeEmbedPlayerHTML(req.query.bvid),
                 width: 720,
@@ -161,7 +160,7 @@ export default function handler(req, res) {
         getVideoData(id)
         .then(data => {
             data.oembed = new URL("/oembed.json", "https://" + req.headers.host).href;
-            for (let i of ["title", "author", "bvid", "thumbnail"])
+            for (let i of ["author", "bvid", "thumbnail"])
                 data[i + "_urlencoded"] = encodeURIComponent(data[i]);
             sendTemplate(res, "template.html", data, "An error ocurred while rendering the embed", req)
         })
