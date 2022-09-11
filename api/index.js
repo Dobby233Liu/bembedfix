@@ -71,7 +71,7 @@ async function getVideoData(id) {
     let response = await fetch(requestUrl);
     let data = await response.json();
     if (!response.ok || data.code != 0)
-        throw new Error(data);
+        throw new Error(JSON.stringify(data));
   
     return {
         url: "https://www.bilibili.com/video/" + data.data.bvid,
