@@ -64,19 +64,18 @@ async function checkVideoAndGetId(url) {
     if (!response.ok)
         throw new Error("Got error while retrieving " + url + ": " + response.status);
 
-    let resUrlObj = new URL(response.url);
-    if (isBilibili(resUrlObj)) {
-        return getID(resUrlObj);
+    let resURLObj = new URL(response.url);
+    if (isBilibili(resURLObj)) {
+        return getID(resURLObj);
     }
     throw new Error("Not a video, got URL " + response.url);
 }
 
 async function getVideoData(id) {
-    let requestUrl = new URL("http://api.bilibili.com/x/web-interface/view");
+    let requestURL = new URL("http://api.bilibili.com/x/web-interface/view");
     let idType = id.startsWith("BV") ? "bvid" : "aid";
-    requestUrl.searchParams.append(idType, id.substring(2, id.length));
-
-    let response = await fetch(requestUrl);
+    requestURL.searchParams.append(idType, id.substring(2, id.length));
+    let response = await fetch(requestURL);
     let data = await response.json();
     if (!response.ok || data.code != 0)
         throw new Error(JSON.stringify(data));
@@ -94,11 +93,12 @@ async function getVideoData(id) {
 }
 
 export default function handler(req, res) {
-    if (req.url == "/favicon.ico") {
+    let parsableURL = new URL(req.url, "https://" + req.headers.host);
+    if (parsableURL.path == "/favicon.ico") {
         res.redirect(301, "https://www.bilibili.com/favicon.ico");
         return;
     }
-    if (req.url == "/oembed.json") {
+    if (parsableURL.path == "/oembed.json") {
         try {
             res.json({
                 version: "1.0",
