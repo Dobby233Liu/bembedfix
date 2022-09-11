@@ -8,6 +8,7 @@ const ERROR_TEMPLATE = `<!DOCTYPE HTML>
     <title>bembedfix - Error <%= code %>: <%= message %></title>
     <meta property="og:site_name" content="bembedfix" />
     <meta name="twitter:card" content="tweet" />
+    <meta property="og:url" content="<%= here %>" />
     <meta property="og:title" content="Error <%= code %> - <%= message %>" />
     <meta property="og:description" content="<%= data %>" />
     <meta name="twitter:title" content="Error <%= code %> - <%= message %>" />
@@ -21,17 +22,19 @@ const ERROR_TEMPLATE = `<!DOCTYPE HTML>
 `;
 const PROJECT_URL = "https://github.com/Dobby233Liu/bembedfix";
 
-function generateError(code, message, data) {
-    return render(ERROR_TEMPLATE, { code: code, message: message, data: data });
+function generateError(code, message, data, req) {
+    return render(ERROR_TEMPLATE,
+        { code: code, message: message, data: data, here: new URL(req.url, req.host).href }
+    );
 }
 
-function sendTemplate(res, file, data, errorMessage) {
+function sendTemplate(res, file, data, errorMessage, req) {
     renderFile(join(process.cwd(), file), data)
     .catch(function (err) {
         console.error(err);
         res
             .status(500)
-            .send(generateError(500, errorMessage, err));
+            .send(generateError(500, errorMessage, err, req));
     })
     .then(out => res.send(out));
 }
@@ -106,12 +109,12 @@ export default function handler(req, res) {
     checkVideoAndGetId(videoURL)
     .then(id => {
         getVideoData(id)
-        .then(data => sendTemplate(res, "template.html", data, "An error ocurred while rendering the embed"))
+        .then(data => sendTemplate(res, "template.html", data, "An error ocurred while rendering the embed", req))
         .catch(e => {
             // console.log(e);
             res
                 .status(500)
-                .send(generateError(500, "An error occurred while retrieving video information", e));
+                .send(generateError(500, "An error occurred while retrieving video information", e, req));
         });
     })
     .catch(e => {
