@@ -7,11 +7,12 @@ const ERROR_TEMPLATE = `<!DOCTYPE HTML>
 <head>
     <title>bembedfix - Error <%= code %>: <%= message %></title>
     <meta property="og:site_name" content="bembedfix" />
-    <meta name="twitter:card" content="tweet" />
+    <meta name="twitter:card" content="summary" />
     <meta property="og:url" content="<%= here %>" />
     <meta property="og:title" content="Error <%= code %> - <%= message %>" />
     <meta property="og:description" content="<%= data %>" />
     <meta name="twitter:title" content="Error <%= code %> - <%= message %>" />
+    <meta property="twitter:description" content="<%= data %>" />
     <meta name="theme-color" content="#FF0000">
 </head>
 <body>
