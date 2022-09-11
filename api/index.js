@@ -80,6 +80,7 @@ async function getVideoData(id) {
   
     return {
         url: "https://www.bilibili.com/video/" + data.data.bvid,
+        embed_url: "https://player.bilibili.com/player.html?bvid=" + data.data.bvid,
         title: data.data.title,
         author: data.data.owner.name,
         upload_date: new Date(data.data.ctime * 1000).toISOString(),
