@@ -24,18 +24,18 @@
     <meta name="twitter:image" content="<%= thumbnail %>" />
     <meta name="twitter:card" content="player">
     <meta property="og:description" content="<%= description %>" />
+    <meta property="twitter:description" content="<%= description %>" />
     <meta name="description" content="<%= description %>" />
     <meta property="og:url" content="<%= url %>" />
     <link rel="canonical" href="<%= url %>" />
-    <meta property="og:video" content="<%= url %>" />
-    <meta property="og:video:secure_url" content="<%= url %>" />
+    <meta property="og:video" content="<%= embed_url %>" />
+    <meta property="og:video:secure_url" content="<%= embed_url %>" />
     <meta property="og:video:type" content="text/html" />
     <meta property="og:video:width" content="720" />
     <meta property="og:video:height" content="480" />
+    <meta name="twitter:player" content="<%= embed_url %>" />
     <meta name="twitter:player:width" content="720" />
     <meta name="twitter:player:height" content="480" />
-    <meta name="twitter:player:stream" content="<%= url %>" />
-    <meta name="twitter:player:stream:content_type" content="text/html" />
 </head>
 <body>
     <p><a href="<%= url %>">正在重定向到 <%= url %></a></p>
