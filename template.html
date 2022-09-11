@@ -4,8 +4,9 @@
     <meta charset="UTF-8" />
     <title><%= title %></title>
     <meta http-equiv="Refresh" content="0; url='<%= url %>'" />
-    <meta property="og:type" content="video.other" />
     <meta property="og:site_name" content="哔哩哔哩（bembedfix）" />
+    <meta name="theme-color" content="#de698c">
+    <meta property="og:type" content="video.other" />
     <meta name="language" content="zh_CN" />
     <meta property="og:title" content="<%= title %>" />
     <meta property="og:author" content="<%= author %>" />
@@ -19,15 +20,21 @@
     <meta property="og:video:update_date" content="<%= release_date %>"/>
     <meta property="og:image" content="<%= thumbnail %>" />
     <meta property="og:image:secure_url" content="<%= thumbnail %>" />
-    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="{{ pic }}" />
+    <meta name="twitter:card" content="player">
     <meta property="og:description" content="<%= description %>" />
     <meta name="description" content="<%= description %>" />
     <meta property="og:url" content="<%= url %>" />
+    <link rel="canonical" href="<%= url %>" />
     <meta property="og:video" content="<%= url %>" />
     <meta property="og:video:secure_url" content="<%= url %>" />
     <meta property="og:video:type" content="text/html" />
-    <link rel="canonical" href="<%= url %>" />
-    <meta name="theme-color" content="#de698c">
+    <meta property="og:video:width" content="720" />
+    <meta property="og:video:height" content="480" />
+    <meta name="twitter:player:width" content="720" />
+    <meta name="twitter:player:height" content="480" />
+    <meta name="twitter:player:stream" content="{%= url %}" />
+    <meta name="twitter:player:stream:content_type" content="text/html" />
 </head>
 <body>
     <p><a href="<%= url %>">正在重定向到 <%= url %></a></p>
