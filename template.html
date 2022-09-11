@@ -5,6 +5,7 @@
     <title><%= title %></title>
     <meta http-equiv="Refresh" content="0; url='<%= url %>'" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta property="application-name" content="哔哩哔哩（bembedfix）" />
     <meta property="og:site_name" content="哔哩哔哩（bembedfix）" />
     <meta name="theme-color" content="#de698c">
     <meta property="og:type" content="video.other" />
@@ -12,7 +13,7 @@
     <meta property="og:title" content="<%= title %>" />
     <meta property="og:author" content="<%= author %>" />
     <meta name="author" content="<%= author %>" />
-    <meta name="twitter:title" content="<%= author %> 发布的视频：<%= title %>" />
+    <meta property="twitter:title" content="<%= author %> 发布的视频：<%= title %>" />
     <meta property="og:video:actor" content="<%= author %>"/>
     <meta property="og:video:director" content="<%= author %>"/>
     <meta property="og:release_date" content="<%= upload_date %>"/>
@@ -21,21 +22,22 @@
     <meta property="og:video:update_date" content="<%= release_date %>"/>
     <meta property="og:image" content="<%= thumbnail %>" />
     <meta property="og:image:secure_url" content="<%= thumbnail %>" />
-    <meta name="twitter:image" content="<%= thumbnail %>" />
-    <meta name="twitter:card" content="summary_large_image"><% if (description && description != "-") { %>
+    <meta property="twitter:image" content="<%= thumbnail %>" />
+    <meta property="twitter:card" content="summary_large_image"><% if (description && description != "-") { %>
     <meta name="description" content="<%= description %>" />
     <meta property="og:description" content="<%= description %>" />
     <meta property="twitter:description" content="<%= description %>" /><% } %>
     <meta property="og:url" content="<%= url %>" />
+    <meta property="twitter:url" content="<%= url %>" />
     <link rel="canonical" href="<%= url %>" />
     <meta property="og:video" content="<%= embed_url %>" />
     <meta property="og:video:secure_url" content="<%= embed_url %>" />
     <meta property="og:video:type" content="text/html" />
     <meta property="og:video:width" content="720" />
     <meta property="og:video:height" content="480" />
-    <meta name="twitter:player" content="<%= embed_url %>" />
-    <meta name="twitter:player:width" content="720" />
-    <meta name="twitter:player:height" content="480" />
+    <meta property="twitter:player" content="<%= embed_url %>" />
+    <meta property="twitter:player:width" content="720" />
+    <meta property="twitter:player:height" content="480" />
     <link rel="alternate" href="<%= oembed %>?type=video&bvid=<%= bvid_urlencoded %>&pic=<%= thumbnail_urlencoded %>&author=<%= author_urlencoded %>&mid=<%= author_mid %>" type="application/json+oembed" title="<%= title %>">
 </head>
 <body>
