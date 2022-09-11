@@ -73,6 +73,15 @@ async function checkVideoAndGetId(url) {
     throw new Error("Not a video, got URL " + response.url);
 }
 
+function makeVideoPage(bvid) {
+    return "https://www.bilibili.com/video/" + encodeURI(data.data.bvid);
+}
+function makeEmbedPlayer(bvid) {
+    return "https://player.bilibili.com/player.html?bvid=" + encodeURIComponent(bvid);
+}
+function makeUserPage(mid) {
+    return new URL(encodeURI("/" + mid), "https://space.bilibili.com");
+}
 async function getVideoData(id) {
     let requestURL = new URL("https://api.bilibili.com/x/web-interface/view");
     let idType = id.startsWith("BV") ? "bvid" : "aid";
@@ -83,11 +92,12 @@ async function getVideoData(id) {
         throw new Error(JSON.stringify(data));
   
     return {
-        url: "https://www.bilibili.com/video/" + encodeURI(data.data.bvid),
-        embed_url: "https://player.bilibili.com/player.html?bvid=" + encodeURIComponent(data.data.bvid),
+        bvid: data.data.bvid,
+        url: makeVideoPage(data.data.bvid),
+        embed_url: makeEmbedPlayer(data.data.bvid),
         title: data.data.title,
         author: data.data.owner.name,
-        author_url: new URL(encodeURI("/" + data.data.owner.mid), "https://space.bilibili.com"),
+        author_mid: data.data.owner.mid,
         upload_date: new Date(data.data.ctime * 1000).toISOString(),
         release_date: new Date(data.data.pubdate * 1000).toISOString(),
         thumbnail: data.data.pic,
@@ -107,10 +117,13 @@ export default function handler(req, res) {
                 version: "1.0",
                 type: req.query.type,
                 title: req.query.title,
-                url: req.query.url,
+                url: makeVideoPage(req.query.bvid),
+                html: makeEmbedPlayer(req.query.bvid),
+                width: 720,
+                height: 480,
                 author_name: req.query.author,
-                author_url: req.query.author_url,
-                provider_name: "哔哩哔哩",
+                author_url: makeUserPage(req.query.mid),
+                provider_name: "哔哩哔哩（bembedfix）",
                 provider_url: "https://www.bilibili.com"
             });
         } catch (e) {
@@ -135,7 +148,7 @@ export default function handler(req, res) {
         getVideoData(id)
         .then(data => {
             data.oembed = new URL("/oembed.json", "https://" + req.headers.host).href;
-            for (let i of ["title", "author", "url", "author_url"])
+            for (let i of ["title", "author", "bvid", "author_url"])
                 data[i + "_urlencoded"] = encodeURIComponent(data[i]);
             sendTemplate(res, "template.html", data, "An error ocurred while rendering the embed", req)
         })
