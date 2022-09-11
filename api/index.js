@@ -96,7 +96,11 @@ async function getVideoData(id) {
     let data = await response.json();
     if (!response.ok || data.code != 0)
         throw new Error(JSON.stringify(data));
-  
+
+    // For the thumbnail, API returns a link with the insecure
+    // HTTP protocol; fix that
+    let picWithSecureProto = new URL(data.data.pic);
+    picWithSecureProto.protocol = "https:";
     return {
         bvid: data.data.bvid,
         url: makeVideoPage(data.data.bvid),
@@ -106,7 +110,7 @@ async function getVideoData(id) {
         author_mid: data.data.owner.mid,
         upload_date: new Date(data.data.ctime * 1000).toISOString(),
         release_date: new Date(data.data.pubdate * 1000).toISOString(),
-        thumbnail: data.data.pic,
+        thumbnail: picWithSecureProto,
         description: data.data.desc,
     };
 }
