@@ -30,6 +30,8 @@ function generateError(code, message, data, req) {
 }
 
 function sendTemplate(res, file, data, errorMessage, req) {
+    data.oembed = new URL("/oembed.json", req.headers.host).href;
+
     renderFile(join(process.cwd(), file), data)
     .catch(function (err) {
         console.error(err);
@@ -94,6 +96,18 @@ async function getVideoData(id) {
 export default function handler(req, res) {
     if (req.url == "/favicon.ico") {
         res.redirect(301, "https://www.bilibili.com/favicon.ico");
+        return;
+    }
+    if (req.url == "/oembed.json") {
+        res.json({
+            version: "1.0",
+            type: req.query.type,
+            title: req.query.title,
+            author_name: req.query.author,
+            author_url: req.query.url,
+            provider_name: "哔哩哔哩",
+            provider_url: "https://www.bilibili.com"
+        });
         return;
     }
 
