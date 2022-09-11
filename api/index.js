@@ -133,6 +133,8 @@ export default function handler(req, res) {
         getVideoData(id)
         .then(data => {
             data.oembed = new URL("/oembed.json", "https://" + req.headers.host).href;
+            for (let i of ["title", "author", "url"])
+                data[i + "_urlencoded"] = encodeURIComponent(data[i]);
             sendTemplate(res, "template.html", data, "An error ocurred while rendering the embed", req)
         })
         .catch(e => {
