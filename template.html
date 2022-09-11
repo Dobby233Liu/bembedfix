@@ -21,8 +21,8 @@
     <meta property="og:image" content="<%= thumbnail %>" />
     <meta property="og:image:secure_url" content="<%= thumbnail %>" />
     <meta name="twitter:image" content="<%= thumbnail %>" />
-    <meta name="twitter:card" content="summary_large_image">
-    <%_ if (description) { %><meta name="description" content="<%= description %>" />
+    <meta name="twitter:card" content="summary_large_image"><% if (description && description != "-") { %>
+    <meta name="description" content="<%= description %>" />
     <meta property="og:description" content="<%= description %>" />
     <meta property="twitter:description" content="<%= description %>" /><% } %>
     <meta property="og:url" content="<%= url %>" />
