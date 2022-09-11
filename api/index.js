@@ -110,7 +110,7 @@ export default function handler(req, res) {
                 provider_url: "https://www.bilibili.com"
             });
         } catch (e) {
-            res.status(500).json({ error: "Generating oembed failed", error: e.toString(), errorInfo: e.stacktrace });
+            res.status(500).json({ code: 500, message: "Generating oembed failed", error: e.toString(), errorInfo: e.stacktrace });
         }
         return;
     }
