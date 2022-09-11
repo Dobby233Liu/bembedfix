@@ -24,8 +24,12 @@ const ERROR_TEMPLATE = `<!DOCTYPE HTML>
 const PROJECT_URL = "https://github.com/Dobby233Liu/bembedfix";
 
 function generateError(code, message, data, req) {
+    let outData = data.toString();
+    if (data.stack && data.message) {
+        outData += "\n\n" + data.stack;
+    }
     return render(ERROR_TEMPLATE,
-        { code: code, message: message, data: data, here: new URL(req.url, "https://" + req.headers.host).href }
+        { code: code, message: message, data: outData, here: new URL(req.url, "https://" + req.headers.host).href }
     );
 }
 
@@ -110,7 +114,7 @@ export default function handler(req, res) {
                 provider_url: "https://www.bilibili.com"
             });
         } catch (e) {
-            res.status(500).json({ code: 500, message: "Generating oembed failed", error: e.toString(), errorInfo: e.stacktrace });
+            res.status(500).json({ code: 500, message: "Generating oembed failed", error: e.toString(), errorInfo: e.stack });
         }
         return;
     }
