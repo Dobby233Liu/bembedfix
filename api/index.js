@@ -74,7 +74,7 @@ async function checkVideoAndGetId(url) {
 }
 
 async function getVideoData(id) {
-    let requestURL = new URL("http://api.bilibili.com/x/web-interface/view");
+    let requestURL = new URL("https://api.bilibili.com/x/web-interface/view");
     let idType = id.startsWith("BV") ? "bvid" : "aid";
     requestURL.searchParams.append(idType, id.substring(2, id.length));
     let response = await fetch(requestURL);
@@ -87,6 +87,7 @@ async function getVideoData(id) {
         embed_url: "https://player.bilibili.com/player.html?bvid=" + data.data.bvid,
         title: data.data.title,
         author: data.data.owner.name,
+        author_url: new URL("/" + data.data.owner.mid, "https://space.bilibili.com"),
         upload_date: new Date(data.data.ctime * 1000).toISOString(),
         release_date: new Date(data.data.pubdate * 1000).toISOString(),
         thumbnail: data.data.pic,
@@ -106,8 +107,9 @@ export default function handler(req, res) {
                 version: "1.0",
                 type: req.query.type,
                 title: req.query.title,
+                url: req.query.url,
                 author_name: req.query.author,
-                author_url: req.query.url,
+                author_url: req.query.author_url,
                 provider_name: "哔哩哔哩",
                 provider_url: "https://www.bilibili.com"
             });
@@ -133,7 +135,7 @@ export default function handler(req, res) {
         getVideoData(id)
         .then(data => {
             data.oembed = new URL("/oembed.json", "https://" + req.headers.host).href;
-            for (let i of ["title", "author", "url"])
+            for (let i of ["title", "author", "url", "author_url"])
                 data[i + "_urlencoded"] = encodeURIComponent(data[i]);
             sendTemplate(res, "template.html", data, "An error ocurred while rendering the embed", req)
         })
