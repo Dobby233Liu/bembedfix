@@ -83,11 +83,11 @@ async function getVideoData(id) {
         throw new Error(JSON.stringify(data));
   
     return {
-        url: "https://www.bilibili.com/video/" + data.data.bvid,
-        embed_url: "https://player.bilibili.com/player.html?bvid=" + data.data.bvid,
+        url: "https://www.bilibili.com/video/" + encodeURI(data.data.bvid),
+        embed_url: "https://player.bilibili.com/player.html?bvid=" + encodeURIComponent(data.data.bvid),
         title: data.data.title,
         author: data.data.owner.name,
-        author_url: new URL("/" + data.data.owner.mid, "https://space.bilibili.com"),
+        author_url: new URL(encodeURI("/" + data.data.owner.mid), "https://space.bilibili.com"),
         upload_date: new Date(data.data.ctime * 1000).toISOString(),
         release_date: new Date(data.data.pubdate * 1000).toISOString(),
         thumbnail: data.data.pic,
