@@ -24,7 +24,7 @@ const PROJECT_URL = "https://github.com/Dobby233Liu/bembedfix";
 
 function generateError(code, message, data, req) {
     return render(ERROR_TEMPLATE,
-        { code: code, message: message, data: data, here: new URL(req.url, req.host).href }
+        { code: code, message: message, data: data, here: new URL(req.path, req.protocol + "://" + req.host).href }
     );
 }
 
