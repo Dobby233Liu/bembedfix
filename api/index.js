@@ -74,7 +74,7 @@ async function checkVideoAndGetId(url) {
 }
 
 function makeVideoPage(bvid) {
-    return "https://www.bilibili.com/video/" + encodeURI(data.data.bvid);
+    return "https://www.bilibili.com/video/" + encodeURI(bvid);
 }
 function makeEmbedPlayer(bvid) {
     return "https://player.bilibili.com/player.html?bvid=" + encodeURIComponent(bvid);
