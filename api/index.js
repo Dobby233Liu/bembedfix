@@ -9,11 +9,11 @@ const ERROR_TEMPLATE = `<!DOCTYPE HTML>
     <title>bembedfix - Error <%= code %>: <%= message %></title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta property="og:site_name" content="bembedfix" />
-    <meta name="twitter:card" content="summary" />
+    <meta property="twitter:card" content="summary" />
     <meta property="og:url" content="<%= here %>" />
     <meta property="og:title" content="Error <%= code %> - <%= message %>" />
     <meta property="og:description" content="<%= data %>" />
-    <meta name="twitter:title" content="Error <%= code %> - <%= message %>" />
+    <meta property="twitter:title" content="Error <%= code %> - <%= message %>" />
     <meta property="twitter:description" content="<%= data %>" />
     <meta name="theme-color" content="#FF0000">
 </head>
