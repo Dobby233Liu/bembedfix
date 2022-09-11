@@ -34,8 +34,6 @@ function generateError(code, message, data, req) {
 }
 
 function sendTemplate(res, file, data, errorMessage, req) {
-    data.oembed = new URL("/oembed.json", "https://" + req.headers.host).href;
-
     renderFile(join(process.cwd(), file), data)
     .catch(function (err) {
         console.error(err);
@@ -133,7 +131,10 @@ export default function handler(req, res) {
     checkVideoAndGetId(videoURL)
     .then(id => {
         getVideoData(id)
-        .then(data => sendTemplate(res, "template.html", data, "An error ocurred while rendering the embed", req))
+        .then(data => {
+            data.oembed = new URL("/oembed.json", "https://" + req.headers.host).href;
+            sendTemplate(res, "template.html", data, "An error ocurred while rendering the embed", req)
+        })
         .catch(e => {
             // console.log(e);
             res
