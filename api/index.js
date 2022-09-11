@@ -70,7 +70,7 @@ async function getVideoData(id) {
 
     let response = await fetch(requestUrl);
     let data = await response.json();
-    if (!response.ok || data.code < 0)
+    if (!response.ok || data.code != 0)
         throw new Error(data);
   
     return {
