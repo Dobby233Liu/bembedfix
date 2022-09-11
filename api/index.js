@@ -30,7 +30,7 @@ function generateError(code, message, data, req) {
 }
 
 function sendTemplate(res, file, data, errorMessage, req) {
-    data.oembed = new URL("/oembed.json", req.headers.host).href;
+    data.oembed = new URL("/oembed.json", "https://" + req.headers.host).href;
 
     renderFile(join(process.cwd(), file), data)
     .catch(function (err) {
@@ -99,15 +99,19 @@ export default function handler(req, res) {
         return;
     }
     if (req.url == "/oembed.json") {
-        res.json({
-            version: "1.0",
-            type: req.query.type,
-            title: req.query.title,
-            author_name: req.query.author,
-            author_url: req.query.url,
-            provider_name: "哔哩哔哩",
-            provider_url: "https://www.bilibili.com"
-        });
+        try {
+            res.json({
+                version: "1.0",
+                type: req.query.type,
+                title: req.query.title,
+                author_name: req.query.author,
+                author_url: req.query.url,
+                provider_name: "哔哩哔哩",
+                provider_url: "https://www.bilibili.com"
+            });
+        } catch (e) {
+            res.status(500).json({ error: "Generating oembed failed", error: e.toString(), errorInfo: e.stacktrace });
+        }
         return;
     }
 
