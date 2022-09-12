@@ -36,7 +36,7 @@ export function sendOembed(data, res, isXML) {
     res.setHeader("Content-Type", "text/xml");
     var builder = new XMLBuilder();
     var xml = `<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-${builder.buildObject({ oembed: data });}`;
+${builder.buildObject({ oembed: data })}`;
     /*} catch (e) {
         res.status(500).json(generateErrorObject(500, "Generating oembed failed", e));
     }*/
