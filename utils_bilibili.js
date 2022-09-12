@@ -72,8 +72,8 @@ export async function getVideoData(id) {
 }
 
 export function getOembedData(query) {
-    let width = Math.min(query.maxwidth, 720);
-    let height = Math.min(query.maxheight, 480);
+    let width = Math.min(+query.maxwidth, 720);
+    let height = Math.min(+query.maxheight, 480);
 
     return {
         version: "1.0",
