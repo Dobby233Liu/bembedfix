@@ -1,7 +1,6 @@
 import { render, renderFile } from "ejs";
 import { join } from "path";
 import { ERROR_TEMPLATE, PROVIDER_NAME, PROVIDER_URL } from "./conf.js";
-import { makeVideoPage, makeEmbedPlayerHTML, makeUserPage } from "./utils_bilibili.js";
 
 export function generateError(code, message, data, req) {
     let outData = data.toString();
@@ -13,10 +12,13 @@ export function generateError(code, message, data, req) {
     );
 }
 
+export function generateErrorObject(code, message, error) {
+    return { code: 500, message: "Generating oembed failed", error: error.toString(), errorInfo: error.stack };
+}
+
 export function sendTemplate(res, file, data, errorMessage, req) {
     renderFile(join(process.cwd(), file), data)
     .catch(function (err) {
-        console.error(err);
         res
             .status(500)
             .send(generateError(500, errorMessage, err, req));
@@ -24,28 +26,10 @@ export function sendTemplate(res, file, data, errorMessage, req) {
     .then(out => res.send(out));
 }
 
-function _getOembedData(query) {
-    return {
-        version: "1.0",
-        type: query.type,
-        url: makeVideoPage(query.bvid),
-        html: makeEmbedPlayerHTML(query.bvid),
-        width: 720,
-        height: 480,
-        thumbnail_url: query.pic,
-        thumbnail_width: 720,
-        thumbnail_height: 480,
-        author_name: query.author,
-        author_url: makeUserPage(query.mid),
-        provider_name: PROVIDER_NAME,
-        provider_url: PROVIDER_URL
-    };
-}
-
-export function sendOembed(query, res, isXML) {
+export function sendOembed(data, res, isXML) {
     try {
-        res.json(_getOembedData(query));
+        res.json(data);
     } catch (e) {
-        res.status(500).json({ code: 500, message: "Generating oembed failed", error: e.toString(), errorInfo: e.stack });
+        res.status(500).json(generateErrorObject(500, "Generating oembed failed", e));
     }
 }

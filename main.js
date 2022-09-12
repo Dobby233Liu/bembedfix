@@ -1,5 +1,5 @@
 import { sendOembed, sendTemplate, generateError } from "./utils.js";
-import { getVideoURL, checkVideoAndGetId, getVideoData } from "./utils_bilibili.js";
+import { getVideoURL, checkVideoAndGetId, getVideoData, getOembedData } from "./utils_bilibili.js";
 import { PROJECT_URL, PROVIDER_NAME } from "./conf.js";
 
 export default function handler(req, res) {
@@ -14,7 +14,7 @@ export default function handler(req, res) {
     res.setHeader("Cache-Control", "s-maxage=5, stale-while-revalidate");
 
     if (parsableURL.pathname == "/oembed.json") {
-        sendOembed(req.query, res, false);
+        sendOembed(getOembedData(req.query), res, false);
         return;
     }
 
