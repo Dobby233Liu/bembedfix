@@ -1,6 +1,6 @@
 import { sendOembed, sendTemplate, generateError } from "./utils.js";
 import { getVideoURL, checkVideoAndGetId, getVideoData, getOembedData } from "./utils_bilibili.js";
-import { PROJECT_URL, PROVIDER_NAME } from "./conf.js";
+import { PROJECT_URL, PROVIDER_NAME, CRAWLER_UAS } from "./conf.js";
 
 export default function handler(req, res) {
     let parsableURL = new URL(req.url, "https://" + req.headers.host);
@@ -11,7 +11,7 @@ export default function handler(req, res) {
         return;
     }
 
-    res.setHeader("Cache-Control", "s-maxage=5, stale-while-revalidate");
+    res.setHeader("Cache-Control", "s-maxage=1, stale-while-revalidate");
 
     if (parsableURL.pathname == "/oembed.json" || parsableURL.pathname == "/oembed.xml") {
         sendOembed(getOembedData(req.query), res, parsableURL.pathname.endsWith(".xml"));
@@ -33,6 +33,11 @@ export default function handler(req, res) {
     .then(id => {
         getVideoData(id)
         .then(data => {
+            if (!CRAWLER_UAS.contains(req.headers.userAgent) && !req.query.__bef_tag_debug) {
+                res.setHeader("Cache-Control", "IGNORE");
+                res.redirect(302, data.url);
+                return;
+            }
             data.oembed = new URL("/oembed.", "https://" + req.headers.host).href;
             data.provider = PROVIDER_NAME;
             for (let i of ["author", "bvid", "thumbnail"])
