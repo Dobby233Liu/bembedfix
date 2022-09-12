@@ -1,4 +1,4 @@
-import { sendOembed, sendTemplate, generateError } as utils from "./utils.js";
+import { sendOembed, sendTemplate, generateError } from "./utils.js";
 import { getVideoURL, checkVideoAndGetId, getVideoData } from "./utils_bilibili.js";
 import { PROJECT_URL, PROVIDER_NAME } from "./conf.js";
 
