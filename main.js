@@ -13,8 +13,8 @@ export default function handler(req, res) {
 
     res.setHeader("Cache-Control", "s-maxage=5, stale-while-revalidate");
 
-    if (parsableURL.pathname == "/oembed.json") {
-        sendOembed(getOembedData(req.query), res, false);
+    if (parsableURL.pathname == "/oembed.json" || parsableURL.pathname == "/oembed.xml") {
+        sendOembed(getOembedData(req.query), res, parsableURL.pathname.endsWith(".xml"));
         return;
     }
 
@@ -33,7 +33,7 @@ export default function handler(req, res) {
     .then(id => {
         getVideoData(id)
         .then(data => {
-            data.oembed = new URL("/oembed.json", "https://" + req.headers.host).href;
+            data.oembed = new URL("/oembed.", "https://" + req.headers.host).href;
             data.provider = PROVIDER_NAME;
             for (let i of ["author", "bvid", "thumbnail"])
                 data[i + "_urlencoded"] = encodeURIComponent(data[i]);

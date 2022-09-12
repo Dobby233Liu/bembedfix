@@ -72,16 +72,19 @@ export async function getVideoData(id) {
 }
 
 export function getOembedData(query) {
+    let width = Math.min(query.maxwidth, 720);
+    let height = Math.min(query.maxheight, 480);
+
     return {
         version: "1.0",
         type: query.type,
         url: makeVideoPage(query.bvid),
         html: makeEmbedPlayerHTML(query.bvid),
-        width: 720,
-        height: 480,
+        width: width,
+        height: height,
         thumbnail_url: query.pic,
-        thumbnail_width: 720,
-        thumbnail_height: 480,
+        thumbnail_width: width,
+        thumbnail_height: height,
         author_name: query.author,
         author_url: makeUserPage(query.mid),
         provider_name: PROVIDER_NAME,

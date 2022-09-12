@@ -1,6 +1,7 @@
 import { render, renderFile } from "ejs";
 import { join } from "path";
 import { ERROR_TEMPLATE } from "./conf.js";
+import { Builder as XMLBuilder } from "xml2js";
 
 export function generateError(code, message, data, req) {
     let outData = data.toString();
@@ -27,9 +28,16 @@ export function sendTemplate(res, file, data, errorMessage, req) {
 }
 
 export function sendOembed(data, res, isXML) {
-    try {
+    if (!isXML) {
         res.json(data);
-    } catch (e) {
-        res.status(500).json(generateErrorObject(500, "Generating oembed failed", e));
+        return;
     }
+
+    res.setHeader("Content-Type", "text/xml");
+    var builder = new XMLBuilder();
+    var xml = builder.buildObject({ oembed: data });
+    /*} catch (e) {
+        res.status(500).json(generateErrorObject(500, "Generating oembed failed", e));
+    }*/
+    res.send(xml);
 }

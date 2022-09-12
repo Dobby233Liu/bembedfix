@@ -36,7 +36,8 @@
     <meta property="twitter:player" content="<%= embed_url %>" />
     <meta property="twitter:player:width" content="720" />
     <meta property="twitter:player:height" content="480" />
-    <link rel="alternate" href="<%= oembed %>?type=video&bvid=<%= bvid_urlencoded %>&pic=<%= thumbnail_urlencoded %>&author=<%= author_urlencoded %>&mid=<%= author_mid %>" type="application/json+oembed" title="<%= title %>">
+    <link rel="alternate" href="<%= oembed %>.json?type=video&bvid=<%= bvid_urlencoded %>&pic=<%= thumbnail_urlencoded %>&author=<%= author_urlencoded %>&mid=<%= author_mid %>" type="application/json+oembed" title="<%= title %>">
+    <link rel="alternate" href="<%= oembed %>.xml?type=video&bvid=<%= bvid_urlencoded %>&pic=<%= thumbnail_urlencoded %>&author=<%= author_urlencoded %>&mid=<%= author_mid %>" type="text/xml+oembed" title="<%= title %>">
 </head>
 <body>
     <p><a href="<%= url %>">正在重定向到 <%= url %></a></p>
