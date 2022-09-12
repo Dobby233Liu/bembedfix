@@ -33,11 +33,11 @@ export default function handler(req, res) {
     .then(id => {
         getVideoData(id)
         .then(data => {
-            /*if (!CRAWLER_UAS.includes(req.headers.userAgent) && !req.query.__bef_tag_debug) {
+            if (!CRAWLER_UAS.includes(req.headers["user-agent"]) && !req.query.__bef_tag_debug) {
                 res.setHeader("Cache-Control", "IGNORE");
                 res.redirect(302, data.url);
                 return;
-            }*/
+            }
             data.oembed = new URL("/oembed.", "https://" + req.headers.host).href;
             data.provider = PROVIDER_NAME;
             for (let i of ["author", "bvid", "thumbnail"])
