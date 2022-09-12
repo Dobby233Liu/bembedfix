@@ -1,6 +1,7 @@
 import { render, renderFile } from "ejs";
 import { join } from "path";
 import { ERROR_TEMPLATE, PROVIDER_NAME, PROVIDER_URL } from "./conf.js";
+import { makeVideoPage, makeEmbedPlayerHTML, makeUserPage } from "./utils_bilibili.js";
 
 export function generateError(code, message, data, req) {
     let outData = data.toString();

@@ -1,5 +1,5 @@
-import * as utils from "./utils.js";
-import * as bili from "./utils_bilibili.js";
+import { sendOembed, sendTemplate, generateError } as utils from "./utils.js";
+import { getVideoURL, checkVideoAndGetId, getVideoData } from "./utils_bilibili.js";
 import { PROJECT_URL, PROVIDER_NAME } from "./conf.js";
 
 export default function handler(req, res) {
@@ -14,13 +14,13 @@ export default function handler(req, res) {
     res.setHeader("Cache-Control", "s-maxage=5, stale-while-revalidate");
 
     if (parsableURL.pathname == "/oembed.json") {
-        utils.sendOembed(req.query, res, false);
+        sendOembed(req.query, res, false);
         return;
     }
 
     let videoURL;
     try {
-        videoURL = bili.getVideoURL(req.url);
+        videoURL = getVideoURL(req.url);
     } catch (e) {
         // console.log(e);
         res.redirect(301, PROJECT_URL);
@@ -29,21 +29,21 @@ export default function handler(req, res) {
 
     let videoID;
     // FIXME: preserve some queries
-    bili.checkVideoAndGetId(videoURL)
+    checkVideoAndGetId(videoURL)
     .then(id => {
-        bili.getVideoData(id)
+        getVideoData(id)
         .then(data => {
             data.oembed = new URL("/oembed.json", "https://" + req.headers.host).href;
             data.provider = PROVIDER_NAME;
             for (let i of ["author", "bvid", "thumbnail"])
                 data[i + "_urlencoded"] = encodeURIComponent(data[i]);
-            utils.sendTemplate(res, "template.html", data, "An error ocurred while rendering the embed", req)
+            sendTemplate(res, "template.html", data, "An error ocurred while rendering the embed", req)
         })
         .catch(e => {
             // console.log(e);
             res
                 .status(500)
-                .send(utils.generateError(500, "An error occurred while retrieving video information", e, req));
+                .send(generateError(500, "An error occurred while retrieving video information", e, req));
         });
     })
     .catch(e => {
