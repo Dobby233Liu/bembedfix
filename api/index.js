@@ -1,2 +1,2 @@
-import handler from "../index.js";
+import handler from "../main.js";
 export default handler;
