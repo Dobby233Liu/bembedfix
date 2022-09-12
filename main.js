@@ -33,7 +33,7 @@ export default function handler(req, res) {
     .then(id => {
         getVideoData(id)
         .then(data => {
-            if (!CRAWLER_UAS.contains(req.headers.userAgent) && !req.query.__bef_tag_debug) {
+            if (!CRAWLER_UAS.includes(req.headers.userAgent) && !req.query.__bef_tag_debug) {
                 res.setHeader("Cache-Control", "IGNORE");
                 res.redirect(302, data.url);
                 return;
