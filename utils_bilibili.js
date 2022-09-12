@@ -41,7 +41,7 @@ export function makeEmbedPlayerHTML(bvid) {
     return `<iframe src="${makeEmbedPlayer(bvid)}" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>`;
 }
 export function makeUserPage(mid) {
-    return new URL(encodeURI("/" + mid), "https://space.bilibili.com");
+    return new URL(encodeURI("/" + mid), "https://space.bilibili.com").href;
 }
 
 export async function getVideoData(id) {
