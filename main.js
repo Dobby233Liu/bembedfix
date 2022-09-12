@@ -20,7 +20,7 @@ export default function handler(req, res) {
 
     let videoURL;
     try {
-        videoURL = getVideoURL(req.url);
+        videoURL = getVideoURL(parsableURL.pathname);
     } catch (e) {
         // console.log(e);
         res.redirect(301, PROJECT_URL);
