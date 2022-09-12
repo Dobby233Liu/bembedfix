@@ -1,4 +1,5 @@
 import fetch from "node-fetch";
+import { PROVIDER_NAME, PROVIDER_URL } from "./conf.js";
 
 export function getVideoURL(path) {
     let url = new URL(path, "https://b23.tv");
