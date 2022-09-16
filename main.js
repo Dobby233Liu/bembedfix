@@ -1,5 +1,5 @@
 import { sendOembed, sendTemplate, generateError } from "./utils.js";
-import { getVideoURL, checkVideoAndGetId, getVideoData, getOembedData } from "./utils_bilibili.js";
+import { getVideoIdByPath, getVideoData, getOembedData } from "./utils_bilibili.js";
 import { PROJECT_URL, PROVIDER_NAME, CRAWLER_UAS } from "./conf.js";
 
 export default function handler(req, res) {
