@@ -1,5 +1,5 @@
 import { sendOembed, sendTemplate, generateError } from "./utils.js";
-import { getVideoURL, checkVideoAndGetId, getVideoData, getOembedData } from "./utils_bilibili.js";
+import { getVideoIdByPath, getVideoData, getOembedData } from "./utils_bilibili.js";
 import { PROJECT_URL, PROVIDER_NAME, CRAWLER_UAS } from "./conf.js";
 
 export default function handler(req, res) {
@@ -18,18 +18,8 @@ export default function handler(req, res) {
         return;
     }
 
-    let videoURL;
-    try {
-        videoURL = getVideoURL(parsableURL.pathname);
-    } catch (e) {
-        // console.log(e);
-        res.redirect(301, PROJECT_URL);
-        return;
-    }
-
-    let videoID;
     // FIXME: preserve some queries
-    checkVideoAndGetId(videoURL)
+    getVideoIdByPath(parsableURL.pathname)
     .then(id => {
         getVideoData(id)
         .then(data => {
