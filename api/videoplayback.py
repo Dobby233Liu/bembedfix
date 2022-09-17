@@ -8,7 +8,7 @@ conf = {
     "outtmpl": "-",
     "format": "bestvideo*+bestaudio/best",
     "postprocessors": [{
-        "key": "FFmpegVideoRemuxerPP",
+        "key": "FFmpegVideoRemuxer",
         "preferedformat": "mp4"
     }],
     "retries": 0,
