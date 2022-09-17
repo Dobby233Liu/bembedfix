@@ -2,6 +2,11 @@
   "github": {
     "silent": true
   },
+  "build": {
+    "env": {
+      "YOUTUBE_DL_FILENAME": "yt-dlp_linux"
+    }
+  },
   "functions": {
     "api/index.js": {
       "includeFiles": "template.html"
