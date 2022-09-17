@@ -22,10 +22,8 @@ class handler(BaseHTTPRequestHandler):
         self.end_headers()
 
         parsed = urlparse(f"http://fake{self.path}")
-        path = parsed.path
         query = dict(parse_qsl(parsed.query))
-        self.wfile.write("Text test")
-        print(query, file=self.wfile)
+
         try:
             with redirect_stdout(self.wfile), yt_dlp.YoutubeDL(conf) as ydl:
                 ydl.download("https://www.bilibili.com/video/" + query.bvid)
@@ -34,4 +32,4 @@ class handler(BaseHTTPRequestHandler):
             error_text = traceback.format_tb(exc_traceback)
             print(error_text, file=self.wfile)
 
-        return
+        self.wfile.flush()
