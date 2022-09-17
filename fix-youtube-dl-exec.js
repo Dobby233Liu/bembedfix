@@ -21,11 +21,13 @@
   SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-import youtubedl from "youtube-dl-exec";
+import _youtubedl from "youtube-dl-exec";
 import isUnix from "is-unix";
 import { execa } from "execa";
 
 const PYTHON_EXECUTABLE = "python3.9";
+
+let youtubedl = _youtubedl;
 
 const args = youtubedl.args;
 const isJSON = youtubedl.isJSON;
