@@ -1,5 +1,6 @@
 import fetch from "node-fetch";
 import { PROVIDER_NAME, PROVIDER_URL } from "./conf.js";
+import youtubedl from "youtube-dl-exec";
 
 export async function getVideoIdByPath(path) {
     let url = new URL(path, "https://b23.tv");
@@ -87,4 +88,16 @@ export function getOembedData(query) {
         provider_name: PROVIDER_NAME,
         provider_url: PROVIDER_URL
     };
+}
+
+export function grabVideoStreamFromBVID(bvid) {
+    const subprocess = youtubedl.exec(makeVideoPage(bvid), {
+        output: "-",
+        format: "bestvideo*+bestaudio/best",
+        remuxVideo: "mp4",
+        retries: 0,
+        noPlaylist: true
+    });
+    setTimeout(subprocess.cancel, 30000);
+    return subprocess.stdout;
 }
