@@ -92,7 +92,7 @@ export function getOembedData(query) {
 
 export function grabVideoStreamFromBVID(bvid) {
     const subprocess = youtubedl.exec(makeVideoPage(bvid), {
-        //output: "-",
+        output: "-",
         format: "bestvideo*+bestaudio/best",
         remuxVideo: "mp4",
         retries: 0,
