@@ -3,9 +3,9 @@ import { getVideoIdByPath, getVideoData, getOembedData } from "./utils_bilibili.
 import { PROJECT_URL, PROVIDER_NAME, CRAWLER_UAS } from "./conf.js";
 
 export default function handler(req, res) {
-    let parsableURL = new URL(req.url, "https://" + req.headers.host);
+    let requestedURL = new URL(req.url, "https://" + req.headers.host);
 
-    if (parsableURL.pathname == "/favicon.ico") {
+    if (requestedURL.pathname == "/favicon.ico") {
         res.setHeader("Cache-Control", "max-age=86400, s-maxage=86400");
         res.redirect(301, "https://www.bilibili.com/favicon.ico");
         return;
@@ -13,13 +13,13 @@ export default function handler(req, res) {
 
     res.setHeader("Cache-Control", "s-maxage=1, stale-while-revalidate");
 
-    if (parasbleURL.pathname == "/oembed" || parsableURL.pathname == "/oembed.json" || parsableURL.pathname == "/oembed.xml") {
-        sendOembed(getOembedData(req.query), res, parsableURL.pathname.endsWith(".xml") || req.query.format == "xml");
+    if (requestedURL.pathname == "/oembed" || requestedURL.pathname == "/oembed.json" || requestedURL.pathname == "/oembed.xml") {
+        sendOembed(getOembedData(req.query), res, requestedURL.pathname.endsWith(".xml") || req.query.format == "xml");
         return;
     }
 
     // FIXME: preserve some queries
-    getVideoIdByPath(parsableURL.pathname)
+    getVideoIdByPath(requestedURL.pathname)
     .then(id => {
         getVideoData(id)
         .then(data => {
