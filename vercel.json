@@ -7,6 +7,9 @@
       "YOUTUBE_DL_FILENAME": "yt-dlp_linux"
     }
   },
+  "env": {
+    "YOUTUBE_DL_FILENAME": "yt-dlp_linux"
+  },
   "functions": {
     "api/index.js": {
       "includeFiles": "template.html"
