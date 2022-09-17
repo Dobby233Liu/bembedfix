@@ -9,6 +9,7 @@
     "node-fetch": "^3.2.10",
     "xml2js": "^0.4.23",
     "youtube-dl-exec": "^2.1.5",
-    "execa": "^6.1.0"
+    "execa": "^6.1.0",
+    "is-unix": "^2.0.7"
   }
 }
