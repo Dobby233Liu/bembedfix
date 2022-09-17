@@ -18,12 +18,13 @@ conf = {
 class handler(BaseHTTPRequestHandler):
     def do_GET(self):
         self.send_response(200)
-        self.send_header("Content-Type", "video/mp4")
+        self.send_header("Content-Type", "application/octet-stream") #video/mp4")
         self.end_headers()
 
         parsed = urlparse(f"http://fake{self.path}")
         path = parsed.path
         query = dict(parse_qsl(parsed.query))
+        print(query, file=self.wfile)
         try:
             with redirect_stdout(self.wfile), yt_dlp.YoutubeDL(conf) as ydl:
                 ydl.download("https://www.bilibili.com/video/" + query.bvid)
