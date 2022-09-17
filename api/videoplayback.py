@@ -33,6 +33,6 @@ class handler(BaseHTTPRequestHandler):
         except Exception:
             exc_type, exc_value, exc_traceback = sys.exc_info()
             error_text = traceback.format_tb(exc_traceback)
-            self.wfile.write(error_text.encode())
+            self.wfile.write(error_text.join("\n").encode())
 
         return
