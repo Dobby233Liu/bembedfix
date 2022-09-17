@@ -2,6 +2,7 @@ from http.server import BaseHTTPRequestHandler
 from contextlib import redirect_stdout
 import yt_dlp
 from urllib.parse import urlparse, parse_qsl
+import traceback
 
 conf = {
     "outtmpl": "-",
@@ -26,7 +27,9 @@ class handler(BaseHTTPRequestHandler):
         try:
             with redirect_stdout(self.wfile), yt_dlp.YoutubeDL(conf) as ydl:
                 ydl.download("https://www.bilibili.com/video/" + query.bvid)
-        except:
-            pass
+        except Exception:
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+            error_text = traceback.format_tb(exc_traceback)
+            print(error_text, file=self.wfile)
 
         return
