@@ -14,6 +14,7 @@ export default function handler(req, res) {
     }
 
     if (parsableURL.pathname == "/getvideo") {
+        res.setHeader("Content-Type", "video/mp4");
         grabVideoStreamFromBVID(req.query.bvid).pipe(res);
         return;
     }
