@@ -99,5 +99,5 @@ export function grabVideoStreamFromBVID(bvid) {
         noPlaylist: true
     });
     setTimeout(subprocess.cancel, 30000);
-    return subprocess.stderr;
+    return subprocess.stdout;
 }
