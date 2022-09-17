@@ -24,14 +24,13 @@ class handler(BaseHTTPRequestHandler):
         parsed = urlparse(f"http://fake{self.path}")
         query = dict(parse_qsl(parsed.query))
 
-        self.wfile.write(("Uber").encode())
-
         try:
             with redirect_stdout(self.wfile), yt_dlp.YoutubeDL(conf) as ydl:
                 ydl.download("https://www.bilibili.com/video/" + query.bvid)
         except Exception:
             exc_type, exc_value, exc_traceback = sys.exc_info()
             error_text = traceback.format_tb(exc_traceback)
-            print(error_text, file=self.wfile)
+            self.wfile.write(error_text.encode())
 
+        self.wfile.flush()
         return
