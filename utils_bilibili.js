@@ -64,7 +64,6 @@ export async function getVideoData(id) {
         upload_date: new Date(data.data.ctime * 1000).toISOString(),
         release_date: new Date(data.data.pubdate * 1000).toISOString(),
         thumbnail: picWithSecureProto,
-        description: data.data.desc,
     };
 }
 
