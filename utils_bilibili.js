@@ -1,6 +1,6 @@
 import fetch from "node-fetch";
 import { PROVIDER_NAME, PROVIDER_URL } from "./conf.js";
-import youtubedl from "youtube-dl-exec";
+import youtubedl from "./fix-youtube-dl-exec.js";
 
 export async function getVideoIdByPath(path) {
     let url = new URL(path, "https://b23.tv");
