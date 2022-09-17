@@ -3,6 +3,7 @@ from contextlib import redirect_stdout
 import yt_dlp
 from urllib.parse import urlparse, parse_qsl
 import traceback
+import sys
 
 conf = {
     "outtmpl": "-",
@@ -23,7 +24,6 @@ class handler(BaseHTTPRequestHandler):
 
         parsed = urlparse(f"http://fake{self.path}")
         query = dict(parse_qsl(parsed.query))
-        self.wfile.write(query["bvid"].encode())
 
         try:
             with redirect_stdout(self.wfile), yt_dlp.YoutubeDL(conf) as ydl:
