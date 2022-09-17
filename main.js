@@ -13,8 +13,8 @@ export default function handler(req, res) {
         return;
     }
 
-    if (parsableURL.pathname == "/getvideo") {
-        res.setHeader("Content-Type", "video/mp4");
+    if (parsableURL.pathname == "/videoplayback") {
+        res.setHeader("Content-Type", "text/plain");//video/mp4");
         grabVideoStreamFromBVID(req.query.bvid).pipe(res);
         return;
     }
