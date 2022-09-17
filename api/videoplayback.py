@@ -24,6 +24,7 @@ class handler(BaseHTTPRequestHandler):
         parsed = urlparse(f"http://fake{self.path}")
         path = parsed.path
         query = dict(parse_qsl(parsed.query))
+        self.wfile.write("Text test")
         print(query, file=self.wfile)
         try:
             with redirect_stdout(self.wfile), yt_dlp.YoutubeDL(conf) as ydl:
