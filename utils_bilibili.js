@@ -39,14 +39,18 @@ export async function getVideoIdByPath(path) {
 
     let response = await fetch(url);
 
+    let responseData = await response.text();
+    try {
+        responseData = JSON.parse(responseData);
+    } catch (_) {}
     if (!response.ok) {
-        let responseText = await response.text();
-        throw new Error("Got HTTP error while retrieving " + url + ": " + response.status + "\n\n" + responseText);
-    }
+        throw new Error("Got HTTP error while retrieving " + url + ": " + response.status + "\n\n" + responseData);
+    } else if (responseData.code && responseData.code != 0)
+        throw new Error("Got error while retrieving " + url + ":" + "\n" + JSON.stringify(responseData));
 
-    let resURLObj = new URL(response.url);
-    if (isBilibili(resURLObj)) {
-        return getID(resURLObj);
+    let redirectionURL = new URL(response.url);
+    if (isBilibili(redirectionURL)) {
+        return getID(redirectionURL);
     }
 
     throw new Error("This doesn't seem to be a video. Got URL " + response.url);
