@@ -16,7 +16,7 @@ export const ERROR_TEMPLATE = `<!DOCTYPE HTML>
 <body>
     <h1><%= code %> - <%= message %></h1>
     <p><pre><%= data %></pre></p>
-    <p>If you believe this is an error on our side, please report it <a href="<%= issues_url =%>">here</a>.</p>
+    <p>If you believe this is an error on our side, please report it <a href="<%= issues_url %>">here</a>.</p>
 </body>
 </html>
 `;
