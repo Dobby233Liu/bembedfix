@@ -36,10 +36,16 @@ export async function getVideoIdByPath(path) {
 
     let response = await fetch(url);
 
-    let responseData;
-    // is this a not-a-redirect?
+    // is this a not-a-redirect? if yes, check if we've got an error
     if (response.status < 300 || response.status > 399) {
-        responseData = await response.text();
+        let responseData = "";
+        try {
+            responseData = await response.text();
+        } catch (e) {
+            e.message = "b23.tv did not return a redirect for " + url + ", but instead a response that we can't get the content of???\n" + e.message;
+            throw e;
+        }
+
         if (!response.ok) {
             throw new Error("Got HTTP error while retrieving " + url + ": " + response.status + "\n\n" + responseData);
         } else {
@@ -50,7 +56,7 @@ export async function getVideoIdByPath(path) {
             } catch (_) {}
             if (responseDataJson && responseDataJson.code && responseDataJson.code != 0)
                 throw new Error("Got error while retrieving " + url + ":" + "\n" + responseData);
-            // we should be fine
+            throw new Error("b23.tv did not return a redirect for " + url + ", but instead a successful response/response of an unknown format???\n" + responseData);
         }
     }
 
