@@ -47,7 +47,7 @@ export async function getVideoIdByPath(path) {
         }
 
         if (!response.ok) {
-            throw new Error("Got HTTP error while retrieving " + url + ": " + response.status + "\n\n" + responseData);
+            throw new Error("Got error while retrieving " + url + " (HTTP status code: " + response.status + ")\n" + responseData);
         } else {
             // server might be returning 200 for a not found error, check it here
             let responseDataJson;
@@ -55,8 +55,8 @@ export async function getVideoIdByPath(path) {
                 responseDataJson = JSON.parse(responseData);
             } catch (_) {}
             if (responseDataJson && responseDataJson.code && responseDataJson.code != 0)
-                throw new Error("Got error while retrieving " + url + ":" + "\n" + responseData);
-            throw new Error("b23.tv did not return a redirect for " + url + ", but instead a successful response/response of an unknown format???\n" + responseData);
+                throw new Error("Got error while retrieving " + url + " (HTTP status code: " + response.status + ")\n" + responseData);
+            throw new Error("b23.tv did not return a redirect for " + url + ", but instead a successful response/response of an unknown format??? (HTTP status code: " + response.status + ")\n" + responseData);
         }
     }
 
