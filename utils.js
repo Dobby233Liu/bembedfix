@@ -5,12 +5,16 @@ import { Builder as XMLBuilder } from "xml2js";
 
 export function generateError(code, message, data, req) {
     let errorMsg = data.toString();
-    let errorMsgShort = errorMsg;
     if (data.stack) {
-        errorMsgShort = data.stack;
+        errorMsg = data.stack;
     }
     return render(ERROR_TEMPLATE,
-        { code: code, message: message, data: errorMsg, data_short: errorMsgShort, here: new URL(req.url, "https://" + req.headers.host).href }
+        {
+            code: code,
+            message: message,
+            data: errorMsg,
+            here: new URL(req.url, "https://" + req.headers.host).href
+        }
     );
 }
 
