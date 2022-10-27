@@ -3,15 +3,16 @@ import { PROVIDER_NAME, PROVIDER_URL } from "./conf.js";
 
 export async function getVideoIdByPath(path) {
     let url = new URL(path, "https://b23.tv");
-
     if (url.pathname == "/")
         throw new Error("Not a video");
+
+    // paths of b23.tv links won't start with /video/
     if (url.pathname.startsWith("/video/"))
         url.hostname = "www.bilibili.com";
 
-    let isBilibili = u =>
-        u.hostname.endsWith("bilibili.com")
-        && u.pathname.startsWith("/video/");
+    let isBilibili = u => u.pathname.startsWith("/video/");
+
+    // extract the ID from path
     let getID = u =>
         u.pathname.substring("/video/".length, u.pathname.length)
          .replace(/\/$/, "");
