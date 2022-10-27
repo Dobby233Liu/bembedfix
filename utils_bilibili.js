@@ -36,19 +36,28 @@ export async function getVideoIdByPath(path) {
 
     let response = await fetch(url);
 
-    let responseData = await response.text();
-    try {
-        responseData = JSON.parse(responseData);
-    } catch (_) {}
-    if (!response.ok) {
-        throw new Error("Got HTTP error while retrieving " + url + ": " + response.status + "\n\n" + responseData);
-    } else if (responseData.code && responseData.code != 0)
-        throw new Error("Got error while retrieving " + url + ":" + "\n" + JSON.stringify(responseData));
+    let responseData;
+    // is this a not-a-redirect?
+    if (response.status < 300 || response.status > 399) {
+        responseData = await response.text();
+        if (!response.ok) {
+            throw new Error("Got HTTP error while retrieving " + url + ": " + response.status + "\n\n" + responseData);
+        } else {
+            // server might be returning 200 for a not found error, check it here
+            let responseDataJson;
+            try {
+                responseDataJson = JSON.parse(responseData);
+            } catch (_) {}
+            if (responseDataJson && responseDataJson.code && responseDataJson.code != 0)
+                throw new Error("Got error while retrieving " + url + ":" + "\n" + responseData);
+            // we should be fine
+        }
+    }
 
-    let redirectionURL = new URL(response.url);
+    let redirectedURL = new URL(response.url);
 
-    if (isBilibiliVideo(redirectionURL)) {
-        return getID(redirectionURL);
+    if (isBilibiliVideo(redirectedURL)) {
+        return getID(redirectedURL);
     }
 
     throw new Error("This doesn't seem to be a video. Got URL " + response.url);
