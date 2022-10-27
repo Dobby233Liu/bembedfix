@@ -1,6 +1,6 @@
 import { render, renderFile } from "ejs";
 import { join } from "path";
-import { ERROR_TEMPLATE } from "./conf.js";
+import { ERROR_TEMPLATE, PROJECT_ISSUES_URL } from "./conf.js";
 import { Builder as XMLBuilder } from "xml2js";
 
 export function generateError(code, message, data, req) {
@@ -13,7 +13,8 @@ export function generateError(code, message, data, req) {
             code: code,
             message: message,
             data: errorMsg,
-            here: new URL(req.url, "https://" + req.headers.host).href
+            here: new URL(req.url, "https://" + req.headers.host).href,
+            issues_url: PROJECT_ISSUES_URL
         }
     );
 }
