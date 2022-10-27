@@ -1,30 +1,72 @@
 import fetch from "node-fetch";
 import { PROVIDER_NAME, PROVIDER_URL } from "./conf.js";
 
+// FIXME: refactor this for other resources
 export async function getVideoIdByPath(path) {
     let url = new URL(path, "https://b23.tv");
-
     if (url.pathname == "/")
         throw new Error("Not a video");
-    if (url.pathname.startsWith("/video/"))
-        url.hostname = "www.bilibili.com";
 
-    let isBilibili = u => u.hostname.endsWith("bilibili.com") && u.pathname.startsWith("/video/");
-    let getID = u => u.pathname.substring("/video/".length, u.pathname.length);
+    // extract the ID from the path
+    // FIXME: make this use RegEx when this gets complex
+    let getID = u =>
+        u.pathname.substring("/video/".length, u.pathname.length)
+         .replace(/\/$/, "");
 
-    if (isBilibili(url)) {
+    // paths of b23.tv links won't start with /video/
+    if (url.pathname.startsWith("/video/")) {
+        // url.hostname = "www.bilibili.com";
         return getID(url);
     }
 
-    let response = await fetch(url);
-    if (!response.ok)
-        throw new Error("Got error while retrieving " + url + ": " + response.status);
+    // FIXME: relocate this
+    let checkIfUrlIsUnderDomain = (l, r) => {
+        let levelsOfDomainLeft = l.split(".");
+        let levelsOfDomainRight = r.split(".");
+        if (levelsOfDomainLeft.length < levelsOfDomainRight.length)
+            return false;
+        return levelsOfDomainLeft
+            .slice(-levelsOfDomainRight.length)
+            .every((level, index) => level == levelsOfDomainRight[index]);
+    };
 
-    let resURLObj = new URL(response.url);
-    if (isBilibili(resURLObj)) {
-        return getID(resURLObj);
+    let isBilibiliVideo = u => 
+        checkIfUrlIsUnderDomain(u.hostname, "bilibili.com")
+        && u.pathname.startsWith("/video/");
+
+    let response = await fetch(url);
+
+    // is this a not-a-redirect? if yes, check if we've got an error
+    if (response.status < 300 || response.status > 399) {
+        let responseData = "";
+        try {
+            responseData = await response.text();
+        } catch (e) {
+            e.message = "b23.tv did not return a redirect for " + url + ", but instead a response that we can't get the content of???\n" + e.message;
+            throw e;
+        }
+
+        if (!response.ok) {
+            throw new Error("Got error while retrieving " + url + " (HTTP status code: " + response.status + ")\n" + responseData);
+        } else {
+            // server might be returning 200 for a not found error, check it here
+            let responseDataJson;
+            try {
+                responseDataJson = JSON.parse(responseData);
+            } catch (_) {}
+            if (responseDataJson && responseDataJson.code && responseDataJson.code != 0)
+                throw new Error("Got error while retrieving " + url + " (HTTP status code: " + response.status + ")\n" + responseData);
+            throw new Error("b23.tv did not return a redirect for " + url + ", but instead a successful response/response of an unknown format??? (HTTP status code: " + response.status + ")\n" + responseData);
+        }
     }
-    throw new Error("Not a video, got URL " + response.url);
+
+    let redirectedURL = new URL(response.url);
+
+    if (isBilibiliVideo(redirectedURL)) {
+        return getID(redirectedURL);
+    }
+
+    throw new Error("This doesn't seem to be a video. Got URL " + response.url);
 }
 
 export function makeVideoPage(bvid) {
@@ -69,7 +111,7 @@ export async function getVideoData(id) {
 
 export function getOembedData(query) {
     let width = query.maxwidth ? Math.min(+query.maxwidth, 720) : 720;
-    let height = query.maxheight ? Math.min(query.maxheight, 480) : 480;
+    let height = query.maxheight ? Math.min(+query.maxheight, 480) : 480;
 
     return {
         version: "1.0",

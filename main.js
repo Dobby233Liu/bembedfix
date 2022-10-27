@@ -10,6 +10,10 @@ export default function handler(req, res) {
         res.redirect(301, "https://www.bilibili.com/favicon.ico");
         return;
     }
+    if (requestedURL.pathname == "/") {
+        res.redirect(301, PROJECT_URL);
+        return;
+    }
 
     res.setHeader("Cache-Control", "s-maxage=1, stale-while-revalidate");
 
@@ -43,6 +47,9 @@ export default function handler(req, res) {
     })
     .catch(e => {
         // console.log(e);
-        res.redirect(301, PROJECT_URL);
+        // res.redirect(301, PROJECT_URL);
+        res
+            .status(500)
+            .send(generateError(500, "An error occurred while trying to parse the requested URL", e, req));
     });
 }

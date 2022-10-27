@@ -1,15 +1,21 @@
 import { render, renderFile } from "ejs";
 import { join } from "path";
-import { ERROR_TEMPLATE } from "./conf.js";
+import { ERROR_TEMPLATE, PROJECT_ISSUES_URL } from "./conf.js";
 import { Builder as XMLBuilder } from "xml2js";
 
 export function generateError(code, message, data, req) {
-    let outData = data.toString();
-    if (data.stack && data.message) {
-        outData += "\n\n" + data.stack;
+    let errorMsg = data.toString();
+    if (data.stack) {
+        errorMsg = data.stack;
     }
     return render(ERROR_TEMPLATE,
-        { code: code, message: message, data: outData, here: new URL(req.url, "https://" + req.headers.host).href }
+        {
+            code: code,
+            message: message,
+            data: errorMsg,
+            here: new URL(req.url, "https://" + req.headers.host).href,
+            issues_url: PROJECT_ISSUES_URL
+        }
     );
 }
 

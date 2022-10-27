@@ -16,12 +16,17 @@ export const ERROR_TEMPLATE = `<!DOCTYPE HTML>
 <body>
     <h1><%= code %> - <%= message %></h1>
     <p><pre><%= data %></pre></p>
+    <p>If you believe this is an error on our side, please report it <a href="<%= issues_url %>">here</a>.</p>
 </body>
 </html>
 `;
+
 export const PROJECT_URL = "https://github.com/Dobby233Liu/bembedfix";
+export const PROJECT_ISSUES_URL = "https://github.com/Dobby233Liu/bembedfix/issues/new";
+
 export const PROVIDER_NAME = "哔哩哔哩（bembedfix）";
 export const PROVIDER_URL = "https://www.bilibili.com";
+
 export const CRAWLER_UAS = [
     "facebookexternalhit/1.1",
     "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.57 Safari/537.36",
