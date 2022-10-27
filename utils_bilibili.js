@@ -12,7 +12,8 @@ export async function getVideoIdByPath(path) {
 
     let isBilibili = u => u.pathname.startsWith("/video/");
 
-    // extract the ID from path
+    // extract the ID from the path
+    // FIXME: make this use RegEx when this gets complex
     let getID = u =>
         u.pathname.substring("/video/".length, u.pathname.length)
          .replace(/\/$/, "");
@@ -47,7 +48,6 @@ export function makeUserPage(mid) {
 }
 
 export async function getVideoData(id) {
-    throw new Error(id);
     let requestURL = new URL("https://api.bilibili.com/x/web-interface/view");
     let idType = id.startsWith("BV") ? "bvid" : "aid";
     requestURL.searchParams.append(idType, id.substring(2, id.length));
