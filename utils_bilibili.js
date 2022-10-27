@@ -1,6 +1,7 @@
 import fetch from "node-fetch";
 import { PROVIDER_NAME, PROVIDER_URL } from "./conf.js";
 
+// FIXME: refactor this for other resources
 export async function getVideoIdByPath(path) {
     let url = new URL(path, "https://b23.tv");
     if (url.pathname == "/")
@@ -29,13 +30,9 @@ export async function getVideoIdByPath(path) {
             .every((level, index) => level == levelsOfDomainRight[index]);
     };
 
-    let isBilibili = u => 
+    let isBilibiliVideo = u => 
         checkIfUrlIsUnderDomain(u.hostname, "bilibili.com")
         && u.pathname.startsWith("/video/");
-
-    if (isBilibili(url)) {
-        return getID(url);
-    }
 
     let response = await fetch(url);
 
@@ -49,7 +46,8 @@ export async function getVideoIdByPath(path) {
         throw new Error("Got error while retrieving " + url + ":" + "\n" + JSON.stringify(responseData));
 
     let redirectionURL = new URL(response.url);
-    if (isBilibili(redirectionURL)) {
+
+    if (isBilibiliVideo(redirectionURL)) {
         return getID(redirectionURL);
     }
 
