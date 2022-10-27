@@ -6,31 +6,50 @@ export async function getVideoIdByPath(path) {
     if (url.pathname == "/")
         throw new Error("Not a video");
 
-    // paths of b23.tv links won't start with /video/
-    if (url.pathname.startsWith("/video/"))
-        url.hostname = "www.bilibili.com";
-
-    let isBilibili = u => u.pathname.startsWith("/video/");
-
     // extract the ID from the path
     // FIXME: make this use RegEx when this gets complex
     let getID = u =>
         u.pathname.substring("/video/".length, u.pathname.length)
          .replace(/\/$/, "");
 
+    // paths of b23.tv links won't start with /video/
+    if (url.pathname.startsWith("/video/")) {
+        // url.hostname = "www.bilibili.com";
+        return getID(url);
+    }
+
+    // FIXME: relocate this
+    let checkIfUrlIsUnderDomain = (l, r) => {
+        let levelsOfDomainLeft = l.split(".");
+        let levelsOfDomainRight = r.split(".");
+        if (levelsOfDomainLeft.length < levelsOfDomainRight.length)
+            return false;
+        return levelsOfDomainLeft
+            .slice(-levelsOfDomainRight.length)
+            .every((level, index) => level == levelsOfDomainRight[index]);
+    };
+
+    let isBilibili = u => 
+        checkIfUrlIsUnderDomain(u.hostname, "bilibili.com")
+        && u.pathname.startsWith("/video/");
+
     if (isBilibili(url)) {
         return getID(url);
     }
 
     let response = await fetch(url);
-    if (!response.ok)
-        throw new Error("Got error while retrieving " + url + ": " + response.status);
+
+    if (!response.ok) {
+        let responseText = await response.text();
+        throw new Error("Got HTTP error while retrieving " + url + ": " + response.status + "\n\n" + responseText);
+    }
 
     let resURLObj = new URL(response.url);
     if (isBilibili(resURLObj)) {
         return getID(resURLObj);
     }
-    throw new Error("Not a video, got URL " + response.url);
+
+    throw new Error("This doesn't seem to be a video. Got URL " + response.url);
 }
 
 export function makeVideoPage(bvid) {
