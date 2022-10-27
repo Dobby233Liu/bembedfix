@@ -37,7 +37,7 @@ export async function getVideoIdByPath(path) {
     let response = await fetch(url);
 
     // is this a not-a-redirect? if yes, check if we've got an error
-    if (response.status < 300 || response.status > 399) {
+    if (!response.redirected) {
         let responseData = "";
         try {
             responseData = await response.text();
