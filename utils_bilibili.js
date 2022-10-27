@@ -9,8 +9,12 @@ export async function getVideoIdByPath(path) {
     if (url.pathname.startsWith("/video/"))
         url.hostname = "www.bilibili.com";
 
-    let isBilibili = u => u.hostname.endsWith("bilibili.com") && u.pathname.startsWith("/video/");
-    let getID = u => u.pathname.substring("/video/".length, u.pathname.length);
+    let isBilibili = u =>
+        u.hostname.endsWith("bilibili.com")
+        && u.pathname.startsWith("/video/");
+    let getID = u =>
+        u.pathname.substring("/video/".length, u.pathname.length)
+         .replace(/\/$/, "");
 
     if (isBilibili(url)) {
         return getID(url);
