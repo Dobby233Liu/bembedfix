@@ -42,6 +42,7 @@ export function makeUserPage(mid) {
 }
 
 export async function getVideoData(id) {
+    throw new Error(id);
     let requestURL = new URL("https://api.bilibili.com/x/web-interface/view");
     let idType = id.startsWith("BV") ? "bvid" : "aid";
     requestURL.searchParams.append(idType, id.substring(2, id.length));
@@ -69,7 +70,7 @@ export async function getVideoData(id) {
 
 export function getOembedData(query) {
     let width = query.maxwidth ? Math.min(+query.maxwidth, 720) : 720;
-    let height = query.maxheight ? Math.min(query.maxheight, 480) : 480;
+    let height = query.maxheight ? Math.min(+query.maxheight, 480) : 480;
 
     return {
         version: "1.0",
