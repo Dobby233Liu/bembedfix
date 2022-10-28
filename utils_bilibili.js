@@ -49,20 +49,18 @@ async function getOriginalURLOfB23TvRedir(url) {
     return new URL(response.url);
 }
 
+const getVideoIdByUrl = u => MAIN_SITE_VIDEO_PAGE_PATHNAME_REGEX.exec(u.pathname)[1];
+
 export async function getVideoIdByPath(path) {
     let url = new URL(path, "https://b23.tv");
 
-    // extract the ID from the path
-    let getIDOfVideo = u => MAIN_SITE_VIDEO_PAGE_PATHNAME_REGEX.exec(u.pathname)[1];
-
     // paths of b23.tv links won't start with /video/
-    if (isPathMainsiteVideoPage(url.pathname)) {
-        return getIDOfVideo(url);
+    if (isPathMainSiteVideoPage(url.pathname)) {
+        return getVideoIdByUrl(url);
     }
-
     const redirectedURL = await getOriginalURLOfB23TvRedir(url);
-    if (isBilibiliVideo(redirectedURL)) {
-        return getIDOfVideo(redirectedURL);
+    if (isUrlBilibiliVideo(redirectedURL)) {
+        return getVideoIdByUrl(redirectedURL);
     }
 
     throw new Error("This doesn't seem to be a video. Got URL " + redirectedURL.href + " (" + url.href + " before following redirection)");
