@@ -42,12 +42,15 @@ const isUrlBilibiliVideo = u => isUrlOnBilibiliMainSite(u) && isPathMainSiteVide
 const getVideoIdByPath = p => MAIN_SITE_VIDEO_PAGE_PATHNAME_REGEX.exec(p)[1];
 
 export async function getVideoIdByPathSmart(path) {
+    // default domain for later
     let url = new URL(path, "https://b23.tv");
 
-    // paths of b23.tv links won't start with /video/
+    // url for video pages on www|m.bilibili.com has a special pattern
     if (isPathMainSiteVideoPage(url.pathname)) {
         return getVideoIdByPath(url.pathname);
     }
+
+    // must've a b23.tv shortlink
     const redirectedURL = await getOriginalURLOfB23TvRedir(url);
     if (isUrlBilibiliVideo(redirectedURL)) {
         return getVideoIdByPath(redirectedURL.pathname);
