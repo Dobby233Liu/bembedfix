@@ -1,40 +1,26 @@
 import fetch from "node-fetch";
 import { PROVIDER_NAME, PROVIDER_URL } from "./conf.js";
 
-// FIXME: refactor this for other resources
-export async function getVideoIdByPath(path) {
-    let url = new URL(path, "https://b23.tv");
-    if (url.pathname == "/")
-        throw new Error("Not a video");
+// Match 1: the ID of the video
+const MAIN_SITE_VIDEO_PAGE_PATHNAME_REGEX = /^\/video\/((?=av|BV)[A-Za-z0-9]+)/;
 
-    // extract the ID from the path
-    // FIXME: make this use RegEx when this gets complex
-    let getID = u =>
-        u.pathname.substring("/video/".length, u.pathname.length)
-         .replace(/\/$/, "");
+// FIXME: relocate this
+function checkIfUrlIsUnderDomain(l, r) {
+    let levelsOfDomainLeft = l.split(".");
+    let levelsOfDomainRight = r.split(".");
+    if (levelsOfDomainLeft.length < levelsOfDomainRight.length)
+        return false;
+    return levelsOfDomainLeft
+        .slice(-levelsOfDomainRight.length)
+        .every((level, index) => level == levelsOfDomainRight[index]);
+}
 
-    // paths of b23.tv links won't start with /video/
-    if (url.pathname.startsWith("/video/")) {
-        // url.hostname = "www.bilibili.com";
-        return getID(url);
-    }
+const isUrlOnBilibiliMainSite = u => checkIfUrlIsUnderDomain(u.hostname, "bilibili.com");
+const isPathMainSiteVideoPage = p => MAIN_SITE_VIDEO_PAGE_PATHNAME_REGEX.test(p);
+const isUrlBilibiliVideo = u => isUrlOnBilibiliMainSite(u) && isPathMainSiteVideoPage(u.pathname);
 
-    // FIXME: relocate this
-    let checkIfUrlIsUnderDomain = (l, r) => {
-        let levelsOfDomainLeft = l.split(".");
-        let levelsOfDomainRight = r.split(".");
-        if (levelsOfDomainLeft.length < levelsOfDomainRight.length)
-            return false;
-        return levelsOfDomainLeft
-            .slice(-levelsOfDomainRight.length)
-            .every((level, index) => level == levelsOfDomainRight[index]);
-    };
-
-    let isBilibiliVideo = u => 
-        checkIfUrlIsUnderDomain(u.hostname, "bilibili.com")
-        && u.pathname.startsWith("/video/");
-
-    let response = await fetch(url);
+async function getOriginalURLOfB23TvRedir(url) {
+    const response = await fetch(url);
 
     // is this a not-a-redirect? if yes, check if we've got an error
     if (!response.redirected) {
@@ -60,13 +46,26 @@ export async function getVideoIdByPath(path) {
         }
     }
 
-    let redirectedURL = new URL(response.url);
+    return new URL(response.url);
+}
 
-    if (isBilibiliVideo(redirectedURL)) {
-        return getID(redirectedURL);
+export async function getVideoIdByPath(path) {
+    let url = new URL(path, "https://b23.tv");
+
+    // extract the ID from the path
+    let getIDOfVideo = u => MAIN_SITE_VIDEO_PAGE_PATHNAME_REGEX.exec(u.pathname)[1];
+
+    // paths of b23.tv links won't start with /video/
+    if (isPathMainsiteVideoPage(url.pathname)) {
+        return getIDOfVideo(url);
     }
 
-    throw new Error("This doesn't seem to be a video. Got URL " + response.url);
+    const redirectedURL = await getOriginalURLOfB23TvRedir(url);
+    if (isBilibiliVideo(redirectedURL)) {
+        return getIDOfVideo(redirectedURL);
+    }
+
+    throw new Error("This doesn't seem to be a video. Got URL " + redirectedURL.href + " (" + url.href + " before following redirection)");
 }
 
 export function makeVideoPage(bvid) {
