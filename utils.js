@@ -1,30 +1,26 @@
 import { render, renderFile } from "ejs";
-import { join } from "path";
+import { join as joinPath } from "path";
 import { ERROR_TEMPLATE, PROJECT_ISSUES_URL } from "./conf.js";
 import { Builder as XMLBuilder } from "xml2js";
 
+export function getRequestedURL(req) {
+    return new URL(req.url, "https://" + req.headers.host);
+}
+
 export function generateError(code, message, data, req) {
-    let errorMsg = data.toString();
-    if (data.stack) {
-        errorMsg = data.stack;
-    }
     return render(ERROR_TEMPLATE,
         {
             code: code,
             message: message,
-            data: errorMsg,
-            here: new URL(req.url, "https://" + req.headers.host).href,
+            data: data.stack ? data.stack : data.toString(),
+            here: getRequestedURL(req).href,
             issues_url: PROJECT_ISSUES_URL
         }
     );
 }
 
-export function generateErrorObject(code, message, error) {
-    return { code: 500, message: "Generating oembed failed", error: error.toString(), errorInfo: error.stack };
-}
-
 export function sendTemplate(res, file, data, errorMessage, req) {
-    renderFile(join(process.cwd(), file), data)
+    renderFile(joinPath(process.cwd(), file), data)
     .catch(function (err) {
         res
             .status(500)
@@ -40,9 +36,15 @@ export function sendOembed(data, res, isXML) {
     }
 
     res.setHeader("Content-Type", "text/xml");
-    var builder = new XMLBuilder();
-    /*} catch (e) {
-        res.status(500).json(generateErrorObject(500, "Generating oembed failed", e));
-    }*/
-    res.send(builder.buildObject({ oembed: data }));
+    res.send(new XMLBuilder().buildObject({ oembed: data }));
+}
+
+export function checkIfUrlIsUnderDomain(l, r) {
+    let levelsOfDomainLeft = l.split(".");
+    let levelsOfDomainRight = r.split(".");
+    if (levelsOfDomainLeft.length < levelsOfDomainRight.length)
+        return false;
+    return levelsOfDomainLeft
+        .slice(-levelsOfDomainRight.length)
+        .every((level, index) => level == levelsOfDomainRight[index]);
 }
