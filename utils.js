@@ -15,9 +15,9 @@ export function generateError(code, message, data, req) {
     );
 }
 
-export function generateErrorObject(code, message, error) {
+/*export function generateErrorObject(code, message, error) {
     return { code: 500, message: message, error: error.toString(), errorInfo: error.stack };
-}
+}*/
 
 export function sendTemplate(res, file, data, errorMessage, req) {
     renderFile(join(process.cwd(), file), data)
@@ -36,11 +36,7 @@ export function sendOembed(data, res, isXML) {
     }
 
     res.setHeader("Content-Type", "text/xml");
-    var builder = new XMLBuilder();
-    /*} catch (e) {
-        res.status(500).json(generateErrorObject(500, "Generating oembed failed", e));
-    }*/
-    res.send(builder.buildObject({ oembed: data }));
+    res.send(new XMLBuilder().buildObject({ oembed: data }));
 }
 
 export function checkIfUrlIsUnderDomain(l, r) {
