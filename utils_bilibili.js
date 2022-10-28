@@ -11,12 +11,12 @@ async function getOriginalURLOfB23TvRedir(url) {
         try {
             responseData = await response.text();
         } catch (e) {
-            e.message = "b23.tv did not return a redirect for " + url + ", but instead a response that we can't get the content of???\n" + e.message;
+            e.message = `请求了 ${url}，但是服务器没有进行跳转，而且获取回应失败？？？` + "\n" + e.message;
             throw e;
         }
 
         if (!response.ok) {
-            throw new Error(`Got error while retrieving ${url} (HTTP status code: ${response.status})` + "\n" + responseData);
+            throw new Error(`对 ${url} 的请求失败。（HTTP 状态码为 ${response.status}）请检查您的链接。` + "\n" + responseData);
         } else {
             // server might be returning 200 for a not found error, check it here
             let responseDataJson;
@@ -24,8 +24,8 @@ async function getOriginalURLOfB23TvRedir(url) {
                 responseDataJson = JSON.parse(responseData);
             } catch (_) {}
             if (responseDataJson && responseDataJson.code && responseDataJson.code != 0)
-                throw new Error(`Got error while retrieving ${url} (HTTP status code: ${response.status})` + "\n" + responseData);
-            throw new Error(`b23.tv did not return a redirect for ${url}, but instead a successful response/response of an unknown format??? (HTTP status code: ${response.status})` + "\n" + responseData);
+                throw new Error(`对 ${url} 的请求失败。（HTTP 状态码为 ${response.status}）请检查您的链接。` + "\n" + responseData);
+            throw new Error(`请求了 ${url}，但是服务器返回了一段奇妙的内容？？？（HTTP 状态码为 ${response.status}）请检查您的链接，如果正常，那么就是我们的 bug。` + "\n" + responseData);
         }
     }
 
@@ -56,7 +56,7 @@ export async function getVideoIdByPathSmart(path) {
         return getVideoIdByPath(redirectedURL.pathname);
     }
 
-    throw new Error(`This doesn't seem to be a video. Got URL ${redirectedURL.href} (${url.href} before following redirection)`);
+    throw new Error("这似乎不是一个视频——本服务目前只支持视频的 embed 化。\n" + `跳转到了 ${redirectedURL.href} （未跳转的 URL：${url.href}）`);
 }
 
 export function makeVideoPage(bvid) {

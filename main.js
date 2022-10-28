@@ -44,17 +44,17 @@ export default function handler(req, res) {
             for (let i of ["author", "bvid", "thumbnail"])
                 data[i + "_urlencoded"] = encodeURIComponent(data[i]);
 
-            sendTemplate(res, "template.html", data, "An error ocurred while rendering the embed", req)
+            sendTemplate(res, "template.html", data, "生成 embed 时发生错误", req)
         })
         .catch(e => {
             res
                 .status(500)
-                .send(generateError(500, "An error occurred while retrieving video information", e, req));
+                .send(generateError(500, "获取视频信息时发生错误", e, req));
         });
     })
     .catch(e => {
         res
             .status(500)
-            .send(generateError(500, "An error occurred while trying to parse the requested URL", e, req));
+            .send(generateError(500, "解析请求的 URL 时发生错误", e, req));
     });
 }
