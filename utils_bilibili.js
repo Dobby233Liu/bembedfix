@@ -2,19 +2,12 @@ import fetch from "node-fetch";
 import { PROVIDER_NAME, PROVIDER_URL } from "./conf.js";
 import { checkIfUrlIsUnderDomain } from "./utils.js";
 
-// Match 1: the ID of the video
-const MAIN_SITE_VIDEO_PAGE_PATHNAME_REGEX = /^\/video\/((?=av|BV)[A-Za-z0-9]+)/;
-
-const isUrlOnBilibiliMainSite = u => checkIfUrlIsUnderDomain(u.hostname, "bilibili.com");
-const isPathMainSiteVideoPage = p => MAIN_SITE_VIDEO_PAGE_PATHNAME_REGEX.test(p);
-const isUrlBilibiliVideo = u => isUrlOnBilibiliMainSite(u) && isPathMainSiteVideoPage(u.pathname);
-
 async function getOriginalURLOfB23TvRedir(url) {
     const response = await fetch(url);
 
-    // is this a not-a-redirect? if yes, check if we've got an error
+    // is this not a redirect? if yes, check if we've got an error
     if (!response.redirected) {
-        let responseData = "";
+        let responseData;
         try {
             responseData = await response.text();
         } catch (e) {
@@ -23,7 +16,7 @@ async function getOriginalURLOfB23TvRedir(url) {
         }
 
         if (!response.ok) {
-            throw new Error("Got error while retrieving " + url + " (HTTP status code: " + response.status + ")\n" + responseData);
+            throw new Error(`Got error while retrieving ${url} (HTTP status code: ${response.status})` + "\n" + responseData);
         } else {
             // server might be returning 200 for a not found error, check it here
             let responseDataJson;
@@ -31,29 +24,36 @@ async function getOriginalURLOfB23TvRedir(url) {
                 responseDataJson = JSON.parse(responseData);
             } catch (_) {}
             if (responseDataJson && responseDataJson.code && responseDataJson.code != 0)
-                throw new Error("Got error while retrieving " + url + " (HTTP status code: " + response.status + ")\n" + responseData);
-            throw new Error("b23.tv did not return a redirect for " + url + ", but instead a successful response/response of an unknown format??? (HTTP status code: " + response.status + ")\n" + responseData);
+                throw new Error(`Got error while retrieving ${url} (HTTP status code: ${response.status})` + "\n" + responseData);
+            throw new Error(`b23.tv did not return a redirect for ${url}, but instead a successful response/response of an unknown format??? (HTTP status code: ${response.status})` + "\n" + responseData);
         }
     }
 
     return new URL(response.url);
 }
 
-const getVideoIdByUrl = u => MAIN_SITE_VIDEO_PAGE_PATHNAME_REGEX.exec(u.pathname)[1];
+// Match 1: the ID of the video
+const MAIN_SITE_VIDEO_PAGE_PATHNAME_REGEX = /^\/video\/((?=av|BV)[A-Za-z0-9]+)/;
 
-export async function getVideoIdByPath(path) {
+const isUrlOnBilibiliMainSite = u => checkIfUrlIsUnderDomain(u.hostname, "bilibili.com");
+const isPathMainSiteVideoPage = p => MAIN_SITE_VIDEO_PAGE_PATHNAME_REGEX.test(p);
+const isUrlBilibiliVideo = u => isUrlOnBilibiliMainSite(u) && isPathMainSiteVideoPage(u.pathname);
+
+const getVideoIdByPath = u => MAIN_SITE_VIDEO_PAGE_PATHNAME_REGEX.exec(u.pathname)[1];
+
+export async function getVideoIdByPathSmart(path) {
     let url = new URL(path, "https://b23.tv");
 
     // paths of b23.tv links won't start with /video/
     if (isPathMainSiteVideoPage(url.pathname)) {
-        return getVideoIdByUrl(url);
+        return getVideoIdByPath(url.pathname);
     }
     const redirectedURL = await getOriginalURLOfB23TvRedir(url);
     if (isUrlBilibiliVideo(redirectedURL)) {
-        return getVideoIdByUrl(redirectedURL);
+        return getVideoIdByPath(redirectedURL.pathname);
     }
 
-    throw new Error("This doesn't seem to be a video. Got URL " + redirectedURL.href + " (" + url.href + " before following redirection)");
+    throw new Error(`This doesn't seem to be a video. Got URL ${redirectedURL.href} (${url.href} before following redirection)`);
 }
 
 export function makeVideoPage(bvid) {
