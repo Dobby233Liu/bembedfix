@@ -2,21 +2,21 @@ export const ERROR_TEMPLATE = `<!DOCTYPE HTML>
 <html>
 <head>
     <meta charset="UTF-8" />
-    <title>bembedfix - Error <%= code %>: <%= message %></title>
+    <title>bembedfix - <%= code %>: <%= message %></title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta property="og:site_name" content="bembedfix" />
     <meta property="twitter:card" content="summary" />
     <meta property="og:url" content="<%= here %>" />
-    <meta property="og:title" content="Error <%= code %> - <%= message %>" />
+    <meta property="og:title" content="<%= code %>: <%= message %>" />
     <meta property="og:description" content="<%= data %>" />
-    <meta property="twitter:title" content="Error <%= code %> - <%= message %>" />
+    <meta property="twitter:title" content="<%= code %>: <%= message %>" />
     <meta property="twitter:description" content="<%= data %>" />
     <meta name="theme-color" content="#FF0000">
 </head>
 <body>
-    <h1><%= code %> - <%= message %></h1>
+    <h1><%= code %>: <%= message %></h1>
     <p><pre><%= data %></pre></p>
-    <p>If you believe this is an error on our side, please report it <a href="<%= issues_url %>">here</a>.</p>
+    <p>如果你认为这个错误是我们的问题，请在<a href="<%= issues_url %>">这里</a>报告 bug。</p>
 </body>
 </html>
 `;
