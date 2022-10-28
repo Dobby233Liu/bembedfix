@@ -15,7 +15,7 @@
 ## 特别鸣谢
 
 * [@狸花十七](https://space.bilibili.com/5490502) 的视频导致我产生了开坑这个项目的想法。十七宝宝就是狸花界的颜值担当！
-* [BEMYPET](https://space.bilibili.com/1677731862) 制作的媒体内容在本项目开发时对我个人产生了一定的心理伤害。（划
+* [BEMYPET](https://space.bilibili.com/1677731862) 制作的媒体内容在本项目开发时对我个人产生了一定的心理创伤。（划
 * 本项目开发过程中对 [哔哩哔哩-API收集整理](https://github.com/SocialSisterYi/bilibili-API-collect) 做了细微参考。
 * 本项目灵感来源于 [TwitFix](https://github.com/dylanpdx/BetterTwitFix)，本项目开发过程中本人也对其代码做了一点参考。
 
