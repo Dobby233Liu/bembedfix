@@ -39,7 +39,7 @@ const isUrlOnBilibiliMainSite = u => checkIfUrlIsUnderDomain(u.hostname, "bilibi
 const isPathMainSiteVideoPage = p => MAIN_SITE_VIDEO_PAGE_PATHNAME_REGEX.test(p);
 const isUrlBilibiliVideo = u => isUrlOnBilibiliMainSite(u) && isPathMainSiteVideoPage(u.pathname);
 
-const getVideoIdByPath = u => MAIN_SITE_VIDEO_PAGE_PATHNAME_REGEX.exec(u.pathname)[1];
+const getVideoIdByPath = p => MAIN_SITE_VIDEO_PAGE_PATHNAME_REGEX.exec(p)[1];
 
 export async function getVideoIdByPathSmart(path) {
     let url = new URL(path, "https://b23.tv");
