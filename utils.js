@@ -1,7 +1,11 @@
 import { render, renderFile } from "ejs";
-import { join } from "path";
+import { join as joinPath } from "path";
 import { ERROR_TEMPLATE, PROJECT_ISSUES_URL } from "./conf.js";
 import { Builder as XMLBuilder } from "xml2js";
+
+export function getRequestedURL(req) {
+    return new URL(req.url, "https://" + req.headers.host);
+}
 
 export function generateError(code, message, data, req) {
     return render(ERROR_TEMPLATE,
@@ -9,18 +13,14 @@ export function generateError(code, message, data, req) {
             code: code,
             message: message,
             data: data.stack ? data.stack : data.toString(),
-            here: new URL(req.url, "https://" + req.headers.host).href,
+            here: getRequestedURL(req).href,
             issues_url: PROJECT_ISSUES_URL
         }
     );
 }
 
-/*export function generateErrorObject(code, message, error) {
-    return { code: 500, message: message, error: error.toString(), errorInfo: error.stack };
-}*/
-
 export function sendTemplate(res, file, data, errorMessage, req) {
-    renderFile(join(process.cwd(), file), data)
+    renderFile(joinPath(process.cwd(), file), data)
     .catch(function (err) {
         res
             .status(500)
