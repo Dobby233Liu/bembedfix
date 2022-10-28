@@ -21,7 +21,7 @@ export default function handler(req, res) {
     if (requestedURL.pathname == "/oembed" || requestedURL.pathname == "/oembed.json" || requestedURL.pathname == "/oembed.xml") {
         sendOembed(getOembedData(req.query), res,
             requestedURL.pathname.endsWith(".xml")
-            || (!requestedURL.pathname.endsWith(".json") && req.query.format == "xml");
+            || (!requestedURL.pathname.endsWith(".json") && req.query.format == "xml"));
         return;
     }
 
