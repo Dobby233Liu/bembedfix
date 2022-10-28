@@ -1,9 +1,9 @@
-import { sendOembed, sendTemplate, generateError } from "./utils.js";
+import { sendOembed, sendTemplate, generateError, getRequestedURL } from "./utils.js";
 import { getVideoIdByPathSmart, getVideoData, getOembedData } from "./utils_bilibili.js";
 import { PROJECT_URL, PROVIDER_NAME, CRAWLER_UAS } from "./conf.js";
 
 export default function handler(req, res) {
-    let requestedURL = new URL(req.url, "https://" + req.headers.host);
+    let requestedURL = getRequestedURL(req);
 
     // special routes
     switch (requestedURL.pathname) {
