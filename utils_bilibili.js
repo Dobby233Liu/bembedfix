@@ -1,19 +1,9 @@
 import fetch from "node-fetch";
 import { PROVIDER_NAME, PROVIDER_URL } from "./conf.js";
+import { checkIfUrlIsUnderDomain } from "./utils.js";
 
 // Match 1: the ID of the video
 const MAIN_SITE_VIDEO_PAGE_PATHNAME_REGEX = /^\/video\/((?=av|BV)[A-Za-z0-9]+)/;
-
-// FIXME: relocate this
-function checkIfUrlIsUnderDomain(l, r) {
-    let levelsOfDomainLeft = l.split(".");
-    let levelsOfDomainRight = r.split(".");
-    if (levelsOfDomainLeft.length < levelsOfDomainRight.length)
-        return false;
-    return levelsOfDomainLeft
-        .slice(-levelsOfDomainRight.length)
-        .every((level, index) => level == levelsOfDomainRight[index]);
-}
 
 const isUrlOnBilibiliMainSite = u => checkIfUrlIsUnderDomain(u.hostname, "bilibili.com");
 const isPathMainSiteVideoPage = p => MAIN_SITE_VIDEO_PAGE_PATHNAME_REGEX.test(p);
