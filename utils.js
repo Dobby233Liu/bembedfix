@@ -7,8 +7,9 @@ export function getRequestedURL(req) {
     return new URL(req.url, "https://" + req.headers.host);
 }
 
-export function generateError(code, message, data, req) {
-    return render(ERROR_TEMPLATE,
+export function sendError(res, code, message, data, req) {
+    res.status(code)
+    .send(render(ERROR_TEMPLATE,
         {
             code: code,
             message: message,
@@ -16,15 +17,13 @@ export function generateError(code, message, data, req) {
             here: getRequestedURL(req).href,
             issues_url: PROJECT_ISSUES_URL
         }
-    );
+    ));
 }
 
 export function sendTemplate(res, file, data, errorMessage, req) {
     renderFile(joinPath(process.cwd(), file), data)
     .catch(function (err) {
-        res
-            .status(500)
-            .send(generateError(500, errorMessage, err, req));
+        sendError(res, 500, errorMessage, err, req);
     })
     .then(out => res.send(out));
 }
