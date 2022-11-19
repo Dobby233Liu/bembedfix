@@ -56,7 +56,7 @@ export async function getVideoIdByPathSmart(path) {
         return getVideoIdByPath(redirectedURL.pathname);
     }
 
-    throw new Error("这似乎不是一个视频——本服务目前只支持视频的 embed 化。\n" + `跳转到了 ${redirectedURL.href} （未跳转的 URL：${url.href}）`);
+    throw new Error("这似乎不是一个视频——本服务目前只支持对视频页面进行 embed 修正。\n" + `跳转到了 ${redirectedURL.href} （未跳转的 URL：${url.href}）`);
 }
 
 export function makeVideoPage(bvid) {
@@ -85,10 +85,10 @@ export async function getVideoData(id) {
         throw new Error(errorMsg + "\n" + dataRaw);
     let data;
     try {
-        data = JSON.parse(data);
+        data = JSON.parse(dataRaw);
     } catch (_) {}
     if (!data)
-        throw new Error(`请求了 ${requestURL}，但无法解析回复的内容。可能发生了错误。请检查您的链接，如果没有问题，则请上报 bug。` + "\n" + dataRaw);
+        throw new Error(`请求了 ${requestURL}，但无法解析服务器回复的内容。可能发生了错误。请检查您的链接，如果没有问题，则请上报 bug。` + "\n" + dataRaw);
     if (data.code && data.code != 0)
         throw new Error(errorMsg + "\n" + dataRaw);
 
