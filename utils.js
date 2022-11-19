@@ -25,7 +25,7 @@ export function sendError(res, code, message, data, req, responseType = "html") 
             break;
         case "xml":
             res.setHeader("Content-Type", "text/xml");
-            res.send(xmlBuilder.buildObject(errorData));
+            res.send(xmlBuilder.buildObject({ bembedfix_error: errorData }));
             break;
         default:
             res.send(render(ERROR_TEMPLATE, {
