@@ -19,8 +19,9 @@ export default function handler(req, res) {
     res.setHeader("Cache-Control", "s-maxage=1, stale-while-revalidate");
 
     if (requestedURL.pathname == "/oembed" || requestedURL.pathname == "/oembed.json" || requestedURL.pathname == "/oembed.xml") {
-        var isXMLRequested = requestedURL.pathname.endsWith(".xml")
+        const isXMLRequested = requestedURL.pathname.endsWith(".xml")
             || (!requestedURL.pathname.endsWith(".json") && req.query.format == "xml");
+        const errorResType = isXMLRequested ? "xml" : "json";
 
         if (req.query.url) {
             // user requested with a URL, grab video info
@@ -41,13 +42,16 @@ export default function handler(req, res) {
                     }), res, isXMLRequested);
                 })
                 .catch(e => {
-                    sendError(res, 500, "获取视频信息时发生错误", e, req);
+                    sendError(res, 500, "获取视频信息时发生错误", e, req, errorResType);
                 });
             })
             .catch(e => {
-                sendError(res, 500, "解析请求的 URL 时发生错误", e, req);
+                sendError(res, 500, "解析请求的 URL 时发生错误", e, req, errorResType);
             });
 
+            return;
+        } else if (!req.query.bvid) {
+            sendError(res, 400, "请求无效。Bad request", "没有提供应有的参数。Did not provide required parameters.", req, errorResType);
             return;
         }
 
