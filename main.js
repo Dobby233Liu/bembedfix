@@ -1,4 +1,4 @@
-import { sendOembed, sendTemplate, generateError, getRequestedURL } from "./utils.js";
+import { sendOembed, sendTemplate, sendError, getRequestedURL } from "./utils.js";
 import { getVideoIdByPathSmart, getVideoData, getOembedData } from "./utils_bilibili.js";
 import { PROJECT_URL, PROVIDER_NAME, CRAWLER_UAS } from "./conf.js";
 
@@ -41,15 +41,11 @@ export default function handler(req, res) {
                     }), res, isXMLRequested);
                 })
                 .catch(e => {
-                    res
-                        .status(500)
-                        .send(generateError(500, "获取视频信息时发生错误", e, req));
+                    sendError(res, 500, "获取视频信息时发生错误", e, req);
                 });
             })
             .catch(e => {
-                res
-                    .status(500)
-                    .send(generateError(500, "解析请求的 URL 时发生错误", e, req));
+                sendError(res, 500, "解析请求的 URL 时发生错误", e, req);
             });
 
             return;
@@ -80,14 +76,10 @@ export default function handler(req, res) {
             sendTemplate(res, "template.html", data, "生成 embed 时发生错误", req)
         })
         .catch(e => {
-            res
-                .status(500)
-                .send(generateError(500, "获取视频信息时发生错误", e, req));
+            sendError(res, 500, "获取视频信息时发生错误", e, req);
         });
     })
     .catch(e => {
-        res
-            .status(500)
-            .send(generateError(500, "解析请求的 URL 时发生错误", e, req));
+        sendError(res, 500, "解析请求的 URL 时发生错误", e, req);
     });
 }
