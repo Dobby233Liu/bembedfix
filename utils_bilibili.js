@@ -74,18 +74,29 @@ export function makeUserPage(mid) {
 }
 
 export async function getVideoData(id) {
-    let requestURL = new URL("https://api.bilibili.com/x/web-interface/view");
-    let idType = id.startsWith("BV") ? "bvid" : "aid";
+    const requestURL = new URL("https://api.bilibili.com/x/web-interface/view");
+    const idType = id.startsWith("BV") ? "bvid" : "aid";
     requestURL.searchParams.append(idType, id.substring(2, id.length));
-    let response = await fetch(requestURL);
-    let data = await response.json();
-    if (!response.ok || data.code != 0)
-        throw new Error(JSON.stringify(data));
+
+    const response = await fetch(requestURL);
+    const errorMsg = `对 ${requestURL} 的请求失败。（HTTP 状态码为 ${response.status}）请检查您的链接。`;
+    const dataRaw = await response.text();
+    if (!response.ok)
+        throw new Error(errorMsg + "\n" + dataRaw);
+    let data;
+    try {
+        data = JSON.parse(data);
+    } catch (_) {}
+    if (!data)
+        throw new Error(`请求了 ${requestURL}，但无法解析回复的内容。可能发生了错误。请检查您的链接，如果没有问题，则请上报 bug。` + "\n" + dataRaw);
+    if (data.code && data.code != 0)
+        throw new Error(errorMsg + "\n" + dataRaw);
 
     // For the thumbnail, API returns a link with the insecure
     // HTTP protocol; fix that
-    let picWithSecureProto = new URL(data.data.pic);
+    const picWithSecureProto = new URL(data.data.pic);
     picWithSecureProto.protocol = "https:";
+
     return {
         bvid: data.data.bvid,
         url: makeVideoPage(data.data.bvid),
