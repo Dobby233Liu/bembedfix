@@ -14,9 +14,9 @@ export const ERROR_TEMPLATE = `<!DOCTYPE HTML>
     <meta name="theme-color" content="#FF0000">
 </head>
 <body>
-    <h1><%= code %>: <%= message %></h1>
-    <p><pre><%= data %></pre></p>
-    <p>如果你认为这个错误是我们的问题，请在<a href="<%= issues_url %>">这里</a>报告 bug。</p>
+    <h1 id="message"><%= code %>: <%= message %></h1>
+    <p><pre id="error"><%= data %></pre></p>
+    <p id="report">如果你认为这个错误是我们的问题，请在<a href="<%= issues_url %>">这里</a>报告 bug。</p>
 </body>
 </html>
 `;
