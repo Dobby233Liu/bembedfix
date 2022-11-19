@@ -7,24 +7,39 @@ export function getRequestedURL(req) {
     return new URL(req.url, "https://" + req.headers.host);
 }
 
-export function generateError(code, message, data, req) {
-    return render(ERROR_TEMPLATE,
-        {
-            code: code,
-            message: message,
-            data: data.stack ? data.stack : data.toString(),
-            here: getRequestedURL(req).href,
-            issues_url: PROJECT_ISSUES_URL
-        }
-    );
+const xmlBuilder = new XMLBuilder();
+
+export function sendError(res, code, message, data, req, responseType = "html") {
+    res.status(code);
+
+    const errorData = {
+        code: code,
+        message: message,
+        data: data.stack ? data.stack : data.toString(),
+        issues_url: PROJECT_ISSUES_URL
+    };
+
+    switch (responseType) {
+        case "json":
+            res.json(errorData);
+            break;
+        case "xml":
+            res.setHeader("Content-Type", "text/xml");
+            res.send(xmlBuilder.buildObject({ bembedfix_error: errorData }));
+            break;
+        default:
+            res.send(render(ERROR_TEMPLATE, {
+                ...errorData,
+                here: getRequestedURL(req).href,
+            }));
+            break;
+    }
 }
 
 export function sendTemplate(res, file, data, errorMessage, req) {
     renderFile(joinPath(process.cwd(), file), data)
     .catch(function (err) {
-        res
-            .status(500)
-            .send(generateError(500, errorMessage, err, req));
+        sendError(res, 500, errorMessage, err, req);
     })
     .then(out => res.send(out));
 }
@@ -36,7 +51,7 @@ export function sendOembed(data, res, isXML) {
     }
 
     res.setHeader("Content-Type", "text/xml");
-    res.send(new XMLBuilder().buildObject({ oembed: data }));
+    res.send(xmlBuilder.buildObject({ oembed: data }));
 }
 
 export function checkIfUrlIsUnderDomain(l, r) {
