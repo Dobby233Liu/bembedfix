@@ -25,8 +25,6 @@ export default function handler(req, res) {
 
         if (req.query.url) {
             // user requested with a URL, grab video info
-            // FIXME: video
-
             getVideoIdByPathSmart(new URL(req.query.url).pathname)
             .then(id => {
                 getVideoData(id)

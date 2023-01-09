@@ -1,41 +1,38 @@
 <!DOCTYPE HTML>
-<html>
+<html lang="zh_CN">
 <head>
     <meta charset="UTF-8" />
     <title><%= title %></title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta http-equiv="Refresh" content="0; url='<%= url %>'" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta property="application-name" content="<%= provider %>" />
     <meta property="og:site_name" content="<%= provider %>" />
-    <meta name="msapplication-tap-highlight" content="no">
-    <meta name="theme-color" content="#de698c">
-    <meta property="og:type" content="video" />
-    <meta property="twitter:card" content="summary_large_image" />
-    <meta name="language" content="zh_CN" />
-    <meta property="og:title" content="<%= title %>" />
-    <meta property="og:author" content="<%= author %>" />
-    <meta name="author" content="<%= author %>" />
-    <meta property="twitter:title" content="<%= author %> 发布的视频：<%= title %>" />
-    <meta property="datePublished" content="<%= release_date %>"/>
-    <meta property="og:release_date" content="<%= upload_date %>"/>
-    <meta property="og:update_date" content="<%= release_date %>"/>
-    <meta property="og:video:release_date" content="<%= upload_date %>"/>
-    <meta property="og:video:update_date" content="<%= release_date %>"/>
-    <meta property="twitter:image" content="<%= thumbnail %>" />
-    <meta property="og:url" content="<%= url %>" />
-    <meta property="twitter:url" content="<%= url %>" />
+    <meta name="theme-color" content="#de698c" />
     <link rel="canonical" href="<%= url %>" />
-    <meta property="og:video:type" content="text/html" />
-    <meta property="og:video" content="<%= embed_url %>" />
+    <meta name="title" content="<%= title %>" />
+    <meta name="language" content="zh_CN" />
+    <link rel="alternate" href="<%= oembed %>.json?type=video&bvid=<%= bvid_urlencoded %>&pic=<%= thumbnail_urlencoded %>&author=<%= author_urlencoded %>&mid=<%= author_mid %>" type="application/json+oembed" title="<%= title %>" />
+    <link rel="alternate" href="<%= oembed %>.xml?type=video&bvid=<%= bvid_urlencoded %>&pic=<%= thumbnail_urlencoded %>&author=<%= author_urlencoded %>&mid=<%= author_mid %>" type="text/xml+oembed" title="<%= title %>" />
+    <meta property="og:type" content="video" />
+    <meta property="og:title" content="<%= title %>" />
+    <meta property="og:url" content="<%= url %>" />
+    <meta property="og:author" content="<%= author %>" />
+    <meta property="og:image" content="<%= thumbnail %>">
+    <meta property="og:image:width" content="960">
+    <meta property="og:image:height" content="720">
     <meta property="og:video:url" content="<%= embed_url %>" />
     <meta property="og:video:secure_url" content="<%= embed_url %>" />
-    <meta property="og:video:width" content="720" />
-    <meta property="og:video:height" content="480" />
+    <meta property="og:video:type" content="video/mp4">
+    <meta property="og:video:width" content="960" />
+    <meta property="og:video:height" content="720" />
+    <meta property="twitter:card" content="player" />
+    <meta property="twitter:url" content="<%= url %>" />
+    <meta property="twitter:title" content="<%= title %>" />
+    <meta property="twitter:image" content="<%= thumbnail %>" />
     <meta property="twitter:player" content="<%= embed_url %>" />
-    <meta property="twitter:player:width" content="720" />
-    <meta property="twitter:player:height" content="480" />
-    <link rel="alternate" href="<%= oembed %>.json?type=video&bvid=<%= bvid_urlencoded %>&pic=<%= thumbnail_urlencoded %>&author=<%= author_urlencoded %>&mid=<%= author_mid %>" type="application/json+oembed" title="<%= title %>">
-    <link rel="alternate" href="<%= oembed %>.xml?type=video&bvid=<%= bvid_urlencoded %>&pic=<%= thumbnail_urlencoded %>&author=<%= author_urlencoded %>&mid=<%= author_mid %>" type="text/xml+oembed" title="<%= title %>">
+    <meta property="twitter:player:width" content="960" />
+    <meta property="twitter:player:height" content="720" />
 </head>
 <body>
     <p><a href="<%= url %>">正在重定向到 <%= url %></a></p>
