@@ -11,7 +11,7 @@ async function getOriginalURLOfB23TvRedir(url) {
         try {
             responseData = await response.text();
         } catch (e) {
-            e.message = `请求了 ${url}，但是服务器没有进行跳转，而且获取回应失败？？？` + "\n" + e.message;
+            e.message = `请求了 ${url}，但是服务器没有进行跳转，而且获取回应失败？` + "\n" + e.message;
             throw e;
         }
 
@@ -25,7 +25,7 @@ async function getOriginalURLOfB23TvRedir(url) {
             } catch (_) {}
             if (responseDataJson && responseDataJson.code && responseDataJson.code != 0)
                 throw new Error(`对 ${url} 的请求失败。（HTTP 状态码为 ${response.status}）请检查您的链接。` + "\n" + responseData);
-            throw new Error(`请求了 ${url}，但是服务器返回了一段奇妙的内容？？？（HTTP 状态码为 ${response.status}）请检查您的链接，如果正常，那么就是我们的 bug。` + "\n" + responseData);
+            throw new Error(`请求了 ${url}，但是服务器返回了一段奇妙的内容？（HTTP 状态码为 ${response.status}）请检查您的链接，如果正常，那么就是我们的 bug。` + "\n" + responseData);
         }
     }
 
@@ -73,6 +73,8 @@ export function makeUserPage(mid) {
     return new URL(encodeURI("/" + mid), "https://space.bilibili.com").href;
 }
 
+// export function getCompatDescription()
+
 export async function getVideoData(id) {
     const requestURL = new URL("https://api.bilibili.com/x/web-interface/view");
     const idType = id.startsWith("BV") ? "bvid" : "aid";
@@ -104,15 +106,15 @@ export async function getVideoData(id) {
         title: data.data.title,
         author: data.data.owner.name,
         author_mid: data.data.owner.mid,
-        upload_date: new Date(data.data.ctime * 1000).toISOString(),
-        release_date: new Date(data.data.pubdate * 1000).toISOString(),
         thumbnail: picWithSecureProto,
     };
 }
 
 export function getOembedData(query) {
-    let width = query.maxwidth ? Math.min(+query.maxwidth, 720) : 720;
-    let height = query.maxheight ? Math.min(+query.maxheight, 480) : 480;
+    const defWidth = 960;
+    const defHeight = 720;
+    let width = query.maxwidth ? Math.min(+query.maxwidth, defWidth) : defWidth;
+    let height = query.maxheight ? Math.min(+query.maxheight, defHeight) : defHeight;
 
     return {
         version: "1.0",
