@@ -8,7 +8,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta property="application-name" content="<%= provider %>" />
     <meta property="og:site_name" content="<%= provider %>" />
-    <meta name="msapplication-tap-highlight" content="no">
     <meta name="theme-color" content="#de698c">
     <link rel="canonical" href="<%= url %>" />
     <meta name="language" content="zh_CN" />
@@ -16,17 +15,16 @@
     <link rel="alternate" href="<%= oembed %>.xml?type=video&bvid=<%= bvid_urlencoded %>&pic=<%= thumbnail_urlencoded %>&author=<%= author_urlencoded %>&mid=<%= author_mid %>" type="text/xml+oembed" title="<%= title %>">
     <meta property="og:type" content="video" />
     <meta property="og:title" content="<%= title %>" />
-    <meta name="author" content="<%= author %>" />
     <meta property="og:author" content="<%= author %>" />
+    <meta property="og:url" content="<%= url %>" />
+    <meta property="og:video:url" content="<%= embed_url %>" />
+    <meta property="og:video:secure_url" content="<%= embed_url %>" />
+    <meta property="og:video:type" content="video/mp4" />
+    <meta property="og:video:width" content="720" />
+    <meta property="og:video:height" content="480" />
     <meta property="datePublished" content="<%= release_date %>"/>
     <meta property="og:video:release_date" content="<%= upload_date %>"/>
     <meta property="og:video:update_date" content="<%= release_date %>"/>
-    <meta property="og:url" content="<%= url %>" />
-    <meta property="og:video:type" content="video/mp4" />
-    <meta property="og:video:url" content="<%= embed_url %>" />
-    <meta property="og:video:secure_url" content="<%= embed_url %>" />
-    <meta property="og:video:width" content="720" />
-    <meta property="og:video:height" content="480" />
     <meta property="twitter:card" content="player" />
     <meta property="twitter:title" content="<%= title %>" />
     <meta property="twitter:image" content="<%= thumbnail %>" />
