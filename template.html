@@ -12,8 +12,8 @@
     <link rel="canonical" href="<%= url %>" />
     <meta name="title" content="<%= title %>" />
     <meta name="language" content="zh_CN" />
-    <link rel="alternate" href="<%= oembed %>.json?type=video&bvid=<%= bvid_urlencoded %>&pic=<%= thumbnail_urlencoded %>&author=<%= author_urlencoded %>&mid=<%= author_mid %>" type="application/json+oembed" title="<%= title %>" />
-    <link rel="alternate" href="<%= oembed %>.xml?type=video&bvid=<%= bvid_urlencoded %>&pic=<%= thumbnail_urlencoded %>&author=<%= author_urlencoded %>&mid=<%= author_mid %>" type="text/xml+oembed" title="<%= title %>" />
+    <link rel="alternate" href="<%= oembed %>.json?type=video&bvid=<%= encodeURIComponent(bvid) %>&pic=<%= encodeURIComponent(thumbnail) %>&author=<%= encodeURIComponent(author) %>&mid=<%= author_mid %>" type="application/json+oembed" title="<%= title %>" />
+    <link rel="alternate" href="<%= oembed %>.xml?type=video&bvid=<%= encodeURIComponent(bvid) %>&pic=<%= encodeURIComponent(thumbnail) %>&author=<%= encodeURIComponent(author) %>&mid=<%= author_mid %>" type="text/xml+oembed" title="<%= title %>" />
     <meta property="og:type" content="video" />
     <meta property="og:title" content="<%= title %>" />
     <meta property="og:url" content="<%= url %>" />

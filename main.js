@@ -1,4 +1,4 @@
-import { sendOembed, sendTemplate, sendError, getRequestedURL } from "./utils.js";
+import { sendOembed, sendTemplate, sendError, getRequestedURL, getMyBaseURL } from "./utils.js";
 import { getVideoIdByPathSmart, getVideoData, getOembedData } from "./utils_bilibili.js";
 import { PROJECT_URL, PROVIDER_NAME, CRAWLER_UAS } from "./conf.js";
 
@@ -70,10 +70,8 @@ export default function handler(req, res) {
             }
 
             // FIXME: preferredly do this in some other way or somewhere else
-            data.oembed = new URL("/oembed", "https://" + req.headers.host).href;
+            data.oembed = new URL("/oembed", getMyBaseURL(req)).href;
             data.provider = PROVIDER_NAME;
-            for (let i of ["author", "bvid", "thumbnail"])
-                data[i + "_urlencoded"] = encodeURIComponent(data[i]);
 
             sendTemplate(res, "template.html", data, "生成 embed 时发生错误", req)
         })

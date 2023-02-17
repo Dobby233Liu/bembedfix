@@ -3,8 +3,16 @@ import { join as joinPath } from "path";
 import { ERROR_TEMPLATE, PROJECT_ISSUES_URL } from "./conf.js";
 import { Builder as XMLBuilder } from "xml2js";
 
+export function getMyBaseURL(req) {
+    const headers = req.headers;
+    const url = new URL("https://example.com"); // Lmao
+    url.protocol = `${headers["x-forwarded-proto"] ?? "https"}:`;
+    url.host = headers["x-vercel-deployment-url"] ?? headers["x-forwarded-host"] ?? headers["host"];
+    return url;
+}
+
 export function getRequestedURL(req) {
-    return new URL(req.url, "https://" + req.headers.host);
+    return new URL(req.url, getMyBaseURL(req));
 }
 
 const xmlBuilder = new XMLBuilder();
