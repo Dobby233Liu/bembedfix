@@ -42,7 +42,7 @@ export default function handler(req, res) {
                     }
 
                     // FIXME: preferredly do this in some other way or somewhere else
-                    data.oembed = new URL("oembed", getMyBaseURL(req) + "/").href;
+                    data.oembed = new URL("oembed", getMyBaseURL(req)).href;
                     data.provider = PROVIDER_NAME;
 
                     sendTemplate(res, req, responseType, "template.html", data, "生成 embed 时发生错误")
