@@ -18,7 +18,7 @@
 * 与 B 站 API 交互的代码参考了 [哔哩哔哩-API收集整理](https://github.com/SocialSisterYi/bilibili-API-collect)。
 * [@狸花十七](https://space.bilibili.com/5490502) 的视频——确切来说是上图中的那则视频——导致我产生了开坑这个项目的想法。（十七宝宝就是狸花界的颜值担当！）
 * [BEMYPET](https://space.bilibili.com/1677731862) 产生的内容在本项目开发过程中对我造成了一定心理创伤。（误）
-* 这还可以加人吗？
+* 我还可以加人吗？
 
 ## 许可证
 
