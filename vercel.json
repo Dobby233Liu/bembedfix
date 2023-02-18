@@ -1,16 +1,13 @@
 {
-  "github": {
-    "silent": true
-  },
-  "functions": {
-    "api/index.js": {
-      "includeFiles": "template.html"
-    }
-  },
-  "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/api"
-    }
-  ]
+    "github": {
+        "silent": true
+    },
+    "functions": {
+        "api/index.js": {
+          "includeFiles": "template.html"
+        }
+    },
+    "rewrites": [
+        { "source": "/:match*", "destination": "/api" }
+    ]
 }

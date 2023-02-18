@@ -143,7 +143,7 @@ export async function getVideoData(info) {
     ret = {
         ...ret,
         cid: resInfo.pages[ret.page-1].cid ?? resInfo.cid,
-        duration: formatISODuration((resInfo.pages[ret.page-1] ?? resInfo.pages[0]).duration),
+        duration: formatISODuration({ seconds: (resInfo.pages[ret.page-1] ?? resInfo.pages[0]).duration }),
     };
     ret = {
         ...ret,

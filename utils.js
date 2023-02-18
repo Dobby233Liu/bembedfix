@@ -50,8 +50,7 @@ export function sendTemplate(res, req, responseType, file, data, errorMessage) {
         sendError(res, req, responseType, 500, errorMessage, err);
     })
     .then(out => {
-        res.setHeader("Content-Type", "text/html");
-        res.send(out)
+        res.send(out);
     });
 }
 
@@ -80,4 +79,7 @@ export function stripTrailingSlashes(str) {
 
 export function isUAEndUser(req) {
     return !CRAWLER_UAS.includes(req.headers["user-agent"]) && !req.query.__bef_tag_debug;
+}
+export function shouldLieAboutPlayerContentType(req) {
+    return req.headers["user-agent"].includes("Discordbot");
 }
