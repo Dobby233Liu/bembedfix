@@ -1,6 +1,6 @@
 import fetch from "node-fetch";
 import { PROVIDER_NAME, PROVIDER_URL } from "./conf.js";
-import { checkIfUrlIsUnderDomain } from "./utils.js";
+import { checkIfUrlIsUnderDomain, stripTrailingSlashes } from "./utils.js";
 
 async function getOriginalURLOfB23TvRedir(url) {
     const response = await fetch(url);
@@ -39,7 +39,7 @@ const isUrlOnBilibiliMainSite = u => checkIfUrlIsUnderDomain(u.hostname, "bilibi
 const isPathMainSiteVideoPage = p => MAIN_SITE_VIDEO_PAGE_PATHNAME_REGEX.test(p);
 const isUrlBilibiliVideo = u => isUrlOnBilibiliMainSite(u) && isPathMainSiteVideoPage(u.pathname);
 
-const getVideoIdByPath = p => MAIN_SITE_VIDEO_PAGE_PATHNAME_REGEX.exec(p)[1];
+const getVideoIdByPath = p => MAIN_SITE_VIDEO_PAGE_PATHNAME_REGEX.exec(stripTrailingSlashes(p))[1];
 
 export async function getVideoIdByPathSmart(path) {
     // default domain for later

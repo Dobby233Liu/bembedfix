@@ -1,14 +1,14 @@
 import { render, renderFile } from "ejs";
 import { join as joinPath } from "path";
-import { ERROR_TEMPLATE, PROJECT_ISSUES_URL } from "./conf.js";
+import { ERROR_TEMPLATE, PROJECT_ISSUES_URL, CRAWLER_UAS } from "./conf.js";
 import { Builder as XMLBuilder } from "xml2js";
 
 export function getMyBaseURL(req) {
     const headers = req.headers;
-    const url = new URL("https://example.com"); // Lmao
-    url.protocol = `${headers["x-forwarded-proto"] ?? "https"}:`;
-    url.host = headers["x-vercel-deployment-url"] ?? headers["x-forwarded-host"] ?? headers["host"];
-    return url;
+    return new URL(
+        `${encodeURI(headers["x-forwarded-proto"] ?? "https")}://`
+        + encodeURI(headers["x-vercel-deployment-url"] ?? headers["x-forwarded-host"] ?? headers["host"])
+    );
 }
 
 export function getRequestedURL(req) {
@@ -17,7 +17,7 @@ export function getRequestedURL(req) {
 
 const xmlBuilder = new XMLBuilder();
 
-export function sendError(res, code, message, data, req, responseType = "html") {
+export function sendError(res, req, responseType = "html", code, message, data) {
     res.status(code);
 
     const errorData = {
@@ -44,22 +44,24 @@ export function sendError(res, code, message, data, req, responseType = "html") 
     }
 }
 
-export function sendTemplate(res, file, data, errorMessage, req) {
+export function sendTemplate(res, req, responseType, file, data, errorMessage) {
     renderFile(joinPath(process.cwd(), file), data)
     .catch(function (err) {
-        sendError(res, 500, errorMessage, err, req);
+        sendError(res, req, responseType, 500, errorMessage, err);
     })
-    .then(out => res.send(out));
+    .then(out => {
+        res.setHeader("Content-Type", "text/html");
+        res.send(out)
+    });
 }
 
-export function sendOembed(data, res, isXML) {
-    if (!isXML) {
+export function sendOembed(res, data, type) {
+    if (type == "json") {
         res.json(data);
-        return;
+    } else {
+        res.setHeader("Content-Type", "text/xml");
+        res.send(xmlBuilder.buildObject({ oembed: data }));
     }
-
-    res.setHeader("Content-Type", "text/xml");
-    res.send(xmlBuilder.buildObject({ oembed: data }));
 }
 
 export function checkIfUrlIsUnderDomain(l, r) {
@@ -70,4 +72,12 @@ export function checkIfUrlIsUnderDomain(l, r) {
     return levelsOfDomainLeft
         .slice(-levelsOfDomainRight.length)
         .every((level, index) => level == levelsOfDomainRight[index]);
+}
+
+export function stripTrailingSlashes(str) {
+    return /^(\/.*?)(\/*$)/.exec(str)[1];
+}
+
+export function isUAEndUser(req) {
+    return !CRAWLER_UAS.includes(req.headers["user-agent"]) && !req.query.__bef_tag_debug;
 }

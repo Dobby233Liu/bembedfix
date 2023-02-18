@@ -1,6 +1,6 @@
-import { sendOembed, sendTemplate, sendError, getRequestedURL, getMyBaseURL } from "./utils.js";
+import { sendOembed, sendTemplate, sendError, getRequestedURL, getMyBaseURL, stripTrailingSlashes, isUAEndUser } from "./utils.js";
 import { getVideoIdByPathSmart, getVideoData, getOembedData } from "./utils_bilibili.js";
-import { PROJECT_URL, PROVIDER_NAME, CRAWLER_UAS } from "./conf.js";
+import { PROJECT_URL, PROVIDER_NAME } from "./conf.js";
 
 export default function handler(req, res) {
     let requestedURL = getRequestedURL(req);
@@ -18,18 +18,36 @@ export default function handler(req, res) {
 
     res.setHeader("Cache-Control", "s-maxage=1, stale-while-revalidate");
 
-    if (requestedURL.pathname == "/oembed" || requestedURL.pathname == "/oembed.json" || requestedURL.pathname == "/oembed.xml") {
-        const isXMLRequested = requestedURL.pathname.endsWith(".xml")
-            || (!requestedURL.pathname.endsWith(".json") && req.query.format == "xml");
-        const errorResType = isXMLRequested ? "xml" : "json";
+    let doOembed = false;
+    let responseType = "html";
+    if (stripTrailingSlashes(requestedURL.pathname) == "/oembed" || requestedURL.pathname == "/oembed.json" || requestedURL.pathname == "/oembed.xml") {
+        doOembed = true;
+        let isXMLRequested = false;
+        if (!requestedURL.pathname.endsWith(".json"))
+            isXMLRequested = requestedURL.pathname.endsWith(".xml") || req.query.format == "xml";
+        responseType = isXMLRequested ? "xml" : "json";
+    }
 
-        if (req.query.url) {
-            // user requested with a URL, grab video info
-            getVideoIdByPathSmart(new URL(req.query.url).pathname)
-            .then(id => {
-                getVideoData(id)
-                .then(data => {
-                    sendOembed(getOembedData({
+    if (!doOembed || req.query.url) {
+        getVideoIdByPathSmart((!doOembed ? requestedURL : new URL(req.query.url)).pathname)
+        .then(id => {
+            getVideoData(id)
+            .then(data => {
+                if (!doOembed) {
+                    if (isUAEndUser(req)) {
+                        res.setHeader("Cache-Control", "private, max-age=1, stale-while-revalidate");
+                        // redirect the client to the real video URL
+                        res.redirect(302, data.url);
+                        return;
+                    }
+
+                    // FIXME: preferredly do this in some other way or somewhere else
+                    data.oembed = new URL("/oembed", getMyBaseURL(req)).href;
+                    data.provider = PROVIDER_NAME;
+
+                    sendTemplate(res, req, responseType, "template.html", data, "生成 embed 时发生错误")
+                } else {
+                    sendOembed(res, getOembedData({
                         type: "video",
                         bvid: data.bvid,
                         pic: data.thumbnail,
@@ -37,49 +55,22 @@ export default function handler(req, res) {
                         mid: data.author_mid,
                         maxwidth: req.query.maxwidth,
                         maxheight: req.query.maxheight,
-                    }), res, isXMLRequested);
-                })
-                .catch(e => {
-                    sendError(res, 500, "获取视频信息时发生错误", e, req, errorResType);
-                });
+                    }), responseType);
+                }
             })
             .catch(e => {
-                sendError(res, 500, "解析请求的 URL 时发生错误", e, req, errorResType);
+                sendError(res, req, responseType, 500, "获取视频信息时发生错误", e);
             });
-
-            return;
-        } else if (!req.query.bvid) {
-            sendError(res, 400, "请求无效。Bad request", "没有提供应有的参数。Did not provide required parameters.", req, errorResType);
+        })
+        .catch(e => {
+            sendError(res, req, responseType, 500, "解析请求的 URL 时发生错误", e);
+        });
+    } else if (doOembed) {
+        if (!req.query.bvid) {
+            sendError(res, req, responseType, 400, "请求无效", "没有提供应有的参数");
             return;
         }
 
-        sendOembed(getOembedData(req.query), res, isXMLRequested);
-        return;
+        sendOembed(res, getOembedData(req.query), responseType);
     }
-
-    getVideoIdByPathSmart(requestedURL.pathname)
-    .then(id => {
-        getVideoData(id)
-        .then(data => {
-            if (!CRAWLER_UAS.includes(req.headers["user-agent"])
-                && !req.query.__bef_tag_debug) {
-                res.setHeader("Cache-Control", "private, max-age=1, stale-while-revalidate");
-                // redirect the client to the real video URL
-                res.redirect(302, data.url);
-                return;
-            }
-
-            // FIXME: preferredly do this in some other way or somewhere else
-            data.oembed = new URL("/oembed", getMyBaseURL(req)).href;
-            data.provider = PROVIDER_NAME;
-
-            sendTemplate(res, "template.html", data, "生成 embed 时发生错误", req)
-        })
-        .catch(e => {
-            sendError(res, 500, "获取视频信息时发生错误", e, req);
-        });
-    })
-    .catch(e => {
-        sendError(res, 500, "解析请求的 URL 时发生错误", e, req);
-    });
 }
