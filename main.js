@@ -1,5 +1,5 @@
 import { sendOembed, sendTemplate, sendError, getRequestedURL, getMyBaseURL, stripTrailingSlashes, isUAEndUser } from "./utils.js";
-import { getVideoIdByPathSmart, getVideoData, getOembedData } from "./utils_bilibili.js";
+import { getRequestedInfo, getVideoData, getOembedData } from "./utils_bilibili.js";
 import { PROJECT_URL, PROVIDER_NAME } from "./conf.js";
 
 export default function handler(req, res) {
@@ -29,9 +29,9 @@ export default function handler(req, res) {
     }
 
     if (!doOembed || req.query.url) {
-        getVideoIdByPathSmart((!doOembed ? requestedURL : new URL(req.query.url)).pathname)
-        .then(id => {
-            getVideoData(id)
+        getRequestedInfo((!doOembed ? requestedURL : new URL(req.query.url)).pathname, requestedURL.searchParams)
+        .then(info => {
+            getVideoData(info)
             .then(data => {
                 if (!doOembed) {
                     if (isUAEndUser(req)) {
@@ -55,6 +55,8 @@ export default function handler(req, res) {
                         mid: data.author_mid,
                         maxwidth: req.query.maxwidth,
                         maxheight: req.query.maxheight,
+                        cid: data.cid,
+                        page: data.page,
                     }), responseType);
                 }
             })

@@ -41,41 +41,61 @@ const isUrlBilibiliVideo = u => isUrlOnBilibiliMainSite(u) && isPathMainSiteVide
 
 const getVideoIdByPath = p => MAIN_SITE_VIDEO_PAGE_PATHNAME_REGEX.exec(stripTrailingSlashes(p))[1];
 
-export async function getVideoIdByPathSmart(path) {
+export async function getRequestedInfo(path, search) {
+    let ret = {
+        type: "video",
+        id: null,
+        page: null
+    }
+
     // default domain for later
     let url = new URL(path, "https://b23.tv");
 
-    // url for video pages on www|m.bilibili.com has a special pattern
-    if (isPathMainSiteVideoPage(url.pathname)) {
-        return getVideoIdByPath(url.pathname);
+    // url for video pages on www|m.bilibili.com has a specific pattern
+    if (!isPathMainSiteVideoPage(url.pathname)) {
+        // must've a b23.tv shortlink
+        url = await getOriginalURLOfB23TvRedir(url);
+        if (!isUrlBilibiliVideo(url)) {
+            throw new Error("这似乎不是一个视频——本服务目前只支持对视频页面进行 embed 修正。\n" + `跳转到了 ${redirectedURL.href} （未跳转的 URL：${url.href}）`);
+        }
+    } else {
+        url.hostname = "www.bilibili.com"
     }
 
-    // must've a b23.tv shortlink
-    const redirectedURL = await getOriginalURLOfB23TvRedir(url);
-    if (isUrlBilibiliVideo(redirectedURL)) {
-        return getVideoIdByPath(redirectedURL.pathname);
+    ret.id = getVideoIdByPath(url.pathname);
+    ret.page = parseInt(search.get("p")) ?? 1;
+    if (isNaN(ret.page)) {
+        ret.page = 1;
     }
 
-    throw new Error("这似乎不是一个视频——本服务目前只支持对视频页面进行 embed 修正。\n" + `跳转到了 ${redirectedURL.href} （未跳转的 URL：${url.href}）`);
+    return ret;
 }
 
-export function makeVideoPage(bvid) {
-    return "https://www.bilibili.com/video/" + encodeURI(bvid);
+export function makeVideoPage(bvid, page = 1) {
+    const ret = new URL(bvid, "https://www.bilibili.com/video/");
+    ret.searchParams.set("p", page);
+    return ret;
 }
-export function makeEmbedPlayer(bvid) {
+export function makeEmbedPlayer(bvid, cid, page = 1) {
     // //player.bilibili.com/player.html?aid=429619610&bvid=BV1GG411b7sc&cid=805522554&page=1
-    return "https://player.bilibili.com/player.html?bvid=" + encodeURIComponent(bvid);
+    const ret = new URL("https://player.bilibili.com/player.html");
+    ret.searchParams.set("bvid", bvid);
+    ret.searchParams.set("cid", cid);
+    ret.searchParams.set("page", page);
+    return ret;
 }
-export function makeEmbedPlayerHTML(bvid) {
-    return `<iframe src="${makeEmbedPlayer(bvid)}" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>`;
+export function makeEmbedPlayerHTML(bvid, cid, page = 1) {
+    return `<iframe src="${makeEmbedPlayer(bvid, cid, page)}" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>`;
 }
 export function makeUserPage(mid) {
-    return new URL(encodeURI("/" + mid), "https://space.bilibili.com").href;
+    return new URL(mid, "https://space.bilibili.com").href;
 }
 
 // export function getCompatDescription()
 
-export async function getVideoData(id) {
+export async function getVideoData(info) {
+    const id = info.id;
+
     const requestURL = new URL("https://api.bilibili.com/x/web-interface/view");
     const idType = id.startsWith("BV") ? "bvid" : "aid";
     requestURL.searchParams.append(idType, id.substring(2, id.length));
@@ -85,29 +105,38 @@ export async function getVideoData(id) {
     const dataRaw = await response.text();
     if (!response.ok)
         throw new Error(errorMsg + "\n" + dataRaw);
-    let data;
+    let res;
     try {
-        data = JSON.parse(dataRaw);
+        res = JSON.parse(dataRaw);
     } catch (_) {}
-    if (!data)
+    if (!res)
         throw new Error(`请求了 ${requestURL}，但无法解析服务器回复的内容。可能发生了错误。请检查您的链接，如果没有问题，则请上报 bug。` + "\n" + dataRaw);
-    if (data.code && data.code != 0)
+    if (res.code && res.code != 0)
         throw new Error(errorMsg + "\n" + dataRaw);
 
-    // For the thumbnail, API returns a link with the insecure
+    // For the thumbnail, the API returns a link with the insecure
     // HTTP protocol; fix that
-    const picWithSecureProto = new URL(data.data.pic);
+    const picWithSecureProto = new URL(res.data.pic);
     picWithSecureProto.protocol = "https:";
 
-    return {
-        bvid: data.data.bvid,
-        url: makeVideoPage(data.data.bvid),
-        embed_url: makeEmbedPlayer(data.data.bvid),
-        title: data.data.title,
-        author: data.data.owner.name,
-        author_mid: data.data.owner.mid,
+    let ret = {
+        bvid: res.data.bvid,
+        page: info.page ?? 1,
+        title: res.data.title,
+        author: res.data.owner.name,
+        author_mid: res.data.owner.mid,
         thumbnail: picWithSecureProto,
     };
+    ret = {
+        ...ret,
+        cid: res.data.pages[ret.page-1].cid ?? res.data.cid
+    };
+    ret = {
+        ...ret,
+        url: makeVideoPage(res.data.bvid, info.page),
+        embed_url: makeEmbedPlayer(res.data.bvid, ret.cid, ret.page),
+    };
+    return ret;
 }
 
 export function getOembedData(query) {
@@ -119,8 +148,8 @@ export function getOembedData(query) {
     return {
         version: "1.0",
         type: query.type,
-        url: makeVideoPage(query.bvid),
-        html: makeEmbedPlayerHTML(query.bvid),
+        url: makeVideoPage(query.bvid, query.page),
+        html: makeEmbedPlayerHTML(query.bvid, query.cid, query.page),
         width: width,
         height: height,
         thumbnail_url: query.pic,
