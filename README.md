@@ -4,7 +4,7 @@
 
 ![demo](images/demo.png)
 
-这是一个小服务，用于修复 bilibili 视频链接的 embed 在 Discord 上的显示效果。效果如上图，一目了然，无需过多介绍。
+这是一个用于修复 bilibili 视频页面在 Discord 上的预览效果的小服务。效果如上图，一目了然，无需过多介绍。
 
 ## 使用
 
