@@ -8,6 +8,7 @@ export default function handler(req, res) {
     // special routes
     switch (requestedURL.pathname) {
         case "/":
+            res.setHeader("Cache-Control", "max-age=10800, s-maxage=10800");
             res.redirect(301, PROJECT_URL);
             return;
         case "/favicon.ico":
