@@ -37,12 +37,12 @@ export default function handler(req, res) {
                     if (isUAEndUser(req)) {
                         res.setHeader("Cache-Control", "private, max-age=1, stale-while-revalidate");
                         // redirect the client to the real video URL
-                        res.redirect(302, data.url);
+                        res.redirect(302, data.url.href);
                         return;
                     }
 
                     // FIXME: preferredly do this in some other way or somewhere else
-                    data.oembed = new URL("/oembed", getMyBaseURL(req)).href;
+                    data.oembed = new URL("oembed", getMyBaseURL(req) + "/").href;
                     data.provider = PROVIDER_NAME;
 
                     sendTemplate(res, req, responseType, "template.html", data, "生成 embed 时发生错误")
