@@ -12,27 +12,50 @@
     <link rel="canonical" href="<%= url %>" />
     <meta name="title" content="<%= title %>" />
     <meta name="language" content="zh_CN" />
+    <meta name="description" content="<%= compat_description %>">
     <link rel="alternate" href="<%= oembed %>.json?type=video&bvid=<%= encodeURIComponent(bvid) %>&pic=<%= encodeURIComponent(thumbnail) %>&cid=<%= encodeURIComponent(cid) %>&page=<%= encodeURIComponent(page) %>&author=<%= encodeURIComponent(author) %>&mid=<%= author_mid %>" type="application/json+oembed" title="<%= title %>" />
     <link rel="alternate" href="<%= oembed %>.xml?type=video&bvid=<%= encodeURIComponent(bvid) %>&pic=<%= encodeURIComponent(thumbnail) %>&cid=<%= encodeURIComponent(cid) %>&page=<%= encodeURIComponent(page) %>&author=<%= encodeURIComponent(author) %>&mid=<%= author_mid %>" type="text/xml+oembed" title="<%= title %>" />
-    <meta property="og:type" content="video" />
+    <meta property="og:type" content="video.other" />
     <meta property="og:title" content="<%= title %>" />
     <meta property="og:url" content="<%= url %>" />
     <meta property="og:author" content="<%= author %>" />
     <meta property="og:image" content="<%= thumbnail %>">
-    <meta property="og:image:width" content="960">
+    <meta property="og:description" content="<%= compat_description %>">
+    <meta property="og:image:width" content="1280">
     <meta property="og:image:height" content="720">
     <meta property="og:video:url" content="<%= embed_url %>" />
     <meta property="og:video:secure_url" content="<%= embed_url %>" />
-    <meta property="og:video:type" content="video/mp4">
-    <meta property="og:video:width" content="960" />
+    <meta property="og:video:type" content="text/html">
+    <meta property="og:video:width" content="1280" />
     <meta property="og:video:height" content="720" />
     <meta property="twitter:card" content="player" />
     <meta property="twitter:url" content="<%= url %>" />
     <meta property="twitter:title" content="<%= title %>" />
+    <meta name="twitter:description" content="<%= compat_description %>">
     <meta property="twitter:image" content="<%= thumbnail %>" />
     <meta property="twitter:player" content="<%= embed_url %>" />
-    <meta property="twitter:player:width" content="960" />
+    <meta property="twitter:player:width" content="1280" />
     <meta property="twitter:player:height" content="720" />
+    <div itemscope itemid="" itemtype="http://schema.org/VideoObject">
+        <link itemprop="url" href="<%= url %>">
+        <meta itemprop="name" content="<%= title %>">
+        <meta itemprop="description" content="<%= compat_description %>">
+        <meta itemprop="duration" content="<%= duration %>">
+        <span itemprop="author" itemscope itemtype="http://schema.org/Person">
+            <link itemprop="url" href="<%= author_url %>">
+            <link itemprop="name" content="<%= author %>">
+        </span>
+        <link itemprop="thumbnailUrl" href="<%= thumbnail %>">
+        <span itemprop="thumbnail" itemscope itemtype="http://schema.org/ImageObject">
+            <link itemprop="url" href="<%= thumbnail %>">
+            <meta itemprop="width" content="1280">
+            <meta itemprop="height" content="720">
+        </span>
+        <link itemprop="embedUrl" href="<%= embed_url %>">
+        <meta itemprop="width" content="1280">
+        <meta itemprop="height" content="720">
+        <meta itemprop="playerType" content="HTML5">
+    </div>
 </head>
 <body>
     <p><a href="<%= url %>">正在重定向到 <%= url %></a></p>

@@ -5,6 +5,7 @@
     "version": "0.1.0",
     "license": "MIT",
     "dependencies": {
+        "date-fns": "^2.29.3",
         "ejs": "^3.1.8",
         "node-fetch": "^3.2.10",
         "xml2js": "^0.4.23"

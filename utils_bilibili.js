@@ -1,4 +1,5 @@
 import fetch from "node-fetch";
+import { formatISODuration } from "date-fns";
 import { PROVIDER_NAME, PROVIDER_URL } from "./conf.js";
 import { checkIfUrlIsUnderDomain, stripTrailingSlashes } from "./utils.js";
 
@@ -91,7 +92,15 @@ export function makeUserPage(mid) {
     return new URL(mid, "https://space.bilibili.com").href;
 }
 
-// export function getCompatDescription()
+function getCompatDescription(desc = "", length = 160) {
+    const elipsis = "……";
+    let ret = desc;
+    ret = ret.replace(/\r\n/g, " ").replace(/\n/g, " ").trim();
+    if (ret.length > length) {
+        return ret.slice(0, length - elipsis.length) + elipsis;
+    }
+    return ret;
+}
 
 export async function getVideoData(info) {
     const id = info.id;
@@ -114,33 +123,38 @@ export async function getVideoData(info) {
     if (res.code && res.code != 0)
         throw new Error(errorMsg + "\n" + dataRaw);
 
+    const resInfo = res.data;
+
     // For the thumbnail, the API returns a link with the insecure
     // HTTP protocol; fix that
-    const picWithSecureProto = new URL(res.data.pic);
+    const picWithSecureProto = new URL(resInfo.pic);
     picWithSecureProto.protocol = "https:";
 
     let ret = {
-        bvid: res.data.bvid,
+        bvid: resInfo.bvid,
         page: info.page ?? 1,
-        title: res.data.title,
-        author: res.data.owner.name,
-        author_mid: res.data.owner.mid,
+        title: resInfo.title,
+        author: resInfo.owner.name,
+        author_mid: resInfo.owner.mid,
+        author_url: makeUserPage(resInfo.owner.mid),
         thumbnail: picWithSecureProto,
+        compat_description: getCompatDescription(resInfo.desc),
     };
     ret = {
         ...ret,
-        cid: res.data.pages[ret.page-1].cid ?? res.data.cid
+        cid: resInfo.pages[ret.page-1].cid ?? resInfo.cid,
+        duration: formatISODuration((resInfo.pages[ret.page-1] ?? resInfo.pages[0]).duration),
     };
     ret = {
         ...ret,
-        url: makeVideoPage(res.data.bvid, info.page),
-        embed_url: makeEmbedPlayer(res.data.bvid, ret.cid, ret.page),
+        url: makeVideoPage(resInfo.bvid, info.page),
+        embed_url: makeEmbedPlayer(resInfo.bvid, ret.cid, ret.page)
     };
     return ret;
 }
 
 export function getOembedData(query) {
-    const defWidth = 960;
+    const defWidth = 1280;
     const defHeight = 720;
     let width = query.maxwidth ? Math.min(+query.maxwidth, defWidth) : defWidth;
     let height = query.maxheight ? Math.min(+query.maxheight, defHeight) : defHeight;
