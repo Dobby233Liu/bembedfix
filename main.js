@@ -6,15 +6,15 @@ export default function handler(req, res) {
     let requestedURL = getRequestedURL(req);
 
     // special routes
-    switch (requestedURL.pathname) {
-        case "/":
-            res.setHeader("Cache-Control", "max-age=10800, s-maxage=10800");
-            res.redirect(308, PROJECT_URL);
-            return;
-        case "/favicon.ico":
-            res.setHeader("Cache-Control", "max-age=86400, s-maxage=86400");
-            res.redirect(308, "https://www.bilibili.com/favicon.ico");
-            return;
+    if (stripTrailingSlashes(requestedURL.pathname) == "/") {
+        res.setHeader("Cache-Control", "max-age=10800, s-maxage=10800");
+        res.redirect(308, PROJECT_URL);
+        return;
+    }
+    if (requestedURL.pathname == "/favicon.ico") {
+        res.setHeader("Cache-Control", "max-age=86400, s-maxage=86400");
+        res.redirect(308, "https://www.bilibili.com/favicon.ico");
+        return;
     }
 
     res.setHeader("Cache-Control", "s-maxage=1, stale-while-revalidate");
