@@ -60,11 +60,11 @@ export default function handler(req, res) {
                 }
             })
             .catch(e => {
-                sendError(res, req, responseType, e ? e.httpError ?? 500 : 500, "获取视频信息时发生错误", e || "未知错误。");
+                sendError(res, req, responseType, e ? e.httpError ?? 500 : 500, "获取视频信息时发生错误", e);
             });
         })
         .catch(e => {
-            sendError(res, req, responseType, e.httpError ?? 500, "解析请求的 URL 时发生错误", e);
+            sendError(res, req, responseType, e ? e.httpError ?? 500 : 500, "解析请求的 URL 时发生错误", e);
         });
     } else if (doOembed) {
         sendOembed(res, loadOembedDataFromQuerystring(req.query), responseType);

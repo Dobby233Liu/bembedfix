@@ -58,7 +58,7 @@ export function getCompatDescription(desc = "", length = 160) {
     return ret;
 }
 
-export function sendError(res, req, responseType = "html", code, message, data) {
+export function sendError(res, req, responseType = "html", code = 500, message = "未知错误", data = "未知错误。") {
     res.status(code);
 
     const errorData = {
