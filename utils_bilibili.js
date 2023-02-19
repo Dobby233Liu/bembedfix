@@ -67,10 +67,7 @@ export async function getRequestedInfo(path, search) {
     }
 
     ret.id = getVideoIdByPath(url.pathname);
-    ret.page = parseInt(search.get("p")) ?? 1;
-    if (isNaN(ret.page)) {
-        ret.page = 1;
-    }
+    ret.page = parseInt(search.get("p")) || 1;
 
     return ret;
 }
