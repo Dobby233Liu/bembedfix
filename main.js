@@ -38,7 +38,7 @@ export default function handler(req, res) {
                     if (isUAEndUser(req)) {
                         res.setHeader("Cache-Control", "private, max-age=1, stale-while-revalidate");
                         // redirect the client to the real video URL
-                        res.redirect(302, data.url.href);
+                        res.redirect(302, data.url);
                         return;
                     }
 
