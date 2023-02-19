@@ -59,7 +59,7 @@ function errorFromBilibili(e, data) {
     ) {
         myCode = 500;
     }
-    if (code > 0 && myCode == -code) {
+    if ((code > 0 && myCode == -code) || myCode < 300) {
         myCode = 500;
     }
 
