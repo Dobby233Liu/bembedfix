@@ -62,8 +62,6 @@ export async function getRequestedInfo(path, search) {
         if (!isUrlBilibiliVideo(url)) {
             throw new Error("这似乎不是一个视频——本服务目前只支持对视频页面进行 embed 修正。\n" + `跳转到了 ${redirectedURL.href} （未跳转的 URL：${url.href}）`);
         }
-    } else {
-        url.hostname = "www.bilibili.com"
     }
 
     ret.id = getVideoIdByPath(url.pathname);
