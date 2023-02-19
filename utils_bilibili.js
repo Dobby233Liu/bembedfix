@@ -1,10 +1,43 @@
 import fetch from "node-fetch";
 import { formatISODuration } from "date-fns";
-import { PROVIDER_NAME, PROVIDER_URL } from "./conf.js";
-import { checkIfUrlIsUnderDomain, stripTrailingSlashes } from "./utils.js";
+import { checkIfURLIsUnderDomain, stripTrailingSlashes, getCompatDescription, oembedAddExtraMetadata, assert, DEFAULT_WIDTH, DEFAULT_HEIGHT } from "./utils.js";
 
-const DEFAULT_VIDEO_WIDTH = 1280;
-const DEFAULT_VIDEO_HEIGHT = 720;
+// Group 4 is the ID of the video
+const MAIN_SITE_VIDEO_PAGE_PATHNAME_REGEX = /^\/((s\/)?(video\/)?)((?=av|BV)[A-Za-z0-9]+)/;
+
+export const isUrlOnBilibiliMainSite = u => checkIfURLIsUnderDomain(u.hostname, "bilibili.com");
+export const isPathMainSiteVideoPage = p => MAIN_SITE_VIDEO_PAGE_PATHNAME_REGEX.test(p);
+export const isUrlBilibiliVideo = u => isUrlOnBilibiliMainSite(u) && isPathMainSiteVideoPage(u.pathname);
+
+export const getVideoIdByPath = p => MAIN_SITE_VIDEO_PAGE_PATHNAME_REGEX.exec(stripTrailingSlashes(p))[4];
+
+export function makeVideoPage(vid, page = 1) {
+    const ret = new URL(vid, "https://www.bilibili.com/video/");
+    if (page != 1)
+        ret.searchParams.set("p", page);
+    return ret.href;
+}
+
+export function makeEmbedPlayerURL(vid, cid, page = 1) {
+    // //player.bilibili.com/player.html?aid=429619610&bvid=BV1GG411b7sc&cid=805522554&page=1
+    const ret = new URL("https://player.bilibili.com/player.html");
+    if (vid.startsWith("BV")) {
+        ret.searchParams.set("bvid", vid);
+    } else {
+        ret.searchParams.set("aid", vid.slice(2));
+    }
+    ret.searchParams.set("cid", cid);
+    ret.searchParams.set("page", page);
+    return ret.href;
+}
+
+export function makeEmbedPlayer(bvid, cid, page = 1) {
+    return `<iframe src="${makeEmbedPlayerURL(bvid, cid, page)}" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>`;
+}
+
+export function makeUserPage(mid) {
+    return new URL(mid, "https://space.bilibili.com").href;
+}
 
 async function getOriginalURLOfB23TvRedir(url) {
     const response = await fetch(url);
@@ -36,15 +69,6 @@ async function getOriginalURLOfB23TvRedir(url) {
     return new URL(response.url);
 }
 
-// Match 1: the ID of the video
-const MAIN_SITE_VIDEO_PAGE_PATHNAME_REGEX = /^\/((s\/)?(video\/)?)((?=av|BV)[A-Za-z0-9]+)/;
-
-const isUrlOnBilibiliMainSite = u => checkIfUrlIsUnderDomain(u.hostname, "bilibili.com");
-const isPathMainSiteVideoPage = p => MAIN_SITE_VIDEO_PAGE_PATHNAME_REGEX.test(p);
-const isUrlBilibiliVideo = u => isUrlOnBilibiliMainSite(u) && isPathMainSiteVideoPage(u.pathname);
-
-const getVideoIdByPath = p => MAIN_SITE_VIDEO_PAGE_PATHNAME_REGEX.exec(stripTrailingSlashes(p))[4];
-
 export async function getRequestedInfo(path, search) {
     let ret = {
         type: "video",
@@ -70,43 +94,12 @@ export async function getRequestedInfo(path, search) {
     return ret;
 }
 
-export function makeVideoPage(bvid, page = 1) {
-    const ret = new URL(bvid, "https://www.bilibili.com/video/");
-    if (page != 1)
-        ret.searchParams.set("p", page);
-    return ret;
-}
-export function makeEmbedPlayer(bvid, cid, page = 1) {
-    // //player.bilibili.com/player.html?aid=429619610&bvid=BV1GG411b7sc&cid=805522554&page=1
-    const ret = new URL("https://player.bilibili.com/player.html");
-    ret.searchParams.set("bvid", bvid);
-    ret.searchParams.set("cid", cid);
-    ret.searchParams.set("page", page);
-    return ret;
-}
-export function makeEmbedPlayerHTML(bvid, cid, page = 1) {
-    return `<iframe src="${makeEmbedPlayer(bvid, cid, page)}" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>`;
-}
-export function makeUserPage(mid) {
-    return new URL(mid, "https://space.bilibili.com").href;
-}
-
-function getCompatDescription(desc = "", length = 160) {
-    const elipsis = "……";
-    let ret = desc;
-    ret = ret.replace(/\r\n/g, " ").replace(/\n/g, " ").trim();
-    if (ret.length > length) {
-        return ret.slice(0, length - elipsis.length) + elipsis;
-    }
-    return ret;
-}
-
 export async function getVideoData(info) {
     const id = info.id;
 
     const requestURL = new URL("https://api.bilibili.com/x/web-interface/view");
     const idType = id.startsWith("BV") ? "bvid" : "aid";
-    requestURL.searchParams.append(idType, id.substring(2, id.length));
+    requestURL.searchParams.append(idType, id.slice(2));
 
     const response = await fetch(requestURL);
     const errorMsg = `对 ${requestURL} 的请求失败。（HTTP 状态码为 ${response.status}）请检查您的链接。`;
@@ -147,17 +140,17 @@ export async function getVideoData(info) {
     ret = {
         ...ret,
         url: makeVideoPage(ret.bvid, info.page),
-        embed_url: makeEmbedPlayer(ret.bvid, ret.cid, ret.page)
+        embed_url: makeEmbedPlayerURL(ret.bvid, ret.cid, ret.page)
     };
     ret.oembed_out = {
         type: "video",
         url: makeVideoPage(ret.bvid, ret.page),
-        html: makeEmbedPlayerHTML(ret.bvid, ret.cid, ret.page),
-        width: (resInfo.pages[ret.page-1] ?? resInfo.pages[0]).dimension.width ?? resInfo.dimension.width ?? DEFAULT_VIDEO_WIDTH,
-        height: (resInfo.pages[ret.page-1] ?? resInfo.pages[0]).dimension.height ?? resInfo.dimension.height ?? DEFAULT_VIDEO_HEIGHT,
+        html: makeEmbedPlayer(ret.bvid, ret.cid, ret.page),
+        width: (resInfo.pages[ret.page-1] ?? resInfo.pages[0]).dimension.width ?? resInfo.dimension.width ?? DEFAULT_WIDTH,
+        height: (resInfo.pages[ret.page-1] ?? resInfo.pages[0]).dimension.height ?? resInfo.dimension.height ?? DEFAULT_HEIGHT,
         thumbnail_url: ret.thumbnail,
-        thumbnail_width: resInfo.dimension.width ?? DEFAULT_VIDEO_WIDTH,
-        thumbnail_height: resInfo.dimension.height ?? DEFAULT_VIDEO_HEIGHT,
+        thumbnail_width: resInfo.dimension.width ?? DEFAULT_WIDTH,
+        thumbnail_height: resInfo.dimension.height ?? DEFAULT_HEIGHT,
         author_name: ret.author,
         author_url: makeUserPage(ret.author_mid)
     };
@@ -177,23 +170,12 @@ export async function getVideoData(info) {
     return ret;
 }
 
-export function oembedAddExtraMetadata(data, query = {}) {
-    let ret = {
-        version: "1.0",
-        ...data,
-        provider_name: PROVIDER_NAME,
-        provider_url: PROVIDER_URL
-    };
-    ret.width = query.maxwidth ? Math.min(+query.maxwidth, ret.width) : ret.width;
-    ret.height = query.maxheight ? Math.min(+query.maxheight, ret.height) : ret.height;
-    return ret;
-}
-
 export function loadOembedDataFromQuerystring(query) {
+    assert(query.type == "video");
     return oembedAddExtraMetadata({
         type: query.type,
         url: makeVideoPage(query.bvid, query.page),
-        html: makeEmbedPlayerHTML(query.bvid, query.cid, query.page),
+        html: makeEmbedPlayer(query.bvid, query.cid, query.page),
         width: query.width,
         height: query.height,
         thumbnail_url: query.pic,

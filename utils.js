@@ -1,7 +1,23 @@
 import { render, renderFile } from "ejs";
 import { join as joinPath } from "path";
-import { ERROR_TEMPLATE, PROJECT_ISSUES_URL, CRAWLER_UAS } from "./conf.js";
 import { Builder as XMLBuilder } from "xml2js";
+import { PROVIDER_NAME, PROVIDER_URL, ERROR_TEMPLATE, PROJECT_ISSUES_URL, CRAWLER_UAS } from "./conf.js";
+import { makeVideoPage, makeEmbedPlayer, makeUserPage } from "./utils_bilibili.js";
+
+export const DEFAULT_WIDTH = 1280;
+export const DEFAULT_HEIGHT = 720;
+
+const xmlBuilder = new XMLBuilder();
+
+export function assert(cond, msg = "") {
+    if (!cond) {
+        throw new Error("断言失败" + msg ? `：${msg}` : "")
+    }
+}
+
+export function getRequestedURL(req) {
+    return new URL(req.url, getMyBaseURL(req));
+}
 
 export function getMyBaseURL(req) {
     const headers = req.headers;
@@ -11,11 +27,37 @@ export function getMyBaseURL(req) {
     );
 }
 
-export function getRequestedURL(req) {
-    return new URL(req.url, getMyBaseURL(req));
+export function checkIfURLIsUnderDomain(l, r) {
+    let levelsOfDomainLeft = l.split(".");
+    let levelsOfDomainRight = r.split(".");
+    if (levelsOfDomainLeft.length < levelsOfDomainRight.length)
+        return false;
+    return levelsOfDomainLeft
+        .slice(-levelsOfDomainRight.length)
+        .every((level, index) => level == levelsOfDomainRight[index]);
 }
 
-const xmlBuilder = new XMLBuilder();
+export function stripTrailingSlashes(path) {
+    return /^(\/.*?)(\/*$)/.exec(path)[1];
+}
+
+export function isUAEndUser(req) {
+    return !CRAWLER_UAS.includes(req.headers["user-agent"]) && !req.query.__bef_tag_debug;
+}
+
+export function shouldLieAboutPlayerContentType(req) {
+    return req.headers["user-agent"].includes("Discordbot");
+}
+
+export function getCompatDescription(desc = "", length = 160) {
+    const elipsis = "……";
+    let ret = desc;
+    ret = ret.replace(/\r\n/g, " ").replace(/\n/g, " ").trim();
+    if (ret.length > length) {
+        return ret.slice(0, length - elipsis.length) + elipsis;
+    }
+    return ret;
+}
 
 export function sendError(res, req, responseType = "html", code, message, data) {
     res.status(code);
@@ -63,23 +105,15 @@ export function sendOembed(res, data, type) {
     }
 }
 
-export function checkIfUrlIsUnderDomain(l, r) {
-    let levelsOfDomainLeft = l.split(".");
-    let levelsOfDomainRight = r.split(".");
-    if (levelsOfDomainLeft.length < levelsOfDomainRight.length)
-        return false;
-    return levelsOfDomainLeft
-        .slice(-levelsOfDomainRight.length)
-        .every((level, index) => level == levelsOfDomainRight[index]);
-}
-
-export function stripTrailingSlashes(str) {
-    return /^(\/.*?)(\/*$)/.exec(str)[1];
-}
-
-export function isUAEndUser(req) {
-    return !CRAWLER_UAS.includes(req.headers["user-agent"]) && !req.query.__bef_tag_debug;
-}
-export function shouldLieAboutPlayerContentType(req) {
-    return req.headers["user-agent"].includes("Discordbot");
+export function oembedAddExtraMetadata(data, query = {}) {
+    let ret = {
+        version: "1.0",
+        ...data,
+        provider_name: PROVIDER_NAME,
+        provider_url: PROVIDER_URL
+    };
+    assert(ret.type == "video");
+    ret.width = query.maxwidth ? Math.min(+query.maxwidth, ret.width) : ret.width;
+    ret.height = query.maxheight ? Math.min(+query.maxheight, ret.height) : ret.height;
+    return ret;
 }

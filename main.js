@@ -1,5 +1,5 @@
-import { sendOembed, sendTemplate, sendError, getRequestedURL, getMyBaseURL, stripTrailingSlashes, isUAEndUser, shouldLieAboutPlayerContentType } from "./utils.js";
-import { getRequestedInfo, getVideoData, loadOembedDataFromQuerystring, oembedAddExtraMetadata } from "./utils_bilibili.js";
+import { sendOembed, sendTemplate, sendError, getRequestedURL, getMyBaseURL, stripTrailingSlashes, isUAEndUser, shouldLieAboutPlayerContentType, oembedAddExtraMetadata } from "./utils.js";
+import { getRequestedInfo, getVideoData, loadOembedDataFromQuerystring } from "./utils_bilibili.js";
 import { PROJECT_URL, PROVIDER_NAME } from "./conf.js";
 
 export default function handler(req, res) {
@@ -67,11 +67,6 @@ export default function handler(req, res) {
             sendError(res, req, responseType, 500, "解析请求的 URL 时发生错误", e);
         });
     } else if (doOembed) {
-        if (!req.query.bvid) {
-            sendError(res, req, responseType, 400, "请求无效", "没有提供应有的参数");
-            return;
-        }
-
         sendOembed(res, loadOembedDataFromQuerystring(req.query), responseType);
     }
 }
