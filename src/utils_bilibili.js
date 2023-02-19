@@ -1,4 +1,5 @@
-import fetch from "node-fetch";
+import _fetch from "@vercel/fetch";
+const fetch = _fetch();
 import { formatISODuration } from "date-fns";
 import { checkIfURLIsUnderDomain, stripTrailingSlashes, getCompatDescription, oembedAddExtraMetadata, assert, DEFAULT_WIDTH, DEFAULT_HEIGHT } from "./utils.js";
 
@@ -77,7 +78,7 @@ function errorFromBilibili(e, data) {
 }
 
 async function getOriginalURLOfB23TvRedir(url) {
-    const response = await fetch(url);
+    const response = await fetch(url.href);
 
     // is this not a redirect? if yes, check if we've got an error
     if (!response.redirected) {
@@ -138,7 +139,7 @@ export async function getVideoData(info) {
     const idType = id.startsWith("BV") ? "bvid" : "aid";
     requestURL.searchParams.append(idType, id.slice(2));
 
-    const response = await fetch(requestURL);
+    const response = await fetch(requestURL.href);
     const errorMsg = `对 ${requestURL} 的请求失败。（HTTP 状态码为 ${response.status}）请检查您的链接。`;
     const dataRaw = await response.text();
     let res = {};

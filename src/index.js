@@ -2,7 +2,7 @@ import { sendOembed, sendTemplate, sendError, getRequestedURL, getMyBaseURL, str
 import { getRequestedInfo, getVideoData, loadOembedDataFromQuerystring } from "./utils_bilibili.js";
 import { PROJECT_URL, PROVIDER_NAME } from "./constants.js";
 
-export default function handler(req, res) {
+export default async function handler(req, res) {
     let requestedURL = getRequestedURL(req);
 
     // special routes
@@ -29,44 +29,53 @@ export default function handler(req, res) {
         responseType = isXMLRequested ? "xml" : "json";
     }
 
-    if (!doOembed || req.query.url) {
-        getRequestedInfo((!doOembed ? requestedURL : new URL(req.query.url)).pathname, requestedURL.searchParams)
-        .then(info => {
-            getVideoData(info)
-            .then(data => {
-                if (!doOembed) {
-                    if (isUAEndUser(req)) {
-                        res.setHeader("Cache-Control", "private, max-age=1, stale-while-revalidate");
-                        // redirect the client to the real video URL
-                        res.redirect(302, data.url);
-                        return;
-                    }
-
-                    data.provider = PROVIDER_NAME;
-                    // FIXME: preferredly do this in some other way or somewhere else
-                    let oembedJson = new URL("oembed.json", getMyBaseURL(req));
-                    let oembedXml = new URL("oembed.xml", getMyBaseURL(req));
-                    for (let [k, v] of Object.entries(data.oembedAPIQueries)) {
-                        oembedJson.searchParams.set(k, v);
-                        oembedXml.searchParams.set(k, v);
-                    }
-                    data.oembed_json = oembedJson;
-                    data.oembed_xml = oembedXml;
-                    data.lie_about_embed_player = shouldLieAboutPlayerContentType(req);
-
-                    sendTemplate(res, req, responseType, "video", data, "生成 embed 时发生错误")
-                } else {
-                    sendOembed(res, oembedAddExtraMetadata(data.oembedData, req.query), responseType);
-                }
-            })
-            .catch(e => {
-                sendError(res, req, responseType, e ? e.httpError ?? 500 : 500, "获取视频信息时发生错误", e);
-            });
-        })
-        .catch(e => {
-            sendError(res, req, responseType, e ? e.httpError ?? 500 : 500, "解析请求的 URL 时发生错误", e);
-        });
-    } else if (doOembed) {
+    if (doOembed && !req.query.url) {
         sendOembed(res, loadOembedDataFromQuerystring(req.query), responseType);
+        return;
+    }
+
+    let info, data;
+    try {
+        info = await getRequestedInfo((!doOembed ? requestedURL : new URL(req.query.url)).pathname, requestedURL.searchParams);
+    } catch (e) {
+        sendError(res, req, responseType, e ? e.httpError ?? 500 : 500, "解析请求的 URL 时发生错误", e);
+        return;
+    }
+    try {
+        data = await getVideoData(info);
+    } catch (e) {
+        sendError(res, req, responseType, e ? e.httpError ?? 500 : 500, "获取视频信息时发生错误", e);
+        return;
+    }
+
+    if (doOembed) {
+        sendOembed(res, oembedAddExtraMetadata(data.oembedData, req.query), responseType);
+        return;
+    }
+
+    try {
+        if (isUAEndUser(req)) {
+            res.setHeader("Cache-Control", "private, max-age=1, stale-while-revalidate");
+            // redirect the client to the real video URL
+            res.redirect(302, data.url);
+            return;
+        }
+
+        data.provider = PROVIDER_NAME;
+        // FIXME: preferredly do this in some other way or somewhere else
+        let oembedJson = new URL("oembed.json", getMyBaseURL(req));
+        let oembedXml = new URL("oembed.xml", getMyBaseURL(req));
+        for (let [k, v] of Object.entries(data.oembedAPIQueries)) {
+            oembedJson.searchParams.set(k, v);
+            oembedXml.searchParams.set(k, v);
+        }
+        data.oembed_json = oembedJson;
+        data.oembed_xml = oembedXml;
+        data.lie_about_embed_player = shouldLieAboutPlayerContentType(req);
+
+        sendTemplate(res, req, responseType, "video", data, "生成 embed 时发生错误");
+    } catch (e) {
+        sendError(res, req, responseType, "生成 embed 时发生错误", e);
+        return;
     }
 }

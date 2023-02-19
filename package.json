@@ -5,9 +5,11 @@
     "version": "0.1.0",
     "license": "MIT",
     "dependencies": {
+        "@types/node-fetch": "^2.6.2",
+        "@vercel/fetch": "^6.2.0",
         "date-fns": "^2.29.3",
         "ejs": "^3.1.8",
-        "node-fetch": "^3.2.10",
+        "node-fetch": "^2.6.7",
         "xml2js": "^0.4.23"
     },
     "devDependencies": {
