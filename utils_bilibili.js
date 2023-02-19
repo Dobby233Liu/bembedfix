@@ -34,7 +34,7 @@ async function getOriginalURLOfB23TvRedir(url) {
 }
 
 // Match 1: the ID of the video
-const MAIN_SITE_VIDEO_PAGE_PATHNAME_REGEX = /^(?=\/s)?\/video\/((?=av|BV)[A-Za-z0-9]+)/;
+const MAIN_SITE_VIDEO_PAGE_PATHNAME_REGEX = /^\/(?=(?=s\/)?video\/)?((?=av|BV)[A-Za-z0-9]+)/;
 
 const isUrlOnBilibiliMainSite = u => checkIfUrlIsUnderDomain(u.hostname, "bilibili.com");
 const isPathMainSiteVideoPage = p => MAIN_SITE_VIDEO_PAGE_PATHNAME_REGEX.test(p);
