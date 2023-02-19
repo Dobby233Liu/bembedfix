@@ -46,20 +46,29 @@ function errorFromBilibili(e, data) {
     const code = data.code;
     let myCode = -code;
 
-    if (myCode == 643 || myCode == -62002 || myCode == -62004) {
+    if (
+        myCode == -1 ||
+        myCode == 643 ||
+        myCode == -110001 ||
+        myCode == -62002 || myCode == -62004 ||
+        myCode == -40003 ||
+        myCode == -19002003 ||
+        myCode == 7201006 || myCode == 72010027 ||
+        myCode == -79502 || myCode == -79503
+    ) {
         myCode = 404;
-    } else if (myCode == 688 || myCode == 689) {
+    } else if (myCode == 6 || myCode == 101 || myCode == 688 || myCode == 689) {
         myCode = 403;
     } else if (
-        (myCode == 0) ||
+        (myCode == 1 || myCode == 3 || myCode == 111) ||
         (myCode == 304 || myCode == 307) ||
         (myCode == 400 || (myCode == 401 && data.message && data.message.includes("非法")) || myCode == 405 || myCode == 409 || myCode == 412) ||
         (myCode >= 500 && myCode <= 701) ||
-        (myCode == 8888)
+        (myCode == 8888) ||
+        (myCode == -40001) ||
+        (myCode == 72000000) ||
+        (code >= 0)
     ) {
-        myCode = 500;
-    }
-    if ((code > 0 && myCode == -code) || myCode < 300) {
         myCode = 500;
     }
 
