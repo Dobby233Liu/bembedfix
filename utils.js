@@ -1,7 +1,7 @@
 import { render, renderFile } from "ejs";
 import { join as joinPath } from "path";
 import { Builder as XMLBuilder } from "xml2js";
-import { PROVIDER_NAME, PROVIDER_URL, ERROR_TEMPLATE, PROJECT_ISSUES_URL, CRAWLER_UAS } from "./conf.js";
+import { PROVIDER_NAME, PROVIDER_URL, ERROR_TEMPLATE, PROJECT_ISSUES_URL, CRAWLER_UAS, MY_NAME } from "./conf.js";
 
 export const DEFAULT_WIDTH = 1280;
 export const DEFAULT_HEIGHT = 720;
@@ -62,6 +62,7 @@ export function sendError(res, req, responseType = "html", code = 500, message =
     res.status(code);
 
     const errorData = {
+        me: MY_NAME,
         code: code,
         message: message,
         data: data.stack ? data.stack : data.toString(),

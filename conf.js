@@ -1,4 +1,5 @@
-export const PROVIDER_NAME = "哔哩哔哩（bembedfix）";
+export const MY_NAME = "bembedfix";
+export const PROVIDER_NAME = `哔哩哔哩（${MY_NAME}）`;
 export const PROVIDER_URL = "https://www.bilibili.com";
 
 export const PROJECT_URL = "https://github.com/Dobby233Liu/bembedfix";
@@ -24,9 +25,9 @@ export const ERROR_TEMPLATE = `<!DOCTYPE HTML>
 <html>
 <head>
     <meta charset="UTF-8" />
-    <title>bembedfix - <%= code %>: <%= message %></title>
+    <title><%= me %> - <%= code %>: <%= message %></title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta property="og:site_name" content="bembedfix" />
+    <meta property="og:site_name" content="<%= me %>" />
     <meta property="twitter:card" content="summary" />
     <meta property="og:url" content="<%= here %>" />
     <meta property="og:title" content="<%= code %>: <%= message %>" />
