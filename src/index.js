@@ -1,6 +1,6 @@
 import { sendOembed, sendTemplate, sendError, getRequestedURL, getMyBaseURL, stripTrailingSlashes, isUAEndUser, shouldLieAboutPlayerContentType, oembedAddExtraMetadata } from "./utils.js";
 import { getRequestedInfo, getVideoData, loadOembedDataFromQuerystring } from "./utils_bilibili.js";
-import { PROJECT_URL, PROVIDER_NAME } from "./conf.js";
+import { PROJECT_URL, PROVIDER_NAME } from "./constants.js";
 
 export default function handler(req, res) {
     let requestedURL = getRequestedURL(req);
