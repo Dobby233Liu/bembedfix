@@ -9,11 +9,11 @@ export default function handler(req, res) {
     switch (requestedURL.pathname) {
         case "/":
             res.setHeader("Cache-Control", "max-age=10800, s-maxage=10800");
-            res.redirect(301, PROJECT_URL);
+            res.redirect(308, PROJECT_URL);
             return;
         case "/favicon.ico":
             res.setHeader("Cache-Control", "max-age=86400, s-maxage=86400");
-            res.redirect(301, "https://www.bilibili.com/favicon.ico");
+            res.redirect(308, "https://www.bilibili.com/favicon.ico");
             return;
     }
 
@@ -60,11 +60,11 @@ export default function handler(req, res) {
                 }
             })
             .catch(e => {
-                sendError(res, req, responseType, 500, "获取视频信息时发生错误", e);
+                sendError(res, req, responseType, e ? e.httpError ?? 500 : 500, "获取视频信息时发生错误", e || "未知错误。");
             });
         })
         .catch(e => {
-            sendError(res, req, responseType, 500, "解析请求的 URL 时发生错误", e);
+            sendError(res, req, responseType, e.httpError ?? 500, "解析请求的 URL 时发生错误", e);
         });
     } else if (doOembed) {
         sendOembed(res, loadOembedDataFromQuerystring(req.query), responseType);

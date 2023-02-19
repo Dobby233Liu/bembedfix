@@ -39,6 +39,31 @@ export function makeUserPage(mid) {
     return new URL(mid, "https://space.bilibili.com").href;
 }
 
+function errorFromBilibili(e, data) {
+    if (!Object.keys(data).includes("code"))
+        return;
+
+    const code = data.code;
+    let myCode = -code;
+
+    if (myCode == 643) {
+        myCode = 404;
+    } else if (myCode == 688 || myCode == 689) {
+        myCode = 403;
+    } else if (
+        (myCode == 0) ||
+        (myCode == 304 || myCode == 307) ||
+        (myCode == 400 || (myCode == 401 && data.message && data.message.includes("非法")) || myCode == 405 || myCode == 409 || myCode == 412) ||
+        (myCode >= 500 && myCode <= 701) ||
+        (myCode == 8888)
+    ) {
+        myCode = 500;
+    }
+
+    e.httpError = myCode;
+    return e;
+}
+
 async function getOriginalURLOfB23TvRedir(url) {
     const response = await fetch(url);
 
@@ -52,18 +77,18 @@ async function getOriginalURLOfB23TvRedir(url) {
             throw e;
         }
 
+        let responseDataJson = {};
+        try {
+            responseDataJson = JSON.parse(responseData);
+        } catch (_) {}
+
         if (!response.ok) {
-            throw new Error(`对 ${url} 的请求失败。（HTTP 状态码为 ${response.status}）请检查您的链接。` + "\n" + responseData);
+            throw errorFromBilibili(new Error(`对 ${url} 的请求失败。（HTTP 状态码为 ${response.status}）请检查您的链接。` + "\n" + responseData), responseDataJson);
         } else {
-            // server might be returning 200 for a not found error, check it here
-            let responseDataJson;
-            try {
-                responseDataJson = JSON.parse(responseData);
-            } catch (_) {}
             if (responseDataJson && responseDataJson.code && responseDataJson.code != 0)
-                throw new Error(`对 ${url} 的请求失败。（HTTP 状态码为 ${response.status}）请检查您的链接。` + "\n" + responseData);
-            throw new Error(`请求了 ${url}，但是服务器返回了一段奇妙的内容？（HTTP 状态码为 ${response.status}）请检查您的链接，如果正常，那么就是我们的 bug。` + "\n" + responseData);
+                throw errorFromBilibili(new Error(`对 ${url} 的请求失败。（HTTP 状态码为 ${response.status}）请检查您的链接。` + "\n" + responseData), responseDataJson);
         }
+        throw new Error(`请求了 ${url}，但是服务器返回了一段奇妙的内容？（HTTP 状态码为 ${response.status}）请检查您的链接，如果正常，那么就是我们的 bug。` + "\n" + responseData);
     }
 
     return new URL(response.url);
@@ -104,16 +129,16 @@ export async function getVideoData(info) {
     const response = await fetch(requestURL);
     const errorMsg = `对 ${requestURL} 的请求失败。（HTTP 状态码为 ${response.status}）请检查您的链接。`;
     const dataRaw = await response.text();
-    if (!response.ok)
-        throw new Error(errorMsg + "\n" + dataRaw);
-    let res;
+    let res = {};
     try {
         res = JSON.parse(dataRaw);
-    } catch (_) {}
-    if (!res)
-        throw new Error(`请求了 ${requestURL}，但无法解析服务器回复的内容。可能发生了错误。请检查您的链接，如果没有问题，则请上报 bug。` + "\n" + dataRaw);
-    if (res.code && res.code != 0)
-        throw new Error(errorMsg + "\n" + dataRaw);
+    } catch (e) {
+        const msgHere = response.ok ? `请求了 ${requestURL}，但无法解析服务器回复的内容。可能发生了错误。请检查您的链接，如果没有问题，则请上报 bug。` : errorMsg;
+        e.message = msgHere + "\n" + e.message + "\n" + dataRaw;
+        throw e;
+    }
+    if (!response.ok || (res.code && res.code != 0))
+        throw errorFromBilibili(new Error(errorMsg + "\n" + dataRaw), res);
 
     const resInfo = res.data;
 
