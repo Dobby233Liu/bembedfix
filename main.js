@@ -46,7 +46,7 @@ export default function handler(req, res) {
                     // FIXME: preferredly do this in some other way or somewhere else
                     let oembedJson = new URL("oembed.json", getMyBaseURL(req));
                     let oembedXml = new URL("oembed.xml", getMyBaseURL(req));
-                    for (let [k, v] of Object.entries(data.oembed_query)) {
+                    for (let [k, v] of Object.entries(data.oembedAPIQueries)) {
                         oembedJson.searchParams.set(k, v);
                         oembedXml.searchParams.set(k, v);
                     }
@@ -56,7 +56,7 @@ export default function handler(req, res) {
 
                     sendTemplate(res, req, responseType, "template.html", data, "生成 embed 时发生错误")
                 } else {
-                    sendOembed(res, oembedAddExtraMetadata(data.oembed_out, req.query), responseType);
+                    sendOembed(res, oembedAddExtraMetadata(data.oembedData, req.query), responseType);
                 }
             })
             .catch(e => {

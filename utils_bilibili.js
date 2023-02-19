@@ -182,7 +182,7 @@ export async function getVideoData(info) {
         width: width,
         height: height,
         duration: formatISODuration({ seconds: resInfo.pages[page-1].duration }),
-        oembed_out: {
+        oembedData: {
             type: "video",
             url: makeVideoPage(resInfo.bvid, page),
             html: makeEmbedPlayer(resInfo.bvid, cid, page),
@@ -194,7 +194,7 @@ export async function getVideoData(info) {
             author_name: resInfo.owner.name,
             author_url: makeUserPage(resInfo.owner.mid)
         },
-        oembed_query: {
+        oembedAPIQueries: {
             type: "video",
             bvid: resInfo.bvid,
             page: page,
