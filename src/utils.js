@@ -58,7 +58,7 @@ export function getCompatDescription(desc = "", length = 160) {
     return ret;
 }
 
-export function sendError(res, req, responseType = "html", code = e ? e.httpError ?? 500 : 500, message = "未知错误", data = "未知错误。") {
+export function sendError(res, req, responseType = "html", message = "未知错误", data = "未知错误。", code = data ? data.httpError ?? 500 : 500) {
     res.status(code);
 
     const errorData = {
@@ -89,7 +89,7 @@ export function sendError(res, req, responseType = "html", code = e ? e.httpErro
 export function sendTemplate(res, req, responseType, file = "video", data, errorMessage) {
     renderFile(joinPath(process.cwd(), `src/templates/${file}.html`), data)
     .catch(function (err) {
-        sendError(res, req, responseType, 500, errorMessage, err);
+        sendError(res, req, responseType, errorMessage, err);
     })
     .then(out => {
         res.send(out);

@@ -38,13 +38,13 @@ export default async function handler(req, res) {
     try {
         info = await getRequestedInfo((!doOembed ? requestedURL : new URL(req.query.url)).pathname, requestedURL.searchParams);
     } catch (e) {
-        sendError(res, req, responseType, e ? e.httpError ?? 500 : 500, "解析请求的 URL 时发生错误", e);
+        sendError(res, req, responseType, "解析请求的 URL 时发生错误", e);
         return;
     }
     try {
         data = await getVideoData(info);
     } catch (e) {
-        sendError(res, req, responseType, e ? e.httpError ?? 500 : 500, "获取视频信息时发生错误", e);
+        sendError(res, req, responseType, "获取视频信息时发生错误", e);
         return;
     }
 
