@@ -54,7 +54,7 @@ export default function handler(req, res) {
                     data.oembed_xml = oembedXml;
                     data.lie_about_embed_player = shouldLieAboutPlayerContentType(req);
 
-                    sendTemplate(res, req, responseType, "template.html", data, "生成 embed 时发生错误")
+                    sendTemplate(res, req, responseType, "video", data, "生成 embed 时发生错误")
                 } else {
                     sendOembed(res, oembedAddExtraMetadata(data.oembedData, req.query), responseType);
                 }

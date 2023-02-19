@@ -86,8 +86,8 @@ export function sendError(res, req, responseType = "html", code = 500, message =
     }
 }
 
-export function sendTemplate(res, req, responseType, file, data, errorMessage) {
-    renderFile(joinPath(process.cwd(), file), data)
+export function sendTemplate(res, req, responseType, file = "video", data, errorMessage) {
+    renderFile(joinPath(process.cwd(), `src/templates/${file}.html`), data)
     .catch(function (err) {
         sendError(res, req, responseType, 500, errorMessage, err);
     })

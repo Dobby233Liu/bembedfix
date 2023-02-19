@@ -2,7 +2,7 @@
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FDobby233Liu%2Fbembedfix)
 
-![demo](images/demo.png)
+![demo](demo.png)
 
 这是一个用于修复 bilibili 视频页面在 Discord 上的预览效果的小服务。效果如上图，一目了然，无需过多介绍。
 
