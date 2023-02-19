@@ -58,7 +58,7 @@ export function getCompatDescription(desc = "", length = 160) {
     return ret;
 }
 
-export function sendError(res, req, responseType = "html", message = "未知错误", data = "未知错误。", code = data ? data.httpError ?? 500 : 500) {
+export function sendError(res, req, message = "未知错误", data = "未知错误。", responseType = "html", code = data ? data.httpError ?? 500 : 500) {
     res.status(code);
 
     const errorData = {
@@ -86,10 +86,10 @@ export function sendError(res, req, responseType = "html", message = "未知错�
     }
 }
 
-export function sendTemplate(res, req, responseType, file = "video", data, errorMessage) {
+export function sendTemplate(res, req, responseType, file = "video", data) {
     renderFile(joinPath(process.cwd(), `src/templates/${file}.html`), data)
     .catch(function (err) {
-        sendError(res, req, responseType, errorMessage, err);
+        sendError(res, req, "生成 embed 时发生错误", err, responseType);
     })
     .then(out => {
         res.send(out);

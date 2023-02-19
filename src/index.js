@@ -38,13 +38,13 @@ export default async function handler(req, res) {
     try {
         info = await getRequestedInfo((!doOembed ? requestedURL : new URL(req.query.url)).pathname, requestedURL.searchParams);
     } catch (e) {
-        sendError(res, req, responseType, "解析请求的 URL 时发生错误", e);
+        sendError(res, req, "解析请求的 URL 时发生错误", e, responseType);
         return;
     }
     try {
         data = await getVideoData(info);
     } catch (e) {
-        sendError(res, req, responseType, "获取视频信息时发生错误", e);
+        sendError(res, req, "获取视频信息时发生错误", e, responseType);
         return;
     }
 
@@ -73,9 +73,9 @@ export default async function handler(req, res) {
         data.oembed_xml = oembedXml;
         data.lie_about_embed_player = shouldLieAboutPlayerContentType(req);
 
-        sendTemplate(res, req, responseType, "video", data, "生成 embed 时发生错误");
+        sendTemplate(res, req, responseType, "video", data);
     } catch (e) {
-        sendError(res, req, responseType, "生成 embed 时发生错误", e);
+        sendError(res, req, "生成 embed 时发生错误", e, responseType);
         return;
     }
 }
