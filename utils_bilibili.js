@@ -140,17 +140,21 @@ export async function getVideoData(info) {
     ret = {
         ...ret,
         url: makeVideoPage(ret.bvid, info.page),
-        embed_url: makeEmbedPlayerURL(ret.bvid, ret.cid, ret.page)
+        embed_url: makeEmbedPlayerURL(ret.bvid, ret.cid, ret.page),
+        width: (resInfo.pages[ret.page-1] ?? resInfo.pages[0]).dimension.width ?? resInfo.dimension.width ?? DEFAULT_WIDTH,
+        height: (resInfo.pages[ret.page-1] ?? resInfo.pages[0]).dimension.height ?? resInfo.dimension.height ?? DEFAULT_HEIGHT,
+        thumbnail_width: resInfo.dimension.width ?? DEFAULT_WIDTH,
+        thumbnail_height: resInfo.dimension.height ?? DEFAULT_HEIGHT,
     };
     ret.oembed_out = {
         type: "video",
         url: makeVideoPage(ret.bvid, ret.page),
         html: makeEmbedPlayer(ret.bvid, ret.cid, ret.page),
-        width: (resInfo.pages[ret.page-1] ?? resInfo.pages[0]).dimension.width ?? resInfo.dimension.width ?? DEFAULT_WIDTH,
-        height: (resInfo.pages[ret.page-1] ?? resInfo.pages[0]).dimension.height ?? resInfo.dimension.height ?? DEFAULT_HEIGHT,
+        width: ret.width,
+        height: ret.height,
         thumbnail_url: ret.thumbnail,
-        thumbnail_width: resInfo.dimension.width ?? DEFAULT_WIDTH,
-        thumbnail_height: resInfo.dimension.height ?? DEFAULT_HEIGHT,
+        thumbnail_width: ret.thumbnail_width,
+        thumbnail_height: ret.thumbnail_height,
         author_name: ret.author,
         author_url: makeUserPage(ret.author_mid)
     };
