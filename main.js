@@ -1,5 +1,5 @@
 import { sendOembed, sendTemplate, sendError, getRequestedURL, getMyBaseURL, stripTrailingSlashes, isUAEndUser, shouldLieAboutPlayerContentType } from "./utils.js";
-import { getRequestedInfo, getVideoData, getOembedData } from "./utils_bilibili.js";
+import { getRequestedInfo, getVideoData, loadOembedDataFromQuerystring, oembedAddExtraMetadata } from "./utils_bilibili.js";
 import { PROJECT_URL, PROVIDER_NAME } from "./conf.js";
 
 export default function handler(req, res) {
@@ -42,24 +42,21 @@ export default function handler(req, res) {
                         return;
                     }
 
-                    // FIXME: preferredly do this in some other way or somewhere else
-                    data.oembed = new URL("oembed", getMyBaseURL(req)).href;
                     data.provider = PROVIDER_NAME;
+                    // FIXME: preferredly do this in some other way or somewhere else
+                    let oembedJson = new URL("oembed.json", getMyBaseURL(req));
+                    let oembedXml = new URL("oembed.xml", getMyBaseURL(req));
+                    for (let [k, v] of Object.entries(data.oembed_query)) {
+                        oembedJson.searchParams.set(k, v);
+                        oembedXml.searchParams.set(k, v);
+                    }
+                    data.oembed_json = oembedJson;
+                    data.oembed_xml = oembedXml;
                     data.lie_about_embed_player = shouldLieAboutPlayerContentType(req);
 
                     sendTemplate(res, req, responseType, "template.html", data, "生成 embed 时发生错误")
                 } else {
-                    sendOembed(res, getOembedData({
-                        type: "video",
-                        bvid: data.bvid,
-                        pic: data.thumbnail,
-                        author: data.author,
-                        mid: data.author_mid,
-                        maxwidth: req.query.maxwidth,
-                        maxheight: req.query.maxheight,
-                        cid: data.cid,
-                        page: data.page,
-                    }), responseType);
+                    sendOembed(res, oembedAddExtraMetadata(data.oembed_out, req.query), responseType);
                 }
             })
             .catch(e => {
@@ -75,6 +72,6 @@ export default function handler(req, res) {
             return;
         }
 
-        sendOembed(res, getOembedData(req.query), responseType);
+        sendOembed(res, loadOembedDataFromQuerystring(req.query), responseType);
     }
 }

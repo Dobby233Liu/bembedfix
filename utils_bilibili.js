@@ -3,6 +3,9 @@ import { formatISODuration } from "date-fns";
 import { PROVIDER_NAME, PROVIDER_URL } from "./conf.js";
 import { checkIfUrlIsUnderDomain, stripTrailingSlashes } from "./utils.js";
 
+const DEFAULT_VIDEO_WIDTH = 1280;
+const DEFAULT_VIDEO_HEIGHT = 720;
+
 async function getOriginalURLOfB23TvRedir(url) {
     const response = await fetch(url);
 
@@ -34,13 +37,13 @@ async function getOriginalURLOfB23TvRedir(url) {
 }
 
 // Match 1: the ID of the video
-const MAIN_SITE_VIDEO_PAGE_PATHNAME_REGEX = /^\/(?=(?=s\/)?video\/)?((?=av|BV)[A-Za-z0-9]+)/;
+const MAIN_SITE_VIDEO_PAGE_PATHNAME_REGEX = /^\/((s\/)?(video\/)?)((?=av|BV)[A-Za-z0-9]+)/;
 
 const isUrlOnBilibiliMainSite = u => checkIfUrlIsUnderDomain(u.hostname, "bilibili.com");
 const isPathMainSiteVideoPage = p => MAIN_SITE_VIDEO_PAGE_PATHNAME_REGEX.test(p);
 const isUrlBilibiliVideo = u => isUrlOnBilibiliMainSite(u) && isPathMainSiteVideoPage(u.pathname);
 
-const getVideoIdByPath = p => MAIN_SITE_VIDEO_PAGE_PATHNAME_REGEX.exec(stripTrailingSlashes(p))[1];
+const getVideoIdByPath = p => MAIN_SITE_VIDEO_PAGE_PATHNAME_REGEX.exec(stripTrailingSlashes(p))[4];
 
 export async function getRequestedInfo(path, search) {
     let ret = {
@@ -74,7 +77,8 @@ export async function getRequestedInfo(path, search) {
 
 export function makeVideoPage(bvid, page = 1) {
     const ret = new URL(bvid, "https://www.bilibili.com/video/");
-    ret.searchParams.set("p", page);
+    if (page != 1)
+        ret.searchParams.set("p", page);
     return ret;
 }
 export function makeEmbedPlayer(bvid, cid, page = 1) {
@@ -142,36 +146,65 @@ export async function getVideoData(info) {
     };
     ret = {
         ...ret,
-        cid: resInfo.pages[ret.page-1].cid ?? resInfo.cid,
+        cid: (resInfo.pages[ret.page-1] ?? resInfo.pages[0]).cid ?? resInfo.cid,
         duration: formatISODuration({ seconds: (resInfo.pages[ret.page-1] ?? resInfo.pages[0]).duration }),
     };
     ret = {
         ...ret,
-        url: makeVideoPage(resInfo.bvid, info.page),
-        embed_url: makeEmbedPlayer(resInfo.bvid, ret.cid, ret.page)
+        url: makeVideoPage(ret.bvid, info.page),
+        embed_url: makeEmbedPlayer(ret.bvid, ret.cid, ret.page)
+    };
+    ret.oembed_out = {
+        type: "video",
+        url: makeVideoPage(ret.bvid, ret.page),
+        html: makeEmbedPlayerHTML(ret.bvid, ret.cid, ret.page),
+        width: (resInfo.pages[ret.page-1] ?? resInfo.pages[0]).dimension.width ?? resInfo.dimension.width ?? DEFAULT_VIDEO_WIDTH,
+        height: (resInfo.pages[ret.page-1] ?? resInfo.pages[0]).dimension.height ?? resInfo.dimension.height ?? DEFAULT_VIDEO_HEIGHT,
+        thumbnail_url: ret.thumbnail,
+        thumbnail_width: resInfo.dimension.width ?? DEFAULT_VIDEO_WIDTH,
+        thumbnail_height: resInfo.dimension.height ?? DEFAULT_VIDEO_HEIGHT,
+        author_name: ret.author,
+        author_url: makeUserPage(ret.author_mid)
+    };
+    ret.oembed_query = {
+        type: "video",
+        bvid: ret.bvid,
+        cid: ret.cid,
+        page: ret.page,
+        width: ret.oembed_out.width,
+        height: ret.oembed_out.height,
+        pic: ret.oembed_out.thumbnail_url,
+        twidth: ret.oembed_out.thumbnail_width,
+        theight: ret.oembed_out.thumbnail_height,
+        author: ret.oembed_out.author_name,
+        mid: ret.oembed_out.author_url
     };
     return ret;
 }
 
-export function getOembedData(query) {
-    const defWidth = 1280;
-    const defHeight = 720;
-    let width = query.maxwidth ? Math.min(+query.maxwidth, defWidth) : defWidth;
-    let height = query.maxheight ? Math.min(+query.maxheight, defHeight) : defHeight;
-
-    return {
+export function oembedAddExtraMetadata(data, query = {}) {
+    let ret = {
         version: "1.0",
-        type: query.type,
-        url: makeVideoPage(query.bvid, query.page),
-        html: makeEmbedPlayerHTML(query.bvid, query.cid, query.page),
-        width: width,
-        height: height,
-        thumbnail_url: query.pic,
-        thumbnail_width: width,
-        thumbnail_height: height,
-        author_name: query.author,
-        author_url: makeUserPage(query.mid),
+        ...data,
         provider_name: PROVIDER_NAME,
         provider_url: PROVIDER_URL
     };
+    ret.width = query.maxwidth ? Math.min(+query.maxwidth, ret.width) : ret.width;
+    ret.height = query.maxheight ? Math.min(+query.maxheight, ret.height) : ret.height;
+    return ret;
+}
+
+export function loadOembedDataFromQuerystring(query) {
+    return oembedAddExtraMetadata({
+        type: query.type,
+        url: makeVideoPage(query.bvid, query.page),
+        html: makeEmbedPlayerHTML(query.bvid, query.cid, query.page),
+        width: query.width,
+        height: query.height,
+        thumbnail_url: query.pic,
+        thumbnail_width: query.twidth,
+        thumbnail_height: query.theight,
+        author_name: query.author,
+        author_url: makeUserPage(query.mid)
+    }, query);
 }

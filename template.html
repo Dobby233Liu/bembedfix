@@ -13,8 +13,8 @@
     <meta name="title" content="<%= title %>" />
     <meta name="language" content="zh_CN" />
     <meta name="description" content="<%= compat_description %>">
-    <link rel="alternate" href="<%= oembed %>.json?type=video&bvid=<%= encodeURIComponent(bvid) %>&pic=<%= encodeURIComponent(thumbnail) %>&cid=<%= encodeURIComponent(cid) %>&page=<%= encodeURIComponent(page) %>&author=<%= encodeURIComponent(author) %>&mid=<%= author_mid %>" type="application/json+oembed" title="<%= title %>" />
-    <link rel="alternate" href="<%= oembed %>.xml?type=video&bvid=<%= encodeURIComponent(bvid) %>&pic=<%= encodeURIComponent(thumbnail) %>&cid=<%= encodeURIComponent(cid) %>&page=<%= encodeURIComponent(page) %>&author=<%= encodeURIComponent(author) %>&mid=<%= author_mid %>" type="text/xml+oembed" title="<%= title %>" />
+    <link rel="alternate" href="<%= oembed_json %>" type="application/json+oembed" title="<%= title %>" />
+    <link rel="alternate" href="<%= oembed_xml %>" type="text/xml+oembed" title="<%= title %>" />
     <meta property="og:type" content="video.other" />
     <meta property="og:title" content="<%= title %>" />
     <meta property="og:url" content="<%= url %>" />
