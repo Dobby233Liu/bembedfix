@@ -154,61 +154,60 @@ export async function getVideoData(info) {
 
     const resInfo = res.data;
 
-    // For the thumbnail, the API returns a link with the insecure
-    // HTTP protocol; fix that
-    const picWithSecureProto = new URL(resInfo.pic);
-    picWithSecureProto.protocol = "https:";
+    let page = info.page && info.page <= resInfo.pages.length ? info.page : 1;
+    let cid = resInfo.pages[page-1].cid ?? resInfo.cid;
+    let width = resInfo.pages[page-1].dimension.width ?? resInfo.dimension.width ?? DEFAULT_WIDTH,
+        height = resInfo.pages[page-1].dimension.height ?? resInfo.dimension.height ?? DEFAULT_HEIGHT;
+    let tWidth = resInfo.dimension.width ?? DEFAULT_WIDTH,
+        tHeight = resInfo.dimension.height ?? DEFAULT_HEIGHT;
+    const pic = new URL(resInfo.pic);
+    pic.protocol = "https:";
+    if (pic.hostname.endsWith("hdslb.com") && pic.pathname.startsWith("/bfs/"))
+        pic.pathname += encodeURIComponent(`@${tWidth}w_${tHeight}h`);
 
-    let ret = {
+    return {
+        url: makeVideoPage(resInfo.bvid, info.page),
         bvid: resInfo.bvid,
-        page: info.page ?? 1,
+        page: page,
+        cid: cid,
+        embed_url: makeEmbedPlayerURL(resInfo.bvid, cid, page),
         title: resInfo.title,
         author: resInfo.owner.name,
         author_mid: resInfo.owner.mid,
         author_url: makeUserPage(resInfo.owner.mid),
-        thumbnail: picWithSecureProto,
         compat_description: getCompatDescription(resInfo.desc),
+        thumbnail: pic.href,
+        thumbnail_width: tWidth,
+        thumbnail_height: tHeight,
+        width: width,
+        height: height,
+        duration: formatISODuration({ seconds: resInfo.pages[page-1].duration }),
+        oembed_out: {
+            type: "video",
+            url: makeVideoPage(resInfo.bvid, page),
+            html: makeEmbedPlayer(resInfo.bvid, cid, page),
+            width: width,
+            height: height,
+            thumbnail_url: pic.href,
+            thumbnail_width: tWidth,
+            thumbnail_height: tHeight,
+            author_name: resInfo.owner.name,
+            author_url: makeUserPage(resInfo.owner.mid)
+        },
+        oembed_query: {
+            type: "video",
+            bvid: resInfo.bvid,
+            page: page,
+            cid: cid,
+            width: width,
+            height: height,
+            pic: pic.href,
+            twidth: tWidth,
+            theight: tHeight,
+            author: resInfo.owner.name,
+            mid: resInfo.owner.mid
+        }
     };
-    ret = {
-        ...ret,
-        cid: (resInfo.pages[ret.page-1] ?? resInfo.pages[0]).cid ?? resInfo.cid,
-        duration: formatISODuration({ seconds: (resInfo.pages[ret.page-1] ?? resInfo.pages[0]).duration }),
-    };
-    ret = {
-        ...ret,
-        url: makeVideoPage(ret.bvid, info.page),
-        embed_url: makeEmbedPlayerURL(ret.bvid, ret.cid, ret.page),
-        width: (resInfo.pages[ret.page-1] ?? resInfo.pages[0]).dimension.width ?? resInfo.dimension.width ?? DEFAULT_WIDTH,
-        height: (resInfo.pages[ret.page-1] ?? resInfo.pages[0]).dimension.height ?? resInfo.dimension.height ?? DEFAULT_HEIGHT,
-        thumbnail_width: resInfo.dimension.width ?? DEFAULT_WIDTH,
-        thumbnail_height: resInfo.dimension.height ?? DEFAULT_HEIGHT,
-    };
-    ret.oembed_out = {
-        type: "video",
-        url: makeVideoPage(ret.bvid, ret.page),
-        html: makeEmbedPlayer(ret.bvid, ret.cid, ret.page),
-        width: ret.width,
-        height: ret.height,
-        thumbnail_url: ret.thumbnail,
-        thumbnail_width: ret.thumbnail_width,
-        thumbnail_height: ret.thumbnail_height,
-        author_name: ret.author,
-        author_url: makeUserPage(ret.author_mid)
-    };
-    ret.oembed_query = {
-        type: "video",
-        bvid: ret.bvid,
-        cid: ret.cid,
-        page: ret.page,
-        width: ret.oembed_out.width,
-        height: ret.oembed_out.height,
-        pic: ret.oembed_out.thumbnail_url,
-        twidth: ret.oembed_out.thumbnail_width,
-        theight: ret.oembed_out.thumbnail_height,
-        author: ret.oembed_out.author_name,
-        mid: ret.author_mid
-    };
-    return ret;
 }
 
 export function loadOembedDataFromQuerystring(query) {
