@@ -46,7 +46,7 @@ function errorFromBilibili(e, data) {
     const code = data.code;
     let myCode = -code;
 
-    if (myCode == 643) {
+    if (myCode == 643 || myCode == -62002 || myCode == -62004) {
         myCode = 404;
     } else if (myCode == 688 || myCode == 689) {
         myCode = 403;
@@ -57,6 +57,9 @@ function errorFromBilibili(e, data) {
         (myCode >= 500 && myCode <= 701) ||
         (myCode == 8888)
     ) {
+        myCode = 500;
+    }
+    if (code > 0 && myCode == -code) {
         myCode = 500;
     }
 
