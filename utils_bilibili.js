@@ -206,7 +206,7 @@ export async function getVideoData(info) {
         twidth: ret.oembed_out.thumbnail_width,
         theight: ret.oembed_out.thumbnail_height,
         author: ret.oembed_out.author_name,
-        mid: ret.oembed_out.author_url
+        mid: ret.author_mid
     };
     return ret;
 }
