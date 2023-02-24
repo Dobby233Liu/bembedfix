@@ -81,7 +81,8 @@ async function getOriginalURLOfB23TvRedir(url) {
     const response = await fetch(url.href);
 
     // is this not a redirect? if so, check if we've got an error
-    if (!(response.status >= 300 && response.status < 400)) {
+    // (vercel hates me https://github.com/vercel/fetch/blob/23038037ee/packages/fetch/index.js#L43)
+    if (!response.redirected && !(response.type == "opaqueredirect")) {
         let responseData;
         try {
             responseData = await response.text();
