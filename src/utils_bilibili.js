@@ -82,7 +82,7 @@ async function getOriginalURLOfB23TvRedir(url) {
 
     // is this not a redirect? if so, check if we've got an error
     // (vercel hates me https://github.com/vercel/fetch/blob/23038037ee/packages/fetch/index.js#L43)
-    if (new URL(response.url).hostname != "b23.tv") {
+    if (new URL(response.url).hostname == "b23.tv") {
         let responseData;
         try {
             responseData = await response.text();
