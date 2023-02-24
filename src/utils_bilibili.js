@@ -80,8 +80,8 @@ function errorFromBilibili(e, data) {
 async function getOriginalURLOfB23TvRedir(url) {
     const response = await fetch(url.href);
 
-    // is this not a redirect? if yes, check if we've got an error
-    if (!response.redirected) {
+    // is this not a redirect? if so, check if we've got an error
+    if (!(response.status >= 300 && response.status < 400)) {
         let responseData;
         try {
             responseData = await response.text();
