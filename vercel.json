@@ -4,10 +4,8 @@
     },
     "functions": {
         "api/index.js": {
-          "includeFiles": "template.html"
+            "includeFiles": "template.html"
         }
     },
-    "rewrites": [
-        { "source": "/(.*)", "destination": "/api" }
-    ]
+    "rewrites": [{ "source": "/(.*)", "destination": "/api" }]
 }

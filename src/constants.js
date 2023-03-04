@@ -3,7 +3,8 @@ export const PROVIDER_NAME = `哔哩哔哩（${MY_NAME}）`;
 export const PROVIDER_URL = "https://www.bilibili.com";
 
 export const PROJECT_URL = "https://github.com/Dobby233Liu/bembedfix";
-export const PROJECT_ISSUES_URL = "https://github.com/Dobby233Liu/bembedfix/issues/new";
+export const PROJECT_ISSUES_URL =
+    "https://github.com/Dobby233Liu/bembedfix/issues/new";
 
 export const CRAWLER_UAS = [
     "facebookexternalhit/1.1",
@@ -17,7 +18,7 @@ export const CRAWLER_UAS = [
     "Mozilla/5.0 (Windows; U; Windows NT 10.0; en-US; Valve Steam Client/default/1596241936; ) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.117 Safari/537.36",
     "Mozilla/5.0 (Windows; U; Windows NT 10.0; en-US; Valve Steam Client/default/0; ) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.117 Safari/537.36",
     "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; Valve Steam FriendsUI Tenfoot/0; ) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.105 Safari/537.36",
-    "BembedfixMetaTagDebugging (like test)"
+    "BembedfixMetaTagDebugging (like test)",
 ];
 
 export const ERROR_TEMPLATE = `<!DOCTYPE HTML>

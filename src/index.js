@@ -1,5 +1,19 @@
-import { sendOembed, sendTemplate, sendError, getRequestedURL, getMyBaseURL, stripTrailingSlashes, isUAEndUser, shouldLieAboutPlayerContentType, oembedAddExtraMetadata } from "./utils.js";
-import { getRequestedInfo, getVideoData, loadOembedDataFromQuerystring } from "./utils_bilibili.js";
+import {
+    sendOembed,
+    sendTemplate,
+    sendError,
+    getRequestedURL,
+    getMyBaseURL,
+    stripTrailingSlashes,
+    isUAEndUser,
+    shouldLieAboutPlayerContentType,
+    oembedAddExtraMetadata,
+} from "./utils.js";
+import {
+    getRequestedInfo,
+    getVideoData,
+    loadOembedDataFromQuerystring,
+} from "./utils_bilibili.js";
 import { PROJECT_URL, PROVIDER_NAME } from "./constants.js";
 
 export default async function handler(req, res) {
@@ -21,11 +35,17 @@ export default async function handler(req, res) {
 
     let doOembed = false;
     let responseType = "html";
-    if (stripTrailingSlashes(requestedURL.pathname) == "/oembed" || requestedURL.pathname == "/oembed.json" || requestedURL.pathname == "/oembed.xml") {
+    if (
+        stripTrailingSlashes(requestedURL.pathname) == "/oembed" ||
+        requestedURL.pathname == "/oembed.json" ||
+        requestedURL.pathname == "/oembed.xml"
+    ) {
         doOembed = true;
         let isXMLRequested = false;
         if (!requestedURL.pathname.endsWith(".json"))
-            isXMLRequested = requestedURL.pathname.endsWith(".xml") || req.query.format == "xml";
+            isXMLRequested =
+                requestedURL.pathname.endsWith(".xml") ||
+                req.query.format == "xml";
         responseType = isXMLRequested ? "xml" : "json";
     }
 
@@ -36,7 +56,10 @@ export default async function handler(req, res) {
 
     let info, data;
     try {
-        info = await getRequestedInfo((!doOembed ? requestedURL : new URL(req.query.url)).pathname, requestedURL.searchParams);
+        info = await getRequestedInfo(
+            (!doOembed ? requestedURL : new URL(req.query.url)).pathname,
+            requestedURL.searchParams
+        );
     } catch (e) {
         sendError(res, req, "解析请求的 URL 时发生错误", e, responseType);
         return;
@@ -49,13 +72,20 @@ export default async function handler(req, res) {
     }
 
     if (doOembed) {
-        sendOembed(res, oembedAddExtraMetadata(data.oembedData, req.query), responseType);
+        sendOembed(
+            res,
+            oembedAddExtraMetadata(data.oembedData, req.query),
+            responseType
+        );
         return;
     }
 
     try {
         if (isUAEndUser(req)) {
-            res.setHeader("Cache-Control", "private, max-age=1, stale-while-revalidate");
+            res.setHeader(
+                "Cache-Control",
+                "private, max-age=1, stale-while-revalidate"
+            );
             // redirect the client to the real video URL
             res.redirect(302, data.url);
             return;

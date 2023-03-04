@@ -1,7 +1,14 @@
 import { render, renderFile } from "ejs";
 import { join as joinPath } from "path";
 import { Builder as XMLBuilder } from "xml2js";
-import { PROVIDER_NAME, PROVIDER_URL, ERROR_TEMPLATE, PROJECT_ISSUES_URL, CRAWLER_UAS, MY_NAME } from "./constants.js";
+import {
+    PROVIDER_NAME,
+    PROVIDER_URL,
+    ERROR_TEMPLATE,
+    PROJECT_ISSUES_URL,
+    CRAWLER_UAS,
+    MY_NAME,
+} from "./constants.js";
 
 export const DEFAULT_WIDTH = 1280;
 export const DEFAULT_HEIGHT = 720;
@@ -10,7 +17,7 @@ const xmlBuilder = new XMLBuilder();
 
 export function assert(cond, msg = "") {
     if (!cond) {
-        throw new Error("断言失败" + msg ? `：${msg}` : "")
+        throw new Error("断言失败" + msg ? `：${msg}` : "");
     }
 }
 
@@ -21,16 +28,19 @@ export function getRequestedURL(req) {
 export function getMyBaseURL(req) {
     const headers = req.headers;
     return new URL(
-        `${encodeURI(headers["x-forwarded-proto"] ?? "https")}://`
-        + encodeURI(headers["x-vercel-deployment-url"] ?? headers["x-forwarded-host"] ?? headers["host"])
+        `${encodeURI(headers["x-forwarded-proto"] ?? "https")}://` +
+            encodeURI(
+                headers["x-vercel-deployment-url"] ??
+                    headers["x-forwarded-host"] ??
+                    headers["host"]
+            )
     );
 }
 
 export function checkIfURLIsUnderDomain(l, r) {
     let levelsOfDomainLeft = l.split(".");
     let levelsOfDomainRight = r.split(".");
-    if (levelsOfDomainLeft.length < levelsOfDomainRight.length)
-        return false;
+    if (levelsOfDomainLeft.length < levelsOfDomainRight.length) return false;
     return levelsOfDomainLeft
         .slice(-levelsOfDomainRight.length)
         .every((level, index) => level == levelsOfDomainRight[index]);
@@ -41,7 +51,10 @@ export function stripTrailingSlashes(path) {
 }
 
 export function isUAEndUser(req) {
-    return !CRAWLER_UAS.includes(req.headers["user-agent"]) && !req.query.__bef_tag_debug;
+    return (
+        !CRAWLER_UAS.includes(req.headers["user-agent"]) &&
+        !req.query.__bef_tag_debug
+    );
 }
 
 export function shouldLieAboutPlayerContentType(req) {
@@ -58,7 +71,14 @@ export function getCompatDescription(desc = "", length = 160) {
     return ret;
 }
 
-export function sendError(res, req, message = "未知错误", data = "未知错误。", responseType = "html", code = data ? data.httpError ?? 500 : 500) {
+export function sendError(
+    res,
+    req,
+    message = "未知错误",
+    data = "未知错误。",
+    responseType = "html",
+    code = data ? data.httpError ?? 500 : 500
+) {
     res.status(code);
 
     const errorData = {
@@ -66,7 +86,7 @@ export function sendError(res, req, message = "未知错误", data = "未知错�
         code: code,
         message: message,
         data: data.stack ? data.stack : data.toString(),
-        issues_url: PROJECT_ISSUES_URL
+        issues_url: PROJECT_ISSUES_URL,
     };
 
     switch (responseType) {
@@ -78,22 +98,24 @@ export function sendError(res, req, message = "未知错误", data = "未知错�
             res.send(xmlBuilder.buildObject({ bembedfix_error: errorData }));
             break;
         default:
-            res.send(render(ERROR_TEMPLATE, {
-                ...errorData,
-                here: getRequestedURL(req).href,
-            }));
+            res.send(
+                render(ERROR_TEMPLATE, {
+                    ...errorData,
+                    here: getRequestedURL(req).href,
+                })
+            );
             break;
     }
 }
 
 export function sendTemplate(res, req, responseType, file = "video", data) {
     renderFile(joinPath(process.cwd(), `src/templates/${file}.html`), data)
-    .catch(function (err) {
-        sendError(res, req, "生成 embed 时发生错误", err, responseType);
-    })
-    .then(out => {
-        res.send(out);
-    });
+        .catch(function (err) {
+            sendError(res, req, "生成 embed 时发生错误", err, responseType);
+        })
+        .then((out) => {
+            res.send(out);
+        });
 }
 
 export function sendOembed(res, data, type) {
@@ -110,10 +132,14 @@ export function oembedAddExtraMetadata(data, query = {}) {
         version: "1.0",
         ...data,
         provider_name: PROVIDER_NAME,
-        provider_url: PROVIDER_URL
+        provider_url: PROVIDER_URL,
     };
     assert(ret.type == "video");
-    ret.width = query.maxwidth ? Math.min(+query.maxwidth, ret.width) : ret.width;
-    ret.height = query.maxheight ? Math.min(+query.maxheight, ret.height) : ret.height;
+    ret.width = query.maxwidth
+        ? Math.min(+query.maxwidth, ret.width)
+        : ret.width;
+    ret.height = query.maxheight
+        ? Math.min(+query.maxheight, ret.height)
+        : ret.height;
     return ret;
 }
