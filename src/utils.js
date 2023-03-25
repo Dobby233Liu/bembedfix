@@ -29,11 +29,11 @@ export function getMyBaseURL(req) {
     const headers = req.headers;
     return new URL(
         `${encodeURI(headers["x-forwarded-proto"] ?? "https")}://` +
-            encodeURI(
-                headers["x-vercel-deployment-url"] ??
-                    headers["x-forwarded-host"] ??
-                    headers["host"]
-            )
+        encodeURI(
+            // headers["x-vercel-deployment-url"] ??
+            headers["x-forwarded-host"] ??
+            headers["host"]
+        )
     );
 }
 
@@ -109,7 +109,7 @@ export function sendError(
 }
 
 export function sendTemplate(res, req, responseType, file = "video", data) {
-    renderFile(joinPath(process.cwd(), `src/templates/${file}.html`), data)
+    renderFile(joinPath(process.cwd(), `src/routes/${file}.html`), data)
         .catch(function (err) {
             sendError(res, req, "生成 embed 时发生错误", err, responseType);
         })

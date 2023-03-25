@@ -91,7 +91,6 @@ export default async function handler(req, res) {
             return;
         }
 
-        data.provider = PROVIDER_NAME;
         // FIXME: preferredly do this in some other way or somewhere else
         let oembedJson = new URL("oembed.json", getMyBaseURL(req));
         let oembedXml = new URL("oembed.xml", getMyBaseURL(req));
@@ -99,11 +98,14 @@ export default async function handler(req, res) {
             oembedJson.searchParams.set(k, v);
             oembedXml.searchParams.set(k, v);
         }
-        data.oembed_json = oembedJson;
-        data.oembed_xml = oembedXml;
-        data.lie_about_embed_player = shouldLieAboutPlayerContentType(req);
 
-        sendTemplate(res, req, responseType, "video", data);
+        sendTemplate(res, req, responseType, "video", {
+            provider: PROVIDER_NAME,
+            ...data,
+            lie_about_embed_player: shouldLieAboutPlayerContentType(req),
+            oembed_json: oembedJson,
+            oembed_xml: oembedXml
+        });
     } catch (e) {
         sendError(res, req, "生成 embed 时发生错误", e, responseType);
         return;
