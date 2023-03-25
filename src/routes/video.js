@@ -8,7 +8,6 @@ import {
 } from "../utils.js";
 import {
     MAIN_SITE_VIDEO_PAGE_PATHNAME_REGEX,
-    STRICTLY_MAIN_SITE_VIDEO_PAGE_PATHNAME_REGEX,
     errorFromBilibili,
     makeVideoPage,
     makeEmbedPlayer,
@@ -84,12 +83,11 @@ async function handler(url, matchKind, matchResult) {
 }
 
 export default {
-    matchs: [
-        { path: MAIN_SITE_VIDEO_PAGE_PATHNAME_REGEX },
+    matches: [
         {
-            path: STRICTLY_MAIN_SITE_VIDEO_PAGE_PATHNAME_REGEX,
+            path: MAIN_SITE_VIDEO_PAGE_PATHNAME_REGEX,
             domain: "bilibili.com",
-            domainMatchingMode: DomainMatchingMode.NEEDED
+            domainMatchingMode: DomainMatchingMode.NEEDED_FOR_RESOLVED_SHORTLINKS
         }
     ],
     handler: handler,

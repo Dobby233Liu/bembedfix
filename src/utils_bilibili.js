@@ -4,8 +4,6 @@ import { checkIfURLIsUnderDomain } from "./utils.js";
 
 export const MAIN_SITE_VIDEO_PAGE_PATHNAME_REGEX =
     /^\/((s\/)?(video\/)?)((?=av|BV)[A-Za-z0-9]+)/;
-export const STRICTLY_MAIN_SITE_VIDEO_PAGE_PATHNAME_REGEX =
-    /^\/((s\/)?(video\/))((?=av|BV)[A-Za-z0-9]+)/;
 
 export const isUrlOnBilibiliMainSite = (u) =>
     checkIfURLIsUnderDomain(u.hostname, "bilibili.com");
