@@ -1,10 +1,7 @@
 import fetch from "./fetch.js";
 
-import {
-    checkIfURLIsUnderDomain
-} from "./utils.js";
+import { checkIfURLIsUnderDomain } from "./utils.js";
 
-// Group 4 is the ID of the video
 export const MAIN_SITE_VIDEO_PAGE_PATHNAME_REGEX =
     /^\/((s\/)?(video\/)?)((?=av|BV)[A-Za-z0-9]+)/;
 export const STRICTLY_MAIN_SITE_VIDEO_PAGE_PATHNAME_REGEX =
@@ -105,9 +102,8 @@ export async function getOriginalURLOfB23TvRedir(url) {
 }
 
 export function errorFromBilibili(e, data) {
-    if (!Object.keys(data).includes("code")) return;
-
     const code = data.code;
+    if (!code) return e;
     let myCode = -code;
 
     if (

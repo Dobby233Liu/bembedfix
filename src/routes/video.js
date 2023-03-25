@@ -19,7 +19,7 @@ import {
 import { DomainMatchingMode } from "./_metadef.js";
 
 async function handler(url, matchKind, matchResult) {
-    let id = matchResult.path[4];
+    let id = matchResult.path[4]; // Group 4 is the ID of the video
     let page = parseInt(url.searchParams.get("p")) || 1;
 
     const requestURL = new URL("https://api.bilibili.com/x/web-interface/view");
