@@ -1,19 +1,7 @@
 import fetch from "./fetch.js";
 
-import { checkIfURLIsUnderDomain } from "./utils.js";
-
 export const MAIN_SITE_VIDEO_PAGE_PATHNAME_REGEX =
     /^\/((s\/)?(video\/)?)((?=av|BV)[A-Za-z0-9]+)/;
-
-export const isUrlOnBilibiliMainSite = (u) =>
-    checkIfURLIsUnderDomain(u.hostname, "bilibili.com");
-export const isPathMainSiteVideoPage = (p) =>
-    MAIN_SITE_VIDEO_PAGE_PATHNAME_REGEX.test(p);
-export const isUrlBilibiliVideo = (u) =>
-    isUrlOnBilibiliMainSite(u) && isPathMainSiteVideoPage(u.pathname);
-
-export const getVideoIdByPath = (p) =>
-    MAIN_SITE_VIDEO_PAGE_PATHNAME_REGEX.exec(p)[4];
 
 export function makeVideoPage(vid, page = 1) {
     const ret = new URL(vid, "https://www.bilibili.com/video/");
