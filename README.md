@@ -20,7 +20,7 @@
 bembedfix 目前提供三种元数据：
 - [Open Graph](https://ogp.me/)
 - [oEmbed](https://oembed.com/)
-    * 注意，本服务提供 HTML 数据中调用 oEmbed API 的方式不符合标准
+    * 注意，本服务提供的 HTML 数据中调用 oEmbed API 的方式不符合标准
 - [Twitter Cards](https://developer.x.com/en/docs/twitter-for-websites/cards/overview/abouts-cards)
 
 值得注意的是，本服务目前只在 Discord 和 Twitter 上正式受测试过。
@@ -30,7 +30,7 @@ bembedfix 目前提供三种元数据：
 -   本项目灵感来源于 [TwitFix](https://github.com/dylanpdx/BetterTwitFix)，我也对其代码做了参考。
 -   与 B 站 API 交互的代码参考了 [哔哩哔哩-API 收集整理](https://github.com/SocialSisterYi/bilibili-API-collect)。
 -   [@狸花十七](https://space.bilibili.com/5490502) 的视频——确切来说是上图中的那则视频——导致我产生了开坑这个项目的想法。
--   [BEMYPET][bemypet-kr]（[似了的 bilibili 账号][bemypet-cn-bili]） 产生的内容在本项目开发过程中对我造成了一定心理创伤。（误）
+-   [BEMYPET][bemypet-kr]（[似了的 bilibili 账号][bemypet-cn-bili]）产生的内容在本项目开发过程中对我造成了一定心理创伤。（误）
 -   我还可以加人吗？
 
 [bemypet-kr]: https://www.youtube.com/@bemypet
