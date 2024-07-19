@@ -61,6 +61,10 @@ export function shouldLieAboutPlayerContentType(req) {
     return req.headers["user-agent"].includes("Discordbot");
 }
 
+export function shouldNotAddRedirectMetaprop(req) {
+    return req.headers["user-agent"].includes("Schema-Markup-Validator");
+}
+
 export function getCompatDescription(desc = "", length = 160) {
     const elipsis = "……";
     let ret = desc;
