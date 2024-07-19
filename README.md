@@ -23,7 +23,7 @@ bembedfix 目前提供三种元数据：
     * 注意，本服务提供 HTML 数据中调用 oEmbed API 的方式不符合标准
 - [Twitter Cards](https://developer.x.com/en/docs/twitter-for-websites/cards/overview/abouts-cards)
 
-值得注意的是，本服务目前只在 Discord 和 Twitter 上受支持过。
+值得注意的是，本服务目前只在 Discord 和 Twitter 上受测试过。
 
 ## 特别鸣谢
 
