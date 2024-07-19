@@ -1,0 +1,3 @@
+我不对本服务的安全性做任何保证。
+
+您可以在 GitHub 上公开报告安全问题：https://github.com/Dobby233Liu/bembedfix/issues/new
