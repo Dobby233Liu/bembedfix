@@ -20,8 +20,11 @@
 -   本项目灵感来源于 [TwitFix](https://github.com/dylanpdx/BetterTwitFix)，我也对其代码做了参考。
 -   与 B 站 API 交互的代码参考了 [哔哩哔哩-API 收集整理](https://github.com/SocialSisterYi/bilibili-API-collect)。
 -   [@狸花十七](https://space.bilibili.com/5490502) 的视频——确切来说是上图中的那则视频——导致我产生了开坑这个项目的想法。
--   [BEMYPET](https://space.bilibili.com/1677731862) 产生的内容在本项目开发过程中对我造成了一定心理创伤。（误）
+-   [BEMYPET][bemypet-kr]（[似了的 bilibili 账号][bemypet-cn-bili]） 产生的内容在本项目开发过程中对我造成了一定心理创伤。（误）
 -   我还可以加人吗？
+
+[bemypet-kr]: https://www.youtube.com/@bemypet
+[bemypet-cn-bili]: https://space.bilibili.com/1677731862
 
 ## 许可证
 
