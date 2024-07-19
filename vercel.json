@@ -2,8 +2,5 @@
     "github": {
         "silent": true
     },
-    "functions": {
-        "api/index.js": {}
-    },
     "rewrites": [{ "source": "/(.*)", "destination": "/api" }]
 }
