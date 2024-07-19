@@ -22,7 +22,7 @@ bembedfix 目前提供三种元数据：
 -    [oEmbed](https://oembed.com/)
       * 注意，本服务提供的 HTML 数据中调用 oEmbed API 的方式不符合标准
 -    [Twitter Cards](https://developer.x.com/en/docs/twitter-for-websites/cards/overview/abouts-cards)
-      * 如果用户代理为 Discordbot，这种元数据其中提供的 player MIME 类型会被谎报为 video/mp4，表现为客户端里视频封面上有播放按钮但是不能直接播放。详情见 [#26](issue-26)
+      * 如果用户代理为 Discordbot，这种元数据其中提供的 player MIME 类型会被谎报为 video/mp4，表现为客户端里视频封面上有播放按钮但是不能直接播放。详情见 [#26][issue-26]
 
 值得注意的是，本服务目前只在 Discord 和 Twitter 上正式受测试过。
 
