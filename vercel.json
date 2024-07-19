@@ -3,9 +3,7 @@
         "silent": true
     },
     "functions": {
-        "api/index.js": {
-            "includeFiles": "template.html"
-        }
+        "api/index.js": {}
     },
     "rewrites": [{ "source": "/(.*)", "destination": "/api" }]
 }
