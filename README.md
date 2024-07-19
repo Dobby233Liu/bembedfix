@@ -9,11 +9,21 @@
 > [!IMPORTANT]
 > 由于本人目前对除视频以外的内容渲染没有需求，本应用的开发目前处于**维护模式**。
 
-## 使用
+## 用法
 
 使用很简单，只需要将您的视频链接中的 `www.bilibili.com` 或 `b23.tv` 换成 `bembedfix.vercel.app`，就可以啦。
 
 **注意**：本服务目前只支持修复视频，而且不会保留例如空降时间的网址参数；本服务也不能处理需要登录才能显示的视频。
+
+## 元数据类型
+
+bembedfix 目前提供三种元数据：
+- [Open Graph](https://ogp.me/)
+- [oEmbed](https://oembed.com/)
+    * 注意，本服务提供 HTML 数据中调用 oEmbed API 的方式不符合标准
+- [Twitter Cards](https://developer.x.com/en/docs/twitter-for-websites/cards/overview/abouts-cards)
+
+值得注意的是，本服务目前只在 Discord 和 Twitter 上受支持过。
 
 ## 特别鸣谢
 
