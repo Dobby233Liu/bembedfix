@@ -4,9 +4,7 @@
         <meta charset="UTF-8" />
         <title><%= title %></title>
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-        <% if (!do_not_add_redirect_metaprop) { %>
-        <meta http-equiv="Refresh" content="0; url='<%= url %>'" />
-        <% } %>
+        <% if (!do_not_add_redirect_metaprop) { %><meta http-equiv="Refresh" content="0; url='<%= url %>'" /><% } %>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta property="application-name" content="<%= provider %>" />
         <meta property="og:site_name" content="<%= provider %>" />
@@ -81,12 +79,7 @@
         </div>
     </head>
     <body>
-        <p>
-            <% if (!do_not_add_redirect_metaprop) { %>
-            <a href="<%= url %>">正在重定向到 <%= url %></a>
-            <% } else { %>
-            <a href="<%= url %>">要查看内容，请访问 <%= url %></a>
-            <% } %>
-        </p>
+        <p><% if (!do_not_add_redirect_metaprop) { %><a href="<%= url %>">正在重定向到 <%= url %></a>
+        <% } else { %><a href="<%= url %>">要查看内容，请访问 <%= url %></a><% } %></p>
     </body>
 </html>
