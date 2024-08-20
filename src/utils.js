@@ -47,7 +47,7 @@ export function checkIfURLIsUnderDomain(l, r) {
 }
 
 export function stripTrailingSlashes(path) {
-    return /^(\/.*?)(\/*$)/.exec(path)[1];
+    return path.replace(/\/+/, "/").replace(/(\/*$)/, "");
 }
 
 export function isUserAStupidKidAndTryingToAccessAWordpressApi(url) {
