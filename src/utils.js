@@ -50,6 +50,10 @@ export function stripTrailingSlashes(path) {
     return /^(\/.*?)(\/*$)/.exec(path)[1];
 }
 
+export function isUserAStupidKidAndTryingToAccessAWordpressApi(url) {
+    return !!(/wp-(admin|content)|.php/.exec(url.pathname));
+}
+
 export function isUAEndUser(req) {
     return (
         !CRAWLER_UAS.includes(req.headers["user-agent"]) &&

@@ -9,6 +9,7 @@ import {
     shouldLieAboutPlayerContentType,
     shouldNotAddRedirectMetaprop,
     oembedAddExtraMetadata,
+    isUserAStupidKidAndTryingToAccessAWordpressApi
 } from "./utils.js";
 import {
     getRequestedInfo,
@@ -21,6 +22,10 @@ export default async function handler(req, res) {
     let requestedURL = getRequestedURL(req);
 
     // special routes
+    if (isUserAStupidKidAndTryingToAccessAWordpressApi(requestedURL)) {
+        res.status(400);
+        return;
+    }
     if (stripTrailingSlashes(requestedURL.pathname) == "/") {
         res.setHeader("Cache-Control", "max-age=10800, s-maxage=10800");
         res.redirect(308, PROJECT_URL);
