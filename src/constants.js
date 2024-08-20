@@ -38,7 +38,6 @@ export const ERROR_TEMPLATE = `<!DOCTYPE HTML>
     <meta property="og:title" content="<%= code %>: <%= message %>" />
     <meta property="og:description" content="<%= data %>" />
     <meta property="twitter:title" content="<%= code %>: <%= message %>" />
-    <meta property="twitter:description" content="<%= data %>" />
     <meta name="theme-color" content="#FF0000">
 </head>
 <body>
