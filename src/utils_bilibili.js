@@ -13,7 +13,7 @@ import {
 
 // Group 4 is the ID of the video
 const MAIN_SITE_VIDEO_PAGE_PATHNAME_REGEX =
-    /^\/((s\/)?(video\/)?)((?=av|BV)[A-Za-z0-9]+)/;
+    /^\/(?:s\/)?(?:video\/)?((?=av|BV)[A-Za-z0-9]+)/;
 
 export const isUrlOnBilibiliMainSite = (u) =>
     checkIfURLIsUnderDomain(u.hostname, "bilibili.com");
@@ -23,7 +23,7 @@ export const isUrlBilibiliVideo = (u) =>
     isUrlOnBilibiliMainSite(u) && isPathMainSiteVideoPage(u.pathname);
 
 export const getVideoIdByPath = (p) =>
-    MAIN_SITE_VIDEO_PAGE_PATHNAME_REGEX.exec(stripTrailingSlashes(p))[4];
+    MAIN_SITE_VIDEO_PAGE_PATHNAME_REGEX.exec(stripTrailingSlashes(p))[1];
 
 export function makeVideoPage(vid, page = 1) {
     const ret = new URL(vid, "https://www.bilibili.com/video/");
