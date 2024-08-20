@@ -163,16 +163,23 @@ export async function getRequestedInfo(path, search) {
     };
 
     // default domain for later
-    let url = new URL(path, "https://b23.tv");
+    let url = new URL(path, "https://b23.tv"), originalURL = url;
 
     // url for video pages on www|m.bilibili.com has a specific pattern
     if (!isPathMainSiteVideoPage(url.pathname)) {
+        for (let knownNonVideoPrefix of ["/cm-huahuo", "/cm-cmt"]) {
+            if (url.pathname.startsWith(knownNonVideoPrefix))
+                throw new Error(
+                    "这似乎不是一个视频——本服务目前只支持对视频页面进行 embed 修正。\n" +
+                        `拼接的 URL：${originalURL.href} 匹配已知非视频前缀：${knownNonVideoPrefix}`
+                );
+        }
         // must've a b23.tv shortlink
         url = await getOriginalURLOfB23TvRedir(url);
         if (!isUrlBilibiliVideo(url)) {
             throw new Error(
                 "这似乎不是一个视频——本服务目前只支持对视频页面进行 embed 修正。\n" +
-                    `跳转到了 ${url.href} （未跳转的 URL：${url.href}）`
+                    `跳转到了 ${url.href} （未跳转的 URL：${originalURL.href}）`
             );
         }
     }
