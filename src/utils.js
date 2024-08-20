@@ -51,7 +51,7 @@ export function stripTrailingSlashes(path) {
 }
 
 export function isUserAStupidKidAndTryingToAccessAWordpressApi(url) {
-    return !!(/wp-(admin|content)|.php/.exec(url.pathname));
+    return /wp-(admin|content)|.php/.test(url.pathname);
 }
 
 export function isUAEndUser(req) {
