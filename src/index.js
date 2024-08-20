@@ -23,7 +23,7 @@ export default async function handler(req, res) {
 
     // special routes
     if (isUserAStupidKidAndTryingToAccessAWordpressApi(requestedURL)) {
-        res.status(400);
+        res.status(400).send();
         return;
     }
     if (stripTrailingSlashes(requestedURL.pathname) == "/") {
