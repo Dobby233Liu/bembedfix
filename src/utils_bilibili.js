@@ -259,9 +259,10 @@ export async function getVideoData(info, getVideoUrl, dropCobaltErrs) {
             }
         }
         if (cobaltRepParsed) {
-            if ((cobaltRepParsed.status == "error" || cobaltRepParsed.status == "rate-limit") && !dropCobaltErrs)
-                throw cobaltRepParsed;
-            if (cobaltRepParsed.status != "picker") {
+            if (cobaltRepParsed.status == "error" || cobaltRepParsed.status == "rate-limit") {
+                if (!dropCobaltErrs)
+                    throw cobaltRepParsed;
+            } else if (cobaltRepParsed.status != "picker") {
                 videoUrl = cobaltRepParsed.url;
             } else {
                 assert(cobaltRepParsed.pickerType == "various");
