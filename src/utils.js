@@ -62,7 +62,7 @@ export function isUAEndUser(req) {
 }
 
 export function doesHTML5EmbedFunctionOnClient(req) {
-    return req.headers["user-agent"].includes("Discordbot");
+    return !req.headers["user-agent"].includes("Discordbot");
 }
 
 export function shouldNotAddRedirectMetaprop(req) {

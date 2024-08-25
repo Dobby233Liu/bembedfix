@@ -106,6 +106,7 @@ export default async function handler(req, res) {
         let oembedJson = new URL("oembed.json", getMyBaseURL(req));
         let oembedXml = new URL("oembed.xml", getMyBaseURL(req));
         for (let [k, v] of Object.entries(data.oembedAPIQueries)) {
+            if (v == null) continue;
             oembedJson.searchParams.set(k, v);
             oembedXml.searchParams.set(k, v);
         }
