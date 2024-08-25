@@ -231,7 +231,6 @@ export async function getVideoData(info, getVideoUrl, dropCobaltErrs) {
 
     let videoUrl;
     if (getVideoUrl) {
-        console.log(makeVideoPage(id, page));
         const cobaltRep = await fetch(new URL("/api/json", COBALT_API_INSTANCE).href, {
             method: "POST",
             headers: {
@@ -245,7 +244,6 @@ export async function getVideoData(info, getVideoUrl, dropCobaltErrs) {
             })
         })
         const cobaltRepRaw = await cobaltRep.text();
-        console.log(cobaltRepRaw);
         let cobaltRepParsed;
         if (!response.ok) {
             if (!dropCobaltErrs)
@@ -269,7 +267,6 @@ export async function getVideoData(info, getVideoUrl, dropCobaltErrs) {
                 videoUrl = cobaltRepParsed.picker[page] ? cobaltRepParsed.picker[page].url : cobaltRepParsed.picker[0].url;
                 // todo: picker[xx].thumb
             }
-            console.log(videoUrl);
         }
     }
 
