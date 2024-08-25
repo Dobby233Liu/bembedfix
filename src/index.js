@@ -6,7 +6,7 @@ import {
     getMyBaseURL,
     stripTrailingSlashes,
     isUAEndUser,
-    shouldLieAboutPlayerContentType,
+    doesHTML5EmbedFunctionOnClient,
     shouldNotAddRedirectMetaprop,
     oembedAddExtraMetadata,
     isUserAStupidKidAndTryingToAccessAWordpressApi
@@ -70,8 +70,11 @@ export default async function handler(req, res) {
         sendError(res, req, "解析请求的 URL 时发生错误", e, responseType);
         return;
     }
+
+    let html5EmbedWorks = doesHTML5EmbedFunctionOnClient(req);
     try {
-        data = await getVideoData(info);
+        // CHANGEME
+        data = await getVideoData(info, !html5EmbedWorks, !req.query.__bef_dont_drop_cobalt_errs);
     } catch (e) {
         sendError(res, req, "获取视频信息时发生错误", e, responseType);
         return;
@@ -107,7 +110,7 @@ export default async function handler(req, res) {
         }
         data.oembed_json = oembedJson;
         data.oembed_xml = oembedXml;
-        data.lie_about_embed_player = shouldLieAboutPlayerContentType(req);
+        data.lie_about_embed_player = html5EmbedWorks;
         data.do_not_add_redirect_metaprop = shouldNotAddRedirectMetaprop(req);
 
         sendTemplate(res, req, responseType, "video", data);

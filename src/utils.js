@@ -29,11 +29,11 @@ export function getMyBaseURL(req) {
     const headers = req.headers;
     return new URL(
         `${encodeURI(headers["x-forwarded-proto"] ?? "https")}://` +
-            encodeURI(
-                headers["x-vercel-deployment-url"] ??
-                    headers["x-forwarded-host"] ??
-                    headers["host"]
-            )
+        encodeURI(
+            headers["x-vercel-deployment-url"] ??
+            headers["x-forwarded-host"] ??
+            headers["host"]
+        )
     );
 }
 
@@ -61,7 +61,7 @@ export function isUAEndUser(req) {
     );
 }
 
-export function shouldLieAboutPlayerContentType(req) {
+export function doesHTML5EmbedFunctionOnClient(req) {
     return req.headers["user-agent"].includes("Discordbot");
 }
 
@@ -93,7 +93,7 @@ export function sendError(
         me: MY_NAME,
         code: code,
         message: message,
-        data: data.stack ? data.stack : data.toString(),
+        data: data.stack ? data.stack : (data.toString() == "[object Object]" ? JSON.stringify(data) : data),
         issues_url: PROJECT_ISSUES_URL,
     };
 

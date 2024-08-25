@@ -26,6 +26,8 @@ export const CRAWLER_UAS = [
     "Mozilla/5.0 (compatible; Schema-Markup-Validator; +https://validator.schema.org/)"
 ];
 
+export const COBALT_API_INSTANCE = "https://api.cobalt.tools";
+
 export const ERROR_TEMPLATE = `<!DOCTYPE HTML>
 <html>
 <head>
