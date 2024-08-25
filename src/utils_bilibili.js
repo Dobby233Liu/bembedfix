@@ -10,6 +10,7 @@ import {
     DEFAULT_WIDTH,
     DEFAULT_HEIGHT,
 } from "./utils.js";
+import { COBALT_API_INSTANCE } from "./constants.js";
 
 // Group 4 is the ID of the video
 const MAIN_SITE_VIDEO_PAGE_PATHNAME_REGEX =
@@ -130,8 +131,8 @@ async function getOriginalURLOfB23TvRedir(url) {
             throw errorFromBilibili(
                 new Error(
                     `对 ${url} 的请求失败。（HTTP 状态码为 ${response.status}）请检查您的链接。` +
-                        "\n" +
-                        responseData
+                    "\n" +
+                    responseData
                 ),
                 responseDataJson
             );
@@ -139,16 +140,16 @@ async function getOriginalURLOfB23TvRedir(url) {
             throw errorFromBilibili(
                 new Error(
                     `对 ${url} 的请求失败。（HTTP 状态码为 ${response.status}）请检查您的链接。` +
-                        "\n" +
-                        responseData
+                    "\n" +
+                    responseData
                 ),
                 responseDataJson
             );
         }
         throw new Error(
             `请求了 ${url}，但是服务器返回了一段奇妙的内容？（HTTP 状态码为 ${response.status}）请检查您的链接，如果正常，那么就是我们的 bug。` +
-                "\n" +
-                responseData
+            "\n" +
+            responseData
         );
     }
 
@@ -171,7 +172,7 @@ export async function getRequestedInfo(path, search) {
             if (url.pathname.startsWith(knownNonVideoPrefix))
                 throw new Error(
                     "这似乎不是一个视频——本服务目前只支持对视频页面进行 embed 修正。\n" +
-                        `拼接的 URL：${originalURL.href} 匹配已知非视频前缀：${knownNonVideoPrefix}`
+                    `拼接的 URL：${originalURL.href} 匹配已知非视频前缀：${knownNonVideoPrefix}`
                 );
         }
         // must've a b23.tv shortlink
@@ -179,7 +180,7 @@ export async function getRequestedInfo(path, search) {
         if (!isUrlBilibiliVideo(url)) {
             throw new Error(
                 "这似乎不是一个视频——本服务目前只支持对视频页面进行 embed 修正。\n" +
-                    `跳转到了 ${url.href} （未跳转的 URL：${originalURL.href}）`
+                `跳转到了 ${url.href} （未跳转的 URL：${originalURL.href}）`
             );
         }
     }
@@ -190,7 +191,7 @@ export async function getRequestedInfo(path, search) {
     return ret;
 }
 
-export async function getVideoData(info) {
+export async function getVideoData(info, getVideoUrl, dropCobaltErrs) {
     const id = info.id;
 
     const requestURL = new URL("https://api.bilibili.com/x/web-interface/view");
@@ -218,15 +219,59 @@ export async function getVideoData(info) {
     let page = info.page && info.page <= resInfo.pages.length ? info.page : 1;
     let cid = resInfo.pages[page - 1].cid ?? resInfo.cid;
     let width =
-            resInfo.pages[page - 1].dimension.width ??
-            resInfo.dimension.width ??
-            DEFAULT_WIDTH,
+        resInfo.pages[page - 1].dimension.width ??
+        resInfo.dimension.width ??
+        DEFAULT_WIDTH,
         height =
             resInfo.pages[page - 1].dimension.height ??
             resInfo.dimension.height ??
             DEFAULT_HEIGHT;
     let tWidth = resInfo.dimension.width ?? DEFAULT_WIDTH,
         tHeight = resInfo.dimension.height ?? DEFAULT_HEIGHT;
+
+    let videoUrl;
+    if (getVideoUrl) {
+        console.log(makeVideoPage(id, page));
+        const cobaltRep = await fetch(new URL("/api/json", COBALT_API_INSTANCE).href, {
+            method: "POST",
+            headers: {
+                "Accept": "application/json",
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                url: makeVideoPage(id, page),
+                vQuality: 720,
+                disableMetadata: true
+            })
+        })
+        const cobaltRepRaw = await cobaltRep.text();
+        console.log(cobaltRepRaw);
+        let cobaltRepParsed;
+        if (!response.ok) {
+            if (!dropCobaltErrs)
+                throw cobaltRepRaw;
+        } else {
+            try {
+                cobaltRepParsed = JSON.parse(cobaltRepRaw);
+            } catch (e) {
+                if (!dropCobaltErrs)
+                    throw e;
+            }
+        }
+        if (cobaltRepParsed) {
+            if ((cobaltRepParsed.status == "error" || cobaltRepParsed.status == "rate-limit") && !dropCobaltErrs)
+                throw cobaltRepParsed;
+            if (cobaltRepParsed.status != "picker") {
+                videoUrl = cobaltRepParsed.url;
+            } else {
+                assert(cobaltRepParsed.pickerType == "various");
+                videoUrl = cobaltRepParsed.picker[page] ? cobaltRepParsed.picker[page].url : cobaltRepParsed.picker[0].url;
+                // todo: picker[xx].thumb
+            }
+            console.log(videoUrl);
+        }
+    }
+
     const pic = new URL(resInfo.pic);
     pic.protocol = "https:";
     if (pic.hostname.endsWith("hdslb.com") && pic.pathname.startsWith("/bfs/"))
@@ -238,6 +283,7 @@ export async function getVideoData(info) {
         page: page,
         cid: cid,
         embed_url: makeEmbedPlayerURL(resInfo.bvid, cid, page),
+        video_url: videoUrl,
         title: resInfo.title,
         author: resInfo.owner.name,
         author_mid: resInfo.owner.mid,
