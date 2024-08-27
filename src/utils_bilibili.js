@@ -14,23 +14,31 @@ import { COBALT_API_INSTANCE } from "./constants.js";
 const MAIN_SITE_VIDEO_PAGE_PATHNAME_REGEX =
     /^\/(?:s\/)?(?:video\/)?(av[0-9]+|BV[A-Za-z0-9]+)$/;
 
-export const isUrlOnBilibiliMainSite = (u) =>
+export const isURLOnBilibiliMainSite = (u) =>
     checkIfURLIsUnderDomain(u.hostname, "bilibili.com");
 export const isPathMainSiteVideoPage = (p) =>
     MAIN_SITE_VIDEO_PAGE_PATHNAME_REGEX.test(stripTrailingSlashes(p));
-export const isUrlBilibiliVideo = (u) =>
-    isUrlOnBilibiliMainSite(u) && isPathMainSiteVideoPage(u.pathname);
+export const isURLBilibiliVideo = (u) =>
+    isURLOnBilibiliMainSite(u) && isPathMainSiteVideoPage(u.pathname);
 
 export const getVideoIdByPath = (p) =>
     MAIN_SITE_VIDEO_PAGE_PATHNAME_REGEX.exec(stripTrailingSlashes(p))[1];
 
-export function makeVideoPage(vid, page = 1) {
+const searchParamEntries = (searchParams) =>
+    (searchParams instanceof URLSearchParams ? searchParams.entries() : Object.entries(searchParams))
+
+export function makeVideoPage(vid, page = 1, searchParams) {
     const ret = new URL(vid, "https://www.bilibili.com/video/");
     if (page != 1) ret.searchParams.set("p", page);
+    if (searchParams) {
+        // I hate my job
+        for (const [k, v] of searchParamEntries(searchParams))
+            ret.searchParams.set(k, v);
+    }
     return ret.href;
 }
 
-export function makeEmbedPlayerURL(vid, cid, page = 1) {
+export function makeEmbedPlayerURL(vid, cid, page = 1, searchParams) {
     // //player.bilibili.com/player.html?aid=429619610&bvid=BV1GG411b7sc&cid=805522554&page=1
     const ret = new URL("https://player.bilibili.com/player.html");
     if (vid.startsWith("BV")) {
@@ -40,15 +48,16 @@ export function makeEmbedPlayerURL(vid, cid, page = 1) {
     }
     ret.searchParams.set("cid", cid);
     ret.searchParams.set("page", page);
+    if (searchParams) {
+        // I hate my job
+        for (const [k, v] of searchParamEntries(searchParams))
+            ret.searchParams.set(k, v);
+    }
     return ret.href;
 }
 
-export function makeEmbedPlayer(bvid, cid, page = 1) {
-    return `<iframe src="${makeEmbedPlayerURL(
-        bvid,
-        cid,
-        page
-    )}" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>`;
+export function makeEmbedPlayer(...args) {
+    return `<iframe src="${makeEmbedPlayerURL(...args)}" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>`;
 }
 
 export function makeUserPage(mid) {
@@ -159,6 +168,10 @@ export async function getRequestedInfo(path, search) {
         type: "video",
         id: null,
         page: null,
+        searchParams: {
+            videoPage: {},
+            embedPlayer: {}
+        },
     };
 
     // default domain for later
@@ -175,7 +188,7 @@ export async function getRequestedInfo(path, search) {
         }
         // must've a b23.tv shortlink
         url = await getOriginalURLOfB23TvRedir(url);
-        if (!isUrlBilibiliVideo(url)) {
+        if (!isURLBilibiliVideo(url)) {
             throw new Error(
                 "这似乎不是一个视频——本服务目前只支持对视频页面进行 embed 修正。\n" +
                 `跳转到了 ${url.href} （未跳转的 URL：${originalURL.href}）`
@@ -186,10 +199,18 @@ export async function getRequestedInfo(path, search) {
     ret.id = getVideoIdByPath(url.pathname);
     ret.page = parseInt(search.get("p")) || 1;
 
+    // web / b23.tv
+    let startProgress = parseInt(search.get("t")) || parseInt(search.get("start_progress"))
+    if (startProgress) {
+        ret.searchParams.videoPage["t"] = startProgress;
+        // this has to be t for the embed player, start_progress will not work
+        ret.searchParams.embedPlayer["t"] = startProgress;
+    }
+
     return ret;
 }
 
-export async function getVideoData(info, getVideoUrl, dropCobaltErrs) {
+export async function getVideoData(info, getVideoURL, dropCobaltErrs) {
     const id = info.id;
 
     const requestURL = new URL("https://api.bilibili.com/x/web-interface/view");
@@ -230,8 +251,9 @@ export async function getVideoData(info, getVideoUrl, dropCobaltErrs) {
     let tWidth = resInfo.dimension.width ?? DEFAULT_WIDTH,
         tHeight = resInfo.dimension.height ?? DEFAULT_HEIGHT;
 
-    let cobaltRepRaw, videoUrl;
-    if (getVideoUrl) {
+    let videoPageURL = makeVideoPage(resInfo.bvid, page, info.searchParams.videoPage);
+    let cobaltRepRaw, videoStreamURL;
+    if (getVideoURL) {
         try {
             const cobaltRep = await fetch(new URL("/api/json", COBALT_API_INSTANCE).href, {
                 method: "POST",
@@ -240,7 +262,7 @@ export async function getVideoData(info, getVideoUrl, dropCobaltErrs) {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    url: makeVideoPage(id, page),
+                    url: videoPageURL,
                     vQuality: 720,
                     disableMetadata: true
                 }),
@@ -270,14 +292,14 @@ export async function getVideoData(info, getVideoUrl, dropCobaltErrs) {
                 if (!dropCobaltErrs)
                     throw cobaltRepParsed;
             } else if (cobaltRepParsed.status != "picker") {
-                videoUrl = cobaltRepParsed.url;
+                videoStreamURL = cobaltRepParsed.url;
             } else {
                 assert(cobaltRepParsed.pickerType == "various");
-                videoUrl = cobaltRepParsed.picker[page] ? cobaltRepParsed.picker[page].url : cobaltRepParsed.picker[0].url;
-                // todo: picker[xx].thumb
+                videoStreamURL = cobaltRepParsed.picker[page] ? cobaltRepParsed.picker[page].url : cobaltRepParsed.picker[0].url;
             }
         }
     }
+    let embedPlayerURL = makeEmbedPlayerURL(resInfo.bvid, cid, page, info.searchParams.embedPlayer);
 
     const pic = new URL(resInfo.pic);
     pic.protocol = "https:";
@@ -287,12 +309,12 @@ export async function getVideoData(info, getVideoUrl, dropCobaltErrs) {
     }
 
     return {
-        url: makeVideoPage(resInfo.bvid, info.page),
+        url: videoPageURL,
         bvid: resInfo.bvid,
         page: page,
         cid: cid,
-        embed_url: makeEmbedPlayerURL(resInfo.bvid, cid, page),
-        video_url: videoUrl,
+        embed_url: embedPlayerURL,
+        video_url: videoStreamURL,
         title: title,
         author: resInfo.owner.name,
         author_mid: resInfo.owner.mid,
@@ -308,8 +330,8 @@ export async function getVideoData(info, getVideoUrl, dropCobaltErrs) {
         }),
         oembedData: {
             type: "video",
-            url: makeVideoPage(resInfo.bvid, page),
-            html: makeEmbedPlayer(resInfo.bvid, cid, page),
+            url: videoPageURL,
+            html: embedPlayerURL,
             width: width,
             height: height,
             thumbnail_url: pic.href,
@@ -330,6 +352,8 @@ export async function getVideoData(info, getVideoUrl, dropCobaltErrs) {
             theight: height != tHeight ? tHeight : null,
             author: resInfo.owner.name,
             mid: resInfo.owner.mid,
+            s_vp: info.searchParams.videoPage.length > 0 ? new URLSearchParams(info.searchParams.videoPage).toString() : null,
+            s_ep: info.searchParams.embedPlayer.length > 0 ? new URLSearchParams(info.searchParams.embedPlayer).toString() : null,
         },
     };
 }
@@ -339,8 +363,8 @@ export function loadOembedDataFromQuerystring(query) {
     return oembedAddExtraMetadata(
         {
             type: query.type,
-            url: makeVideoPage(query.bvid, query.page),
-            html: makeEmbedPlayer(query.bvid, query.cid, query.page),
+            url: makeVideoPage(query.bvid, query.page, new URLSearchParams(query.s_vp)),
+            html: makeEmbedPlayer(query.bvid, query.cid, query.page, new URLSearchParams(query.s_ep)),
             width: query.width,
             height: query.height,
             thumbnail_url: query.pic,
