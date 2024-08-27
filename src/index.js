@@ -110,7 +110,7 @@ export default async function handler(req, res) {
         }
         data.oembed_json = oembedJson;
         data.oembed_xml = oembedXml;
-        data.lie_about_embed_player = html5EmbedWorks;
+        data.lie_about_embed_player = !html5EmbedWorks;
         data.do_not_add_redirect_metaprop = shouldNotAddRedirectMetaprop(req);
 
         sendTemplate(res, req, responseType, "video", data);
