@@ -1,5 +1,3 @@
-import _fetch from "@vercel/fetch";
-const fetch = _fetch();
 import { formatISODuration } from "date-fns";
 import {
     checkIfURLIsUnderDomain,
@@ -106,9 +104,7 @@ function errorFromBilibili(e, data) {
 async function getOriginalURLOfB23TvRedir(url) {
     const response = await fetch(url.href);
 
-    // is this not a redirect? if so, check if we've got an error
-    // (vercel hates me https://github.com/vercel/fetch/blob/23038037ee/packages/fetch/index.js#L43)
-    if (new URL(response.url).hostname == "b23.tv") {
+    if (!response.redirected) {
         let responseData;
         try {
             responseData = await response.text();
@@ -231,32 +227,39 @@ export async function getVideoData(info, getVideoUrl, dropCobaltErrs) {
     let tWidth = resInfo.dimension.width ?? DEFAULT_WIDTH,
         tHeight = resInfo.dimension.height ?? DEFAULT_HEIGHT;
 
-    let videoUrl;
+    let cobaltRepRaw, videoUrl;
     if (getVideoUrl) {
-        const cobaltRep = await fetch(new URL("/api/json", COBALT_API_INSTANCE).href, {
-            method: "POST",
-            headers: {
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                url: makeVideoPage(id, page),
-                vQuality: 720,
-                disableMetadata: true
-            })
-        })
-        const cobaltRepRaw = await cobaltRep.text();
-        let cobaltRepParsed;
-        if (!response.ok) {
-            if (!dropCobaltErrs)
-                throw cobaltRepRaw;
-        } else {
-            try {
-                cobaltRepParsed = JSON.parse(cobaltRepRaw);
-            } catch (e) {
+        try {
+            const cobaltRep = await fetch(new URL("/api/json", COBALT_API_INSTANCE).href, {
+                method: "POST",
+                headers: {
+                    "Accept": "application/json",
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    url: makeVideoPage(id, page),
+                    vQuality: 720,
+                    disableMetadata: true
+                }),
+                signal: AbortSignal.timeout(3000)
+            });
+            cobaltRepRaw = await cobaltRep.text();
+            if (!response.ok) {
                 if (!dropCobaltErrs)
-                    throw e;
+                    throw cobaltRepRaw;
             }
+        } catch (e) {
+            if (!dropCobaltErrs)
+                throw e;
+        }
+    }
+    if (cobaltRepRaw) {
+        let cobaltRepParsed;
+        try {
+            cobaltRepParsed = JSON.parse(cobaltRepRaw);
+        } catch (e) {
+            if (!dropCobaltErrs)
+                throw e;
         }
         if (cobaltRepParsed) {
             if (cobaltRepParsed.status == "error" || cobaltRepParsed.status == "rate-limit") {
