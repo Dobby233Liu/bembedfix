@@ -72,8 +72,7 @@ export function shouldNotAddRedirectMetaprop(req) {
 
 export function getCompatDescription(desc = "", length = 160) {
     const elipsis = "……";
-    let ret = desc;
-    ret = ret.replace(/\r\n/g, "").replace(/\n/g, "").trim();
+    let ret = desc.replace(/\r\n/g, "").replace(/\n/g, "").trim();
     if (ret.length > length) {
         return ret.slice(0, length - elipsis.length) + elipsis;
     }
