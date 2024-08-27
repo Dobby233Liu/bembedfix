@@ -216,6 +216,9 @@ export async function getVideoData(info, getVideoUrl, dropCobaltErrs) {
 
     let page = info.page && info.page <= resInfo.pages.length ? info.page : 1;
     let cid = resInfo.pages[page - 1].cid ?? resInfo.cid;
+    let title = resInfo.title;
+    if (resInfo.pages.length > 1)
+        title += ` P${page} ${resInfo.pages[page - 1].part}`;
     let width =
         resInfo.pages[page - 1].dimension.width ??
         resInfo.dimension.width ??
@@ -241,7 +244,8 @@ export async function getVideoData(info, getVideoUrl, dropCobaltErrs) {
                     vQuality: 720,
                     disableMetadata: true
                 }),
-                signal: AbortSignal.timeout(3000)
+                // FIXME
+                // signal: AbortSignal.timeout(3000)
             });
             cobaltRepRaw = await cobaltRep.text();
             if (!response.ok) {
@@ -289,7 +293,7 @@ export async function getVideoData(info, getVideoUrl, dropCobaltErrs) {
         cid: cid,
         embed_url: makeEmbedPlayerURL(resInfo.bvid, cid, page),
         video_url: videoUrl,
-        title: resInfo.title,
+        title: title,
         author: resInfo.owner.name,
         author_mid: resInfo.owner.mid,
         author_url: makeUserPage(resInfo.owner.mid),
