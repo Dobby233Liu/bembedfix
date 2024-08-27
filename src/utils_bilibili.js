@@ -242,7 +242,7 @@ export async function getVideoData(info, getVideoURL, dropCobaltErrs) {
     let cid = resInfo.pages[page - 1].cid ?? resInfo.cid;
     let title = resInfo.title;
     if (resInfo.pages.length > 1)
-        title += ` P${page} ${resInfo.pages[page - 1].part}`;
+        title += ` - P${page} ${resInfo.pages[page - 1].part}`;
     let width =
         resInfo.pages[page - 1].dimension.width ??
         resInfo.dimension.width ??
