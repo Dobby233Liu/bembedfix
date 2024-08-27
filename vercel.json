@@ -8,5 +8,5 @@
             "destination": "/api"
         }
     ],
-    "installCommand": "yarn install --production"
+    "installCommand": "yarn workspaces focus --all --production"
 }
