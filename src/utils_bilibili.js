@@ -56,7 +56,7 @@ export function makeEmbedPlayerURL(vid, cid, page = 1, searchParams) {
 }
 
 export function makeEmbedPlayer(...args) {
-    return `<iframe src="${makeEmbedPlayerURL(...args)}" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>`;
+    return `<iframe src="${makeEmbedPlayerURL(...args)}" frameborder="0" allowfullscreen></iframe>`;
 }
 
 export function makeUserPage(mid) {
