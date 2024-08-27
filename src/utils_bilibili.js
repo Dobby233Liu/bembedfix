@@ -151,6 +151,8 @@ async function getOriginalURLOfB23TvRedir(url) {
             "\n" +
             responseData
         );
+    } else {
+        response.body.cancel();
     }
 
     return new URL(response.url);
