@@ -1,8 +1,6 @@
 .editorconfig
 .eslintrc.cjs
-.gitattribute
+.gitattributes
 .vscode/
-.yarn/
-.yarnrc.yml
-yarn.lock
 README.md
+demo.jpg
