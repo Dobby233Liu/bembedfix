@@ -13,7 +13,7 @@ import {
 export const DEFAULT_WIDTH = 1280;
 export const DEFAULT_HEIGHT = 720;
 
-const xmlBuilder = new XMLBuilder();
+const xmlBuilder = new XMLBuilder({ renderOpts: { pretty: false } });
 
 export function assert(cond, msg = "") {
     if (!cond) {
