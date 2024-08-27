@@ -67,7 +67,7 @@ export function doesHTML5EmbedFunctionOnClient(req) {
 }
 
 export function shouldNotAddRedirectMetaprop(req) {
-    return req.headers["user-agent"].includes("Schema-Markup-Validator");
+    return req.headers["user-agent"].includes("Schema-Markup-Validator") || req.query.__bef_tag_debug;
 }
 
 export function getCompatDescription(desc = "", length = 160) {
