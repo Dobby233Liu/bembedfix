@@ -73,7 +73,8 @@ export default async function handler(req, res) {
 
     let html5EmbedWorks = doesHTML5EmbedFunctionOnClient(req) && !req.query.__bef_disable_html5_embed;
     try {
-        data = await getVideoData(info, !html5EmbedWorks, !req.query.__bef_report_cobalt_errs);
+        // TODO: Uncommenting the following enables interaction with the Cobalt API
+        data = await getVideoData(info); // , !html5EmbedWorks, !req.query.__bef_report_cobalt_errs);
     } catch (e) {
         sendError(res, req, "获取视频信息时发生错误", e, responseType);
         return;
