@@ -105,6 +105,10 @@ function errorFromBilibili(e, data) {
         myCode = 500;
     }
 
+    if (myCode < 200 || myCode >= 600) {
+        myCode = 500;
+    }
+
     e.httpError = myCode;
     return e;
 }
