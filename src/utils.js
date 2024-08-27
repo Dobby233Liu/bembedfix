@@ -1,6 +1,7 @@
 import { render, renderFile } from "ejs";
 import { join as joinPath } from "path";
 import { Builder as XMLBuilder } from "xml2js";
+import { minify } from "html-minifier-terser";
 import {
     PROVIDER_NAME,
     PROVIDER_URL,
@@ -79,6 +80,12 @@ export function getCompatDescription(desc = "", length = 160) {
     return ret;
 }
 
+const MINIFY_OPTIONS = {
+    "decodeEntities": true,
+    "collapseWhitespace": true,
+    "removeComments": true
+};
+
 export function sendError(
     res,
     req,
@@ -106,12 +113,14 @@ export function sendError(
             res.send(xmlBuilder.buildObject({ bembedfix_error: errorData }));
             break;
         default:
-            res.send(
-                render(ERROR_TEMPLATE, {
-                    ...errorData,
-                    here: getRequestedURL(req).href,
-                })
-            );
+            // FIXME: If this fails... good luck
+            minify(render(ERROR_TEMPLATE, {
+                ...errorData,
+                here: getRequestedURL(req).href,
+            }), MINIFY_OPTIONS)
+                .then((out) => {
+                    res.send(out);
+                });
             break;
     }
 }
@@ -121,6 +130,7 @@ export function sendTemplate(res, req, responseType, file = "video", data) {
         .catch(function (err) {
             sendError(res, req, "生成 embed 时发生错误", err, responseType);
         })
+        .then((out) => minify(out, MINIFY_OPTIONS))
         .then((out) => {
             res.send(out);
         });
