@@ -5,3 +5,4 @@
 .yarn/
 .yarnrc.yml
 yarn.lock
+README.md
