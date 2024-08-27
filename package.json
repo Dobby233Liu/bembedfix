@@ -4,6 +4,9 @@
     "type": "module",
     "version": "0.1.0",
     "license": "MIT",
+    "scripts": {
+        "start": "vercel dev"
+    },
     "dependencies": {
         "@vercel/fetch": "^6.2.0",
         "date-fns": "^2.29.3",
