@@ -2,5 +2,6 @@
 .eslintrc.cjs
 .gitattributes
 .vscode/
+.yarn/
 README.md
 demo.jpg
