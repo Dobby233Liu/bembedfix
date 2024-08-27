@@ -7,6 +7,5 @@
             "source": "/(.*)",
             "destination": "/api"
         }
-    ],
-    "installCommand": "yarn workspaces focus --all --production"
+    ]
 }
