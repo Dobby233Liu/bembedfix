@@ -371,6 +371,7 @@ export function loadOembedDataFromQuerystring(query) {
             width: query.width,
             height: query.height,
             thumbnail_url: query.pic,
+            // TODO: make this honor maxwidth/maxheight
             thumbnail_width: query.twidth || query.width,
             thumbnail_height: query.theight || query.height,
             author_name: query.author,
