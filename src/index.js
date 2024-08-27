@@ -71,9 +71,7 @@ export default async function handler(req, res) {
         return;
     }
 
-    let html5EmbedWorks = doesHTML5EmbedFunctionOnClient(req);
-    if (req.query.__bef_disable_html5_embed)
-        html5EmbedWorks = false;
+    let html5EmbedWorks = doesHTML5EmbedFunctionOnClient(req) && !req.query.__bef_disable_html5_embed;
     try {
         data = await getVideoData(info, !html5EmbedWorks, !req.query.__bef_report_cobalt_errs);
     } catch (e) {
