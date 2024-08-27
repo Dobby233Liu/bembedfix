@@ -152,6 +152,7 @@ export function oembedAddExtraMetadata(data, query = {}) {
         provider_url: PROVIDER_URL,
     };
     assert(ret.type == "video");
+    // The embed player probably honors it, so don't bother that much
     ret.width = query.maxwidth
         ? Math.min(+query.maxwidth, ret.width)
         : ret.width;
