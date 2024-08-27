@@ -24,6 +24,7 @@ export const isURLBilibiliVideo = (u) =>
 export const getVideoIdByPath = (p) =>
     MAIN_SITE_VIDEO_PAGE_PATHNAME_REGEX.exec(stripTrailingSlashes(p))[1];
 
+// I hate my job
 const searchParamEntries = (searchParams) =>
     (searchParams instanceof URLSearchParams ? searchParams.entries() : Object.entries(searchParams))
 
@@ -31,7 +32,6 @@ export function makeVideoPage(vid, page = 1, searchParams) {
     const ret = new URL(vid, "https://www.bilibili.com/video/");
     if (page != 1) ret.searchParams.set("p", page);
     if (searchParams) {
-        // I hate my job
         for (const [k, v] of searchParamEntries(searchParams))
             ret.searchParams.set(k, v);
     }
@@ -49,7 +49,6 @@ export function makeEmbedPlayerURL(vid, cid, page = 1, searchParams) {
     ret.searchParams.set("cid", cid);
     ret.searchParams.set("page", page);
     if (searchParams) {
-        // I hate my job
         for (const [k, v] of searchParamEntries(searchParams))
             ret.searchParams.set(k, v);
     }
