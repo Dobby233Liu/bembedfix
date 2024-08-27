@@ -366,8 +366,8 @@ export function loadOembedDataFromQuerystring(query) {
     return oembedAddExtraMetadata(
         {
             type: query.type,
-            url: makeVideoPage(query.bvid, query.page, new URLSearchParams(query.s_vp)),
-            html: makeEmbedPlayer(query.bvid, query.cid, query.page, new URLSearchParams(query.s_ep)),
+            url: makeVideoPage(query.bvid, query.page, new URLSearchParams(query.s_vp || "")),
+            html: makeEmbedPlayer(query.bvid, query.cid, query.page, new URLSearchParams(query.s_ep || "")),
             width: query.width,
             height: query.height,
             thumbnail_url: query.pic,
