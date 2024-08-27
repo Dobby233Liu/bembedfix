@@ -277,8 +277,10 @@ export async function getVideoData(info, getVideoUrl, dropCobaltErrs) {
 
     const pic = new URL(resInfo.pic);
     pic.protocol = "https:";
-    if (pic.hostname.endsWith("hdslb.com") && pic.pathname.startsWith("/bfs/"))
-        pic.pathname += encodeURIComponent(`@${tWidth}w_${tHeight}h`);
+    if ((pic.hostname.endsWith("hdslb.com") || pic.hostname == "archive.biliimg.com") && pic.pathname.startsWith("/bfs/")) {
+        pic.pathname = pic.pathname.split("@")[0];
+        pic.pathname += encodeURIComponent(`@${tWidth}w_${tHeight}h_1c`);
+    }
 
     return {
         url: makeVideoPage(resInfo.bvid, info.page),
