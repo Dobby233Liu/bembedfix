@@ -27,6 +27,7 @@ export const CRAWLER_UAS = [
     "Mozilla/5.0 (compatible; Schema-Markup-Validator; +https://validator.schema.org/)",
 ];
 
+// Set to null to disable
 export const COBALT_API_INSTANCE = "https://cal1.coapi.ggtyler.dev";
 // 7, 10
 export const COBALT_API_VERSION = 10;

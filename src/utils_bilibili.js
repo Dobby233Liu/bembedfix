@@ -9,6 +9,7 @@ import {
     DEFAULT_HEIGHT,
     obtainVideoStreamFromCobalt,
 } from "./utils.js";
+import { COBALT_API_INSTANCE } from "./constants.js";
 
 // Group 4 is the ID of the video
 const MAIN_SITE_VIDEO_PAGE_PATHNAME_REGEX =
@@ -266,7 +267,7 @@ export async function getVideoData(info, getVideoURL, dropCobaltErrs) {
         info.searchParams.videoPage,
     );
     let videoStreamURL;
-    if (getVideoURL) {
+    if (COBALT_API_INSTANCE && getVideoURL) {
         try {
             videoStreamURL = await obtainVideoStreamFromCobalt(
                 videoPageURL,
