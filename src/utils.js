@@ -182,7 +182,7 @@ export async function obtainVideoStreamFromCobalt(videoPageURL, page = 1) {
     if (COBALT_API_VERSION == 10) {
         cobaltReqBody = {
             ...cobaltReqBody,
-            videoQuality: 720,
+            videoQuality: "720",
         };
     } else {
         cobaltReqBody = {
