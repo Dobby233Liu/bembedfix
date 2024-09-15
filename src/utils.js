@@ -9,7 +9,8 @@ import {
     PROJECT_ISSUES_URL,
     CRAWLER_UAS,
     MY_NAME,
-    COBALT_API_INSTANCE, COBALT_API_VERSION
+    COBALT_API_INSTANCE,
+    COBALT_API_VERSION,
 } from "./constants.js";
 
 export const DEFAULT_WIDTH = 1280;
@@ -31,11 +32,11 @@ export function getMyBaseURL(req) {
     const headers = req.headers;
     return new URL(
         `${encodeURI(headers["x-forwarded-proto"] ?? "https")}://` +
-        encodeURI(
-            headers["x-vercel-deployment-url"] ??
-            headers["x-forwarded-host"] ??
-            headers["host"]
-        )
+            encodeURI(
+                headers["x-vercel-deployment-url"] ??
+                    headers["x-forwarded-host"] ??
+                    headers["host"],
+            ),
     );
 }
 
@@ -68,7 +69,10 @@ export function doesHTML5EmbedFunctionOnClient(req) {
 }
 
 export function shouldNotAddRedirectMetaprop(req) {
-    return req.headers["user-agent"].includes("Schema-Markup-Validator") || req.query.__bef_tag_debug;
+    return (
+        req.headers["user-agent"].includes("Schema-Markup-Validator") ||
+        req.query.__bef_tag_debug
+    );
 }
 
 export function getCompatDescription(desc = "", length = 160) {
@@ -81,9 +85,9 @@ export function getCompatDescription(desc = "", length = 160) {
 }
 
 const MINIFY_OPTIONS = {
-    "decodeEntities": true,
-    "collapseWhitespace": true,
-    "removeComments": true
+    decodeEntities: true,
+    collapseWhitespace: true,
+    removeComments: true,
 };
 
 export function sendError(
@@ -92,7 +96,7 @@ export function sendError(
     message = "未知错误",
     data = "未知错误。",
     responseType = "html",
-    code = data ? data.httpError ?? 500 : 500
+    code = data ? (data.httpError ?? 500) : 500,
 ) {
     res.status(code);
 
@@ -100,7 +104,11 @@ export function sendError(
         me: MY_NAME,
         code: code,
         message: message,
-        data: data.stack ? data.stack : (data.toString() == "[object Object]" ? JSON.stringify(data) : data),
+        data: data.stack
+            ? data.stack
+            : data.toString() == "[object Object]"
+              ? JSON.stringify(data)
+              : data,
         issues_url: PROJECT_ISSUES_URL,
     };
 
@@ -114,13 +122,15 @@ export function sendError(
             break;
         default:
             // FIXME: If this fails... good luck
-            minify(render(ERROR_TEMPLATE, {
-                ...errorData,
-                here: getRequestedURL(req).href,
-            }), MINIFY_OPTIONS)
-                .then((out) => {
-                    res.send(out);
-                });
+            minify(
+                render(ERROR_TEMPLATE, {
+                    ...errorData,
+                    here: getRequestedURL(req).href,
+                }),
+                MINIFY_OPTIONS,
+            ).then((out) => {
+                res.send(out);
+            });
             break;
     }
 }
@@ -167,45 +177,57 @@ export async function obtainVideoStreamFromCobalt(videoPageURL, page = 1) {
     let cobaltRepRaw;
     let cobaltReqBody = {
         url: videoPageURL,
-        disableMetadata: true
+        disableMetadata: true,
     };
     if (COBALT_API_VERSION == 10) {
         cobaltReqBody = {
             ...cobaltReqBody,
-            videoQuality: 720
+            videoQuality: 720,
         };
     } else {
         cobaltReqBody = {
             ...cobaltReqBody,
-            vQuality: 720
+            vQuality: 720,
         };
     }
-    const cobaltRep = await fetch(new URL(COBALT_API_VERSION == 10 ? "/" : "/api/json", COBALT_API_INSTANCE).href, {
-        method: "POST",
-        headers: {
-            "Accept": "application/json",
-            "Content-Type": "application/json",
+    const cobaltRep = await fetch(
+        new URL(
+            COBALT_API_VERSION == 10 ? "/" : "/api/json",
+            COBALT_API_INSTANCE,
+        ).href,
+        {
+            method: "POST",
+            headers: {
+                Accept: "application/json",
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(cobaltReqBody),
+            // FIXME
+            // signal: AbortSignal.timeout(3000)
         },
-        body: JSON.stringify(cobaltReqBody),
-        // FIXME
-        // signal: AbortSignal.timeout(3000)
-    });
+    );
     cobaltRepRaw = await cobaltRep.text();
     if (!cobaltRep.ok) {
         throw cobaltRepRaw;
     }
     let cobaltRepParsed = JSON.parse(cobaltRepRaw);
-    if (cobaltRepParsed.status == "error" || COBALT_API_VERSION == 7 ? cobaltRepParsed.status == "rate-limit" : false) {
+    if (
+        cobaltRepParsed.status == "error" || COBALT_API_VERSION == 7
+            ? cobaltRepParsed.status == "rate-limit"
+            : false
+    ) {
         throw cobaltRepParsed;
-    } else if (cobaltRepParsed.status != "picker") { // redirect, tunnel (10)
+    } else if (cobaltRepParsed.status != "picker") {
+        // redirect, tunnel (10)
         return cobaltRepParsed.url;
     } else {
         if (COBALT_API_VERSION == 7)
             assert(cobaltRepParsed.pickerType == "various");
         assert(cobaltRepParsed.picker.length > 0);
-        const item = cobaltRepParsed.picker[page - 1] ? cobaltRepParsed.picker[page - 1] : cobaltRepParsed.picker[0];
-        if (COBALT_API_VERSION == 10)
-            assert(item.type == "video");
+        const item = cobaltRepParsed.picker[page - 1]
+            ? cobaltRepParsed.picker[page - 1]
+            : cobaltRepParsed.picker[0];
+        if (COBALT_API_VERSION == 10) assert(item.type == "video");
         return item.url;
     }
 }

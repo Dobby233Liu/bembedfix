@@ -277,7 +277,8 @@ __metadata:
     ejs: "npm:^3.1.8"
     eslint: "npm:^8.35.0"
     html-minifier-terser: "npm:^7.2.0"
-    prettier: "npm:2.8.4"
+    prettier: "npm:3.3.3"
+    prettier-plugin-ejs: "npm:^1.0.3"
     xml2js: "npm:^0.4.23"
   languageName: unknown
   linkType: soft
@@ -1019,12 +1020,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prettier@npm:2.8.4":
-  version: 2.8.4
-  resolution: "prettier@npm:2.8.4"
+"prettier-plugin-ejs@npm:^1.0.3":
+  version: 1.0.3
+  resolution: "prettier-plugin-ejs@npm:1.0.3"
+  peerDependencies:
+    prettier: 2.x - 3.x
+  checksum: 10c0/f43b222257933caa2bbc8870c1ffeca2c406b17326d40527c5f2b58fd780c3d2a08eef2a048971c68806ae00d4e47eab1e4542614e92e68a340160add95aa0d8
+  languageName: node
+  linkType: hard
+
+"prettier@npm:3.3.3":
+  version: 3.3.3
+  resolution: "prettier@npm:3.3.3"
   bin:
-    prettier: bin-prettier.js
-  checksum: 10c0/d272cbd842d466fbd10e7efc22fd99ebdbfb78c06c0fe8ffdaa86d50883e7b3d3fba822a86fd8a1c851ca91ec5dfc867e612071c9c54d0e29954f20954262dcb
+    prettier: bin/prettier.cjs
+  checksum: 10c0/b85828b08e7505716324e4245549b9205c0cacb25342a030ba8885aba2039a115dbcf75a0b7ca3b37bc9d101ee61fab8113fc69ca3359f2a226f1ecc07ad2e26
   languageName: node
   linkType: hard
 
