@@ -27,6 +27,8 @@ export const CRAWLER_UAS = [
 ];
 
 export const COBALT_API_INSTANCE = "https://api.cobalt.tools";
+// 7, 10
+export const COBALT_API_VERSION = 10;
 
 export const ERROR_TEMPLATE = `<!DOCTYPE HTML>
 <html>
