@@ -9,7 +9,7 @@ import {
     PROJECT_ISSUES_URL,
     CRAWLER_UAS,
     MY_NAME,
-    COBALT_API_INSTANCE
+    COBALT_API_INSTANCE, COBALT_API_VERSION
 } from "./constants.js";
 
 export const DEFAULT_WIDTH = 1280;
@@ -165,17 +165,28 @@ export function oembedAddExtraMetadata(data, query = {}) {
 
 export async function obtainVideoStreamFromCobalt(videoPageURL, page = 1) {
     let cobaltRepRaw;
-    const cobaltRep = await fetch(new URL("/api/json", COBALT_API_INSTANCE).href, {
+    let cobaltReqBody = {
+        url: videoPageURL,
+        disableMetadata: true
+    };
+    if (COBALT_API_VERSION == 10) {
+        cobaltReqBody = {
+            ...cobaltReqBody,
+            videoQuality: 720
+        };
+    } else {
+        cobaltReqBody = {
+            ...cobaltReqBody,
+            vQuality: 720
+        };
+    }
+    const cobaltRep = await fetch(new URL(COBALT_API_VERSION == 10 ? "/" : "/api/json", COBALT_API_INSTANCE).href, {
         method: "POST",
         headers: {
             "Accept": "application/json",
             "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-            url: videoPageURL,
-            vQuality: 720,
-            disableMetadata: true
-        }),
+        body: JSON.stringify(cobaltReqBody),
         // FIXME
         // signal: AbortSignal.timeout(3000)
     });
@@ -184,13 +195,17 @@ export async function obtainVideoStreamFromCobalt(videoPageURL, page = 1) {
         throw cobaltRepRaw;
     }
     let cobaltRepParsed = JSON.parse(cobaltRepRaw);
-    if (cobaltRepParsed.status == "error" || cobaltRepParsed.status == "rate-limit") {
+    if (cobaltRepParsed.status == "error" || COBALT_API_VERSION == 7 ? cobaltRepParsed.status == "rate-limit" : false) {
         throw cobaltRepParsed;
-    } else if (cobaltRepParsed.status != "picker") {
+    } else if (cobaltRepParsed.status != "picker") { // redirect, tunnel (10)
         return cobaltRepParsed.url;
     } else {
-        assert(cobaltRepParsed.pickerType == "various");
+        if (COBALT_API_VERSION == 7)
+            assert(cobaltRepParsed.pickerType == "various");
         assert(cobaltRepParsed.picker.length > 0);
-        return cobaltRepParsed.picker[page - 1] ? cobaltRepParsed.picker[page - 1].url : cobaltRepParsed.picker[0].url;
+        const item = cobaltRepParsed.picker[page - 1] ? cobaltRepParsed.picker[page - 1] : cobaltRepParsed.picker[0];
+        if (COBALT_API_VERSION == 10)
+            assert(item.type == "video");
+        return item.url;
     }
 }
