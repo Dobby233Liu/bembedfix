@@ -212,12 +212,16 @@ export async function obtainVideoStreamFromCobalt(videoPageURL, page = 1) {
         },
     );
     cobaltRepRaw = await cobaltRep.text();
-    if (!cobaltRep.ok) {
+    let cobaltRepParsed;
+    try {
+        cobaltRepParsed = JSON.parse(cobaltRepRaw);
+    } catch (_) {
         throw cobaltRepRaw;
     }
-    let cobaltRepParsed = JSON.parse(cobaltRepRaw);
     if (
-        cobaltRepParsed.status == "error" || COBALT_API_VERSION == 7
+        !cobaltRep.ok ||
+        cobaltRepParsed.status == "error" ||
+        COBALT_API_VERSION == 7
             ? cobaltRepParsed.status == "rate-limit"
             : false
     ) {
