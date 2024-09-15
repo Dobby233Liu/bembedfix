@@ -9,6 +9,7 @@ import {
     PROJECT_ISSUES_URL,
     CRAWLER_UAS,
     MY_NAME,
+    COBALT_API_INSTANCE
 } from "./constants.js";
 
 export const DEFAULT_WIDTH = 1280;
@@ -160,4 +161,36 @@ export function oembedAddExtraMetadata(data, query = {}) {
         ? Math.min(+query.maxheight, ret.height)
         : ret.height;
     return ret;
+}
+
+export async function obtainVideoStreamFromCobalt(videoPageURL, page = 1) {
+    let cobaltRepRaw;
+    const cobaltRep = await fetch(new URL("/api/json", COBALT_API_INSTANCE).href, {
+        method: "POST",
+        headers: {
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            url: videoPageURL,
+            vQuality: 720,
+            disableMetadata: true
+        }),
+        // FIXME
+        // signal: AbortSignal.timeout(3000)
+    });
+    cobaltRepRaw = await cobaltRep.text();
+    if (!cobaltRep.ok) {
+        throw cobaltRepRaw;
+    }
+    let cobaltRepParsed = JSON.parse(cobaltRepRaw);
+    if (cobaltRepParsed.status == "error" || cobaltRepParsed.status == "rate-limit") {
+        throw cobaltRepParsed;
+    } else if (cobaltRepParsed.status != "picker") {
+        return cobaltRepParsed.url;
+    } else {
+        assert(cobaltRepParsed.pickerType == "various");
+        assert(cobaltRepParsed.picker.length > 0);
+        return cobaltRepParsed.picker[page - 1] ? cobaltRepParsed.picker[page - 1].url : cobaltRepParsed.picker[0].url;
+    }
 }

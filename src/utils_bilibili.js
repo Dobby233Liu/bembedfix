@@ -7,8 +7,8 @@ import {
     assert,
     DEFAULT_WIDTH,
     DEFAULT_HEIGHT,
+    obtainVideoStreamFromCobalt
 } from "./utils.js";
-import { COBALT_API_INSTANCE } from "./constants.js";
 
 // Group 4 is the ID of the video
 const MAIN_SITE_VIDEO_PAGE_PATHNAME_REGEX =
@@ -255,50 +255,15 @@ export async function getVideoData(info, getVideoURL, dropCobaltErrs) {
         tHeight = resInfo.dimension.height ?? DEFAULT_HEIGHT;
 
     let videoPageURL = makeVideoPage(resInfo.bvid, page, info.searchParams.videoPage);
-    let cobaltRepRaw, videoStreamURL;
+    let videoStreamURL;
     if (getVideoURL) {
         try {
-            const cobaltRep = await fetch(new URL("/api/json", COBALT_API_INSTANCE).href, {
-                method: "POST",
-                headers: {
-                    "Accept": "application/json",
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    url: videoPageURL,
-                    vQuality: 720,
-                    disableMetadata: true
-                }),
-                // FIXME
-                // signal: AbortSignal.timeout(3000)
-            });
-            cobaltRepRaw = await cobaltRep.text();
-            if (!response.ok) {
-                if (!dropCobaltErrs)
-                    throw cobaltRepRaw;
-            }
+            videoStreamURL = await obtainVideoStreamFromCobalt(videoPageURL, page);
         } catch (e) {
-            if (!dropCobaltErrs)
-                throw e;
-        }
-    }
-    if (cobaltRepRaw) {
-        let cobaltRepParsed;
-        try {
-            cobaltRepParsed = JSON.parse(cobaltRepRaw);
-        } catch (e) {
-            if (!dropCobaltErrs)
-                throw e;
-        }
-        if (cobaltRepParsed) {
-            if (cobaltRepParsed.status == "error" || cobaltRepParsed.status == "rate-limit") {
-                if (!dropCobaltErrs)
-                    throw cobaltRepParsed;
-            } else if (cobaltRepParsed.status != "picker") {
-                videoStreamURL = cobaltRepParsed.url;
+            if (dropCobaltErrs) {
+                console.warn(e);
             } else {
-                assert(cobaltRepParsed.pickerType == "various");
-                videoStreamURL = cobaltRepParsed.picker[page] ? cobaltRepParsed.picker[page].url : cobaltRepParsed.picker[0].url;
+                throw e;
             }
         }
     }
