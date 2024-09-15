@@ -174,6 +174,11 @@ export function oembedAddExtraMetadata(data, query = {}) {
 }
 
 export async function obtainVideoStreamFromCobalt(videoPageURL, page = 1) {
+    if (!COBALT_API_INSTANCE)
+        throw new Error(
+            "Cobalt intergration is not enabled (COBALT_API_INSTANCE is not set)",
+        );
+
     let cobaltRepRaw;
     let cobaltReqBody = {
         url: videoPageURL,
