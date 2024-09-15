@@ -7,7 +7,7 @@ import {
     assert,
     DEFAULT_WIDTH,
     DEFAULT_HEIGHT,
-    obtainVideoStreamFromCobalt
+    obtainVideoStreamFromCobalt,
 } from "./utils.js";
 
 // Group 4 is the ID of the video
@@ -26,7 +26,9 @@ export const getVideoIdByPath = (p) =>
 
 // I hate my job
 const searchParamEntries = (searchParams) =>
-    (searchParams instanceof URLSearchParams ? searchParams.entries() : Object.entries(searchParams))
+    searchParams instanceof URLSearchParams
+        ? searchParams.entries()
+        : Object.entries(searchParams);
 
 export function makeVideoPage(vid, page = 1, searchParams) {
     const ret = new URL(vid, "https://www.bilibili.com/video/");
@@ -139,25 +141,25 @@ async function getOriginalURLOfB23TvRedir(url) {
             throw errorFromBilibili(
                 new Error(
                     `对 ${url} 的请求失败。（HTTP 状态码为 ${response.status}）请检查您的链接。` +
-                    "\n" +
-                    responseData
+                        "\n" +
+                        responseData,
                 ),
-                responseDataJson
+                responseDataJson,
             );
         } else if (responseDataJson.code && responseDataJson.code != 0) {
             throw errorFromBilibili(
                 new Error(
                     `对 ${url} 的请求失败。（HTTP 状态码为 ${response.status}）请检查您的链接。` +
-                    "\n" +
-                    responseData
+                        "\n" +
+                        responseData,
                 ),
-                responseDataJson
+                responseDataJson,
             );
         }
         throw new Error(
             `请求了 ${url}，但是服务器返回了一段奇妙的内容？（HTTP 状态码为 ${response.status}）请检查您的链接，如果正常，那么就是我们的 bug。` +
-            "\n" +
-            responseData
+                "\n" +
+                responseData,
         );
     } else {
         response.body.cancel();
@@ -173,12 +175,13 @@ export async function getRequestedInfo(path, search) {
         page: null,
         searchParams: {
             videoPage: {},
-            embedPlayer: {}
+            embedPlayer: {},
         },
     };
 
     // default domain for later
-    let url = new URL(path, "https://b23.tv"), originalURL = url;
+    let url = new URL(path, "https://b23.tv"),
+        originalURL = url;
 
     // url for video pages on www|m.bilibili.com has a specific pattern
     if (!isPathMainSiteVideoPage(url.pathname)) {
@@ -186,7 +189,7 @@ export async function getRequestedInfo(path, search) {
             if (url.pathname.startsWith(knownNonVideoPrefix))
                 throw new Error(
                     "这似乎不是一个视频——本服务目前只支持对视频页面进行 embed 修正。\n" +
-                    `拼接的 URL：${originalURL.href} 匹配已知非视频前缀：${knownNonVideoPrefix}`
+                        `拼接的 URL：${originalURL.href} 匹配已知非视频前缀：${knownNonVideoPrefix}`,
                 );
         }
         // must've a b23.tv shortlink
@@ -194,7 +197,7 @@ export async function getRequestedInfo(path, search) {
         if (!isURLBilibiliVideo(url)) {
             throw new Error(
                 "这似乎不是一个视频——本服务目前只支持对视频页面进行 embed 修正。\n" +
-                `跳转到了 ${url.href} （未跳转的 URL：${originalURL.href}）`
+                    `跳转到了 ${url.href} （未跳转的 URL：${originalURL.href}）`,
             );
         }
     }
@@ -203,7 +206,8 @@ export async function getRequestedInfo(path, search) {
     ret.page = parseInt(search.get("p")) || 1;
 
     // web / b23.tv
-    let startProgress = parseInt(search.get("t")) || parseInt(search.get("start_progress"))
+    let startProgress =
+        parseInt(search.get("t")) || parseInt(search.get("start_progress"));
     if (startProgress) {
         ret.searchParams.videoPage["t"] = startProgress;
         // this has to be t for the embed player, start_progress will not work
@@ -244,9 +248,9 @@ export async function getVideoData(info, getVideoURL, dropCobaltErrs) {
     if (resInfo.pages.length > 1)
         title += ` - P${page} ${resInfo.pages[page - 1].part}`;
     let width =
-        resInfo.pages[page - 1].dimension.width ??
-        resInfo.dimension.width ??
-        DEFAULT_WIDTH,
+            resInfo.pages[page - 1].dimension.width ??
+            resInfo.dimension.width ??
+            DEFAULT_WIDTH,
         height =
             resInfo.pages[page - 1].dimension.height ??
             resInfo.dimension.height ??
@@ -254,11 +258,18 @@ export async function getVideoData(info, getVideoURL, dropCobaltErrs) {
     let tWidth = resInfo.dimension.width ?? DEFAULT_WIDTH,
         tHeight = resInfo.dimension.height ?? DEFAULT_HEIGHT;
 
-    let videoPageURL = makeVideoPage(resInfo.bvid, page, info.searchParams.videoPage);
+    let videoPageURL = makeVideoPage(
+        resInfo.bvid,
+        page,
+        info.searchParams.videoPage,
+    );
     let videoStreamURL;
     if (getVideoURL) {
         try {
-            videoStreamURL = await obtainVideoStreamFromCobalt(videoPageURL, page);
+            videoStreamURL = await obtainVideoStreamFromCobalt(
+                videoPageURL,
+                page,
+            );
         } catch (e) {
             if (dropCobaltErrs) {
                 console.warn(e);
@@ -267,11 +278,20 @@ export async function getVideoData(info, getVideoURL, dropCobaltErrs) {
             }
         }
     }
-    let embedPlayerURL = makeEmbedPlayerURL(resInfo.bvid, cid, page, info.searchParams.embedPlayer);
+    let embedPlayerURL = makeEmbedPlayerURL(
+        resInfo.bvid,
+        cid,
+        page,
+        info.searchParams.embedPlayer,
+    );
 
     const pic = new URL(resInfo.pic);
     pic.protocol = "https:";
-    if ((pic.hostname.endsWith("hdslb.com") || pic.hostname == "archive.biliimg.com") && pic.pathname.startsWith("/bfs/")) {
+    if (
+        (pic.hostname.endsWith("hdslb.com") ||
+            pic.hostname == "archive.biliimg.com") &&
+        pic.pathname.startsWith("/bfs/")
+    ) {
         pic.pathname = pic.pathname.split("@")[0];
         pic.pathname += encodeURIComponent(`@${tWidth}w_${tHeight}h_1c`);
     }
@@ -320,8 +340,18 @@ export async function getVideoData(info, getVideoURL, dropCobaltErrs) {
             theight: height != tHeight ? tHeight : null,
             author: resInfo.owner.name,
             mid: resInfo.owner.mid,
-            s_vp: info.searchParams.videoPage.length > 0 ? new URLSearchParams(info.searchParams.videoPage).toString() : null,
-            s_ep: info.searchParams.embedPlayer.length > 0 ? new URLSearchParams(info.searchParams.embedPlayer).toString() : null,
+            s_vp:
+                info.searchParams.videoPage.length > 0
+                    ? new URLSearchParams(
+                          info.searchParams.videoPage,
+                      ).toString()
+                    : null,
+            s_ep:
+                info.searchParams.embedPlayer.length > 0
+                    ? new URLSearchParams(
+                          info.searchParams.embedPlayer,
+                      ).toString()
+                    : null,
         },
     };
 }
@@ -331,8 +361,17 @@ export function loadOembedDataFromQuerystring(query) {
     return oembedAddExtraMetadata(
         {
             type: query.type,
-            url: makeVideoPage(query.bvid, query.page, new URLSearchParams(query.s_vp || "")),
-            html: makeEmbedPlayer(query.bvid, query.cid, query.page, new URLSearchParams(query.s_ep || "")),
+            url: makeVideoPage(
+                query.bvid,
+                query.page,
+                new URLSearchParams(query.s_vp || ""),
+            ),
+            html: makeEmbedPlayer(
+                query.bvid,
+                query.cid,
+                query.page,
+                new URLSearchParams(query.s_ep || ""),
+            ),
             width: query.width,
             height: query.height,
             thumbnail_url: query.pic,
@@ -342,6 +381,6 @@ export function loadOembedDataFromQuerystring(query) {
             author_name: query.author,
             author_url: makeUserPage(query.mid),
         },
-        query
+        query,
     );
 }

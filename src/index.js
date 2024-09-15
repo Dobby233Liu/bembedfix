@@ -9,7 +9,7 @@ import {
     doesHTML5EmbedFunctionOnClient,
     shouldNotAddRedirectMetaprop,
     oembedAddExtraMetadata,
-    isUserAStupidKidAndTryingToAccessAWordpressApi
+    isUserAStupidKidAndTryingToAccessAWordpressApi,
 } from "./utils.js";
 import {
     getRequestedInfo,
@@ -64,14 +64,16 @@ export default async function handler(req, res) {
     try {
         info = await getRequestedInfo(
             (!doOembed ? requestedURL : new URL(req.query.url)).pathname,
-            requestedURL.searchParams
+            requestedURL.searchParams,
         );
     } catch (e) {
         sendError(res, req, "解析请求的 URL 时发生错误", e, responseType);
         return;
     }
 
-    let html5EmbedWorks = doesHTML5EmbedFunctionOnClient(req) && !req.query.__bef_disable_html5_embed;
+    let html5EmbedWorks =
+        doesHTML5EmbedFunctionOnClient(req) &&
+        !req.query.__bef_disable_html5_embed;
     try {
         // TODO: Uncommenting the following enables interaction with the Cobalt API
         data = await getVideoData(info); // , !html5EmbedWorks, !req.query.__bef_report_cobalt_errs);
@@ -84,7 +86,7 @@ export default async function handler(req, res) {
         sendOembed(
             res,
             oembedAddExtraMetadata(data.oembedData, req.query),
-            responseType
+            responseType,
         );
         return;
     }
@@ -93,7 +95,7 @@ export default async function handler(req, res) {
         if (isUAEndUser(req)) {
             res.setHeader(
                 "Cache-Control",
-                "private, max-age=1, stale-while-revalidate"
+                "private, max-age=1, stale-while-revalidate",
             );
             // redirect the client to the real video URL
             res.redirect(302, data.url);
