@@ -27,7 +27,7 @@ export const CRAWLER_UAS = [
     "Mozilla/5.0 (compatible; Schema-Markup-Validator; +https://validator.schema.org/)",
 ];
 
-export const COBALT_API_INSTANCE = "https://api.cobalt.tools";
+export const COBALT_API_INSTANCE = "https://cal1.coapi.ggtyler.dev";
 // 7, 10
 export const COBALT_API_VERSION = 10;
 
