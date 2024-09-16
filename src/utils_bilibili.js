@@ -173,7 +173,8 @@ async function getOriginalURLOfB23TvRedir(fetchCookie, url) {
         let responseDataJson;
         try {
             responseDataJson = JSON.parse(responseData);
-        } catch (_) {
+        } catch (e) {
+            e;
             responseDataJson = {};
         }
 
@@ -201,10 +202,15 @@ async function getOriginalURLOfB23TvRedir(fetchCookie, url) {
 
 export async function getRequestedInfo(path, search) {
     // Do not expose to user
-    let ret = {
+    let info = {
+        fetchCookie: null,
+        wbiKeys: {},
+
         type: "video",
+
         id: null,
         page: null,
+
         searchParams: {
             videoPage: new URLSearchParams(),
             embedPlayer: new URLSearchParams(),
@@ -212,7 +218,7 @@ export async function getRequestedInfo(path, search) {
     };
 
     // FIXME: Is it wise to create one for every request?
-    const fetchCookie = (ret.fetchCookie = makeFetchCookie(fetch));
+    const fetchCookie = (info.fetchCookie = makeFetchCookie(fetch));
 
     // default domain for later
     let url = new URL(path, "https://b23.tv"),
@@ -241,14 +247,14 @@ export async function getRequestedInfo(path, search) {
         }
     }
 
-    ret.id = getVideoIdByPath(url.pathname);
-    assert(ret.id, "无法从 URL 中提取视频 ID");
-    ret.page = parseIntSafe(search.get("p")) ?? 1;
+    info.id = getVideoIdByPath(url.pathname);
+    assert(info.id, "无法从 URL 中提取视频 ID");
+    info.page = parseIntSafe(search.get("p")) ?? 1;
 
     const fakeReferer = makeVideoPage(
-        ret.id,
-        ret.page,
-        ret.searchParams.videoPage,
+        info.id,
+        info.page,
+        info.searchParams.videoPage,
     );
     if (!requestedPage) {
         const fakeRefererRep = await fetchCookie(fakeReferer, {
@@ -270,18 +276,20 @@ export async function getRequestedInfo(path, search) {
         parseIntSafe(search.get("t")) ??
         parseIntSafe(search.get("start_progress"));
     if (startProgress) {
-        ret.searchParams.videoPage.set("t", startProgress);
+        info.searchParams.videoPage.set("t", startProgress);
         // this has to be t for the embed player, start_progress will not work
-        ret.searchParams.embedPlayer.set("t", startProgress);
+        info.searchParams.embedPlayer.set("t", startProgress);
     }
 
-    ret.wbiKeys = await wbiGetKeys(fetchCookie, fakeReferer);
+    info.wbiKeys = await wbiGetKeys(fetchCookie, fakeReferer);
     // TODO: buvid4; bili_ticket (for space). Doesn't seem so important right now
 
-    return ret;
+    return info;
 }
 
 export async function getVideoData(info, getVideoURL, dropCobaltErrs) {
+    const oembedMediaType = "video";
+
     const id = info.id;
     let page = info.page;
     let videoPageURL = makeVideoPage(id, page, info.searchParams.videoPage);
@@ -398,7 +406,7 @@ export async function getVideoData(info, getVideoURL, dropCobaltErrs) {
             }),
         ),
         oembedData: {
-            type: "video",
+            type: oembedMediaType,
             url: videoPageURL,
             html: embedPlayerURL,
             width: width,
@@ -410,7 +418,7 @@ export async function getVideoData(info, getVideoURL, dropCobaltErrs) {
             author_url: makeUserPage(resInfo.owner.mid),
         },
         oembedAPIQueries: {
-            type: "video",
+            type: oembedMediaType,
             bvid: resInfo.bvid,
             page: page,
             cid: cid,
@@ -437,31 +445,39 @@ export async function getVideoData(info, getVideoURL, dropCobaltErrs) {
     };
 }
 
-export function loadOembedDataFromQuerystring(query) {
-    assert(query.type == "video");
-    return oembedAddExtraMetadata(
-        {
-            type: query.type,
-            url: makeVideoPage(
-                query.bvid,
-                query.page,
-                new URLSearchParams(query.s_vp || ""),
-            ),
-            html: makeEmbedPlayer(
-                query.bvid,
-                query.cid,
-                query.page,
-                new URLSearchParams(query.s_ep || ""),
-            ),
-            width: query.width,
-            height: query.height,
-            thumbnail_url: query.pic,
-            // TODO: make this honor maxwidth/maxheight
-            thumbnail_width: query.twidth || query.width,
-            thumbnail_height: query.theight || query.height,
-            author_name: query.author,
-            author_url: makeUserPage(query.mid),
-        },
-        query,
-    );
+export function loadOembedDataFromQueryString(query) {
+    let meta = { type: query.type };
+
+    switch (meta.type) {
+        case "video":
+            meta = {
+                ...meta,
+                url: makeVideoPage(
+                    query.bvid,
+                    query.page,
+                    new URLSearchParams(query.s_vp || ""),
+                ),
+                html: makeEmbedPlayer(
+                    query.bvid,
+                    query.cid,
+                    query.page,
+                    new URLSearchParams(query.s_ep || ""),
+                ),
+                width: query.width,
+                height: query.height,
+                thumbnail_url: query.pic,
+                // TODO: make this honor maxwidth/maxheight
+                thumbnail_width: query.twidth || query.width,
+                thumbnail_height: query.theight || query.height,
+                author_name: query.author,
+                author_url: makeUserPage(query.mid),
+            };
+            break;
+
+        default:
+            assert(false, "未知 OEmbed 对象类型 " + meta.type);
+            break;
+    }
+
+    return oembedAddExtraMetadata(meta, query);
 }

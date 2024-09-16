@@ -41,7 +41,8 @@ export async function wbiGetKeys(fetchCookie, referer) {
     let responseData = {};
     try {
         responseData = JSON.parse(responseDataRaw);
-    } catch (_) {
+    } catch (e) {
+        e;
         // pass
     }
     if (
