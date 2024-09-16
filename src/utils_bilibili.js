@@ -243,20 +243,20 @@ export async function getRequestedInfo(path, search) {
     assert(info.id, "无法从 URL 中提取视频 ID");
     info.page = parseIntSafe(search.get("p")) ?? 1;
 
-    const fakeReferer = makeVideoPage(
+    const fakeReferrer = makeVideoPage(
         info.id,
         info.page,
         info.searchParams.videoPage,
     );
     if (!requestedPage) {
-        const fakeRefererRep = await fetchCookie(fakeReferer, {
+        const fakeReferrerRep = await fetchCookie(fakeReferrer, {
             headers: genSpoofHeaders(),
         });
         // We're kinda obliged to read it...
-        const fakeRefererRepRaw = await fakeRefererRep.text();
+        const fakeReferrerRepRaw = await fakeReferrerRep.text();
         if (
-            fakeRefererRep.status == 412 ||
-            fakeRefererRepRaw.includes("由于触发哔哩哔哩安全风控策略")
+            fakeReferrerRep.status == 412 ||
+            fakeReferrerRepRaw.includes("由于触发哔哩哔哩安全风控策略")
         )
             throw errorFromBilibili(new Error("获取 buvid3 & b_nut 失败。"), {
                 code: -352,
@@ -273,7 +273,7 @@ export async function getRequestedInfo(path, search) {
         info.searchParams.embedPlayer.set("t", startProgress);
     }
 
-    info.wbiKeys = await wbiGetKeys(fetchCookie, fakeReferer);
+    info.wbiKeys = await wbiGetKeys(fetchCookie, fakeReferrer);
     // TODO: buvid4; bili_ticket (for space). Doesn't seem so important right now
 
     return info;
@@ -298,7 +298,7 @@ export async function getVideoData(info, getVideoURL, dropCobaltErrs) {
 
     const response = await fetchCookie(requestURL.href, {
         headers: genSpoofHeaders(),
-        referer: videoPageURL,
+        referrer: videoPageURL,
         referrerPolicy: "strict-origin-when-cross-origin",
     });
     const errorMsg = `对 ${requestURL} 的请求失败。（HTTP 状态码为 ${response.status}）请检查您的链接。`;
