@@ -25,7 +25,7 @@ export default async function handler(req, res) {
 
     // special routes
     if (isUserAStupidKidAndTryingToAccessAWordpressApi(requestedURL)) {
-        res.status(400).send();
+        res.status(204).send();
         return;
     }
     if (stripTrailingSlashes(requestedURL.pathname) == "/") {
