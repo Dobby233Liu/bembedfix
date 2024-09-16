@@ -71,7 +71,7 @@ export function makeUserPage(mid) {
 }
 
 function errorFromBilibili(e, data) {
-    if (!Object.keys(data).includes("code")) return;
+    if (!("code" in data)) return e;
 
     const code = data.code;
     let myCode = -code;
@@ -85,6 +85,7 @@ function errorFromBilibili(e, data) {
         myCode == -40003 ||
         myCode == -19002003 ||
         myCode == 7201006 ||
+        myCode == 4511006 || // TODO
         myCode == 72010027 ||
         myCode == -79502 ||
         myCode == -79503
@@ -103,6 +104,7 @@ function errorFromBilibili(e, data) {
         myCode == 405 ||
         myCode == 409 ||
         myCode == 412 ||
+        myCode == 352 ||
         (myCode >= 500 && myCode <= 701) ||
         myCode == 8888 ||
         myCode == -40001 ||
@@ -114,6 +116,10 @@ function errorFromBilibili(e, data) {
 
     if (myCode < 200 || myCode >= 600) {
         myCode = 500;
+    }
+
+    if (myCode == 352) {
+        e.message += "\n请求疑似被 bilibili 风控系统拦截，请稍后再试。";
     }
 
     e.httpError = myCode;
@@ -234,7 +240,7 @@ async function getOriginalURLOfB23TvRedir(fetchCookie, url) {
             responseData = await response.text();
         } catch (e) {
             e.message =
-                `请求了 ${url}，但是服务器没有进行跳转，而且获取回应失败？` +
+                `尝试了解析短链 ${url}，但是服务器没有进行跳转，而且获取回应失败？` +
                 "\n" +
                 e.message;
             throw e;
@@ -253,7 +259,7 @@ async function getOriginalURLOfB23TvRedir(fetchCookie, url) {
         ) {
             throw errorFromBilibili(
                 new Error(
-                    `对 ${url} 的请求失败。（HTTP 状态码为 ${response.status}）请检查您的链接。` +
+                    `解析短链 ${url} 失败。（HTTP 状态码为 ${response.status}）请检查您的链接。` +
                         "\n" +
                         responseData,
                 ),
@@ -261,7 +267,7 @@ async function getOriginalURLOfB23TvRedir(fetchCookie, url) {
             );
         }
         throw new Error(
-            `请求了 ${url}，但是服务器返回了一段奇妙的内容？（HTTP 状态码为 ${response.status}）请检查您的链接，如果正常，那么就是我们的 bug。` +
+            `尝试了解析短链 ${url}，但是服务器返回了一段奇妙的内容？（HTTP 状态码为 ${response.status}）请检查您的链接。` +
                 "\n" +
                 responseData,
         );
@@ -324,11 +330,18 @@ export async function getRequestedInfo(path, search) {
         ret.searchParams.videoPage,
     );
     if (!requestedPage) {
-        // This is just so we gain the cookies
         const fakeRefererRep = await fetchCookie(fakeReferer, {
             headers: genSpoofHeaders(),
         });
-        fakeRefererRep.body.cancel();
+        // We're kinda obliged to read it...
+        const fakeRefererRepRaw = await fakeRefererRep.text();
+        if (
+            fakeRefererRep.status == 412 ||
+            fakeRefererRepRaw.includes("由于触发哔哩哔哩安全风控策略")
+        )
+            throw errorFromBilibili(new Error("获取 buvid3 & b_nut 失败。"), {
+                code: -352,
+            });
     }
 
     // web / b23.tv
@@ -348,7 +361,7 @@ export async function getRequestedInfo(path, search) {
 export async function getVideoData(info, getVideoURL, dropCobaltErrs) {
     const id = info.id;
     let page = info.page;
-    const videoPageURL = makeVideoPage(id, page, info.searchParams.videoPage);
+    let videoPageURL = makeVideoPage(id, page, info.searchParams.videoPage);
 
     const requestURL = new URL(
         "https://api.bilibili.com/x/web-interface/wbi/view",
@@ -381,8 +394,11 @@ export async function getVideoData(info, getVideoURL, dropCobaltErrs) {
     const resInfo = res.data;
 
     page = page <= resInfo.pages.length ? page : 1;
+    videoPageURL = makeVideoPage(resInfo.id, page, info.searchParams.videoPage);
     let cid = resInfo.pages[page - 1].cid ?? resInfo.cid;
     let title = resInfo.title;
+    // TODO
+    if (resInfo.is_upower_exclusive) title = `【充电专属】${title}`;
     if (resInfo.pages.length > 1)
         title += ` - P${page} ${resInfo.pages[page - 1].part}`;
     let width =
@@ -397,7 +413,8 @@ export async function getVideoData(info, getVideoURL, dropCobaltErrs) {
         tHeight = resInfo.dimension.height ?? DEFAULT_HEIGHT;
 
     let videoStreamURL;
-    if (COBALT_API_INSTANCE && getVideoURL) {
+    // TODO: Check is_upower_preview?
+    if (COBALT_API_INSTANCE && getVideoURL && !resInfo.is_upower_exclusive) {
         try {
             videoStreamURL = await obtainVideoStreamFromCobalt(
                 videoPageURL,
@@ -437,6 +454,7 @@ export async function getVideoData(info, getVideoURL, dropCobaltErrs) {
         embed_url: embedPlayerURL,
         video_url: videoStreamURL,
         title: title,
+        // TODO: Honor resInfo.staff, resInfo.disable_show_up_info?
         author: resInfo.owner.name,
         author_mid: resInfo.owner.mid,
         author_url: makeUserPage(resInfo.owner.mid),
