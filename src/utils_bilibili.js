@@ -206,7 +206,6 @@ function wbiSignURLSearchParams(url, img, sub) {
     const timestamp = Math.round(Date.now() / 1000);
 
     url.searchParams.set("wts", timestamp);
-    // FIXME: This could be the wrong way to sort the query string.
     url.searchParams.sort();
     url.searchParams.forEach((value, key) => {
         url.searchParams.set(
@@ -214,7 +213,7 @@ function wbiSignURLSearchParams(url, img, sub) {
             value.replace(WBI_SIGN_CHAR_FILTER_REGEX, ""),
         );
     });
-    let query = url.searchParams.toString();
+    let query = "?" + url.searchParams.toString();
 
     const signature = crypto
         .createHash("md5")
