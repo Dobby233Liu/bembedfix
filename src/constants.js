@@ -2,10 +2,9 @@ export const MY_NAME = "bembedfix";
 export const PROVIDER_NAME = `哔哩哔哩（${MY_NAME}）`;
 export const PROVIDER_URL = "https://www.bilibili.com";
 
-export const PROJECT_URL =
-    "https://github.com/Dobby233Liu/bembedfix?tab=readme-ov-file#readme";
-export const PROJECT_ISSUES_URL =
-    "https://github.com/Dobby233Liu/bembedfix/issues/new";
+const PROJECT_URL = "https://github.com/Dobby233Liu/bembedfix";
+export const PROJECT_HOMEPAGE_URL = PROJECT_URL + "?tab=readme-ov-file#readme";
+export const PROJECT_ISSUES_URL = PROJECT_URL + "/issues/new";
 
 export const ERROR_TEMPLATE = `<!DOCTYPE HTML>
 <html>

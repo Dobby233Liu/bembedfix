@@ -1,6 +1,6 @@
 import * as duration from "duration-fns";
 import {
-    checkIfURLIsUnderDomain,
+    checkDomainIsSubdomainOf,
     stripTrailingSlashes,
     getCompatDescription,
     oembedAddExtraMetadata,
@@ -18,7 +18,7 @@ const MAIN_SITE_VIDEO_PAGE_PATHNAME_REGEX =
     /^\/(?:s\/)?(?:video\/)?(av[0-9]+|BV[A-Za-z0-9]+)$/;
 
 export const isURLOnBilibiliMainSite = (u) =>
-    checkIfURLIsUnderDomain(u.hostname, "bilibili.com");
+    checkDomainIsSubdomainOf(u.hostname, "bilibili.com");
 export const isPathMainSiteVideoPage = (p) =>
     MAIN_SITE_VIDEO_PAGE_PATHNAME_REGEX.test(stripTrailingSlashes(p));
 export const isURLBilibiliVideo = (u) =>

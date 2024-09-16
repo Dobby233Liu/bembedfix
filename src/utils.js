@@ -40,13 +40,17 @@ export function getMyBaseURL(req) {
     );
 }
 
-export function checkIfURLIsUnderDomain(l, r) {
-    let levelsOfDomainLeft = l.split(".");
-    let levelsOfDomainRight = r.split(".");
-    if (levelsOfDomainLeft.length < levelsOfDomainRight.length) return false;
-    return levelsOfDomainLeft
-        .slice(-levelsOfDomainRight.length)
-        .every((level, index) => level == levelsOfDomainRight[index]);
+/**
+ * @param {string} subdomain
+ * @param {string} domain
+ */
+export function checkDomainIsSubdomainOf(subdomain, domain) {
+    let leftLevels = subdomain.split(".").reverse();
+    let rightLevels = domain.split(".").reverse();
+    if (leftLevels.length < rightLevels.length) return false;
+    return leftLevels
+        .slice(0, rightLevels.length)
+        .every((l, i) => l === rightLevels[i]);
 }
 
 export function stripTrailingSlashes(path) {
@@ -88,7 +92,7 @@ export function getCompatDescription(desc = "", length = 160) {
     return ret;
 }
 
-const MINIFY_OPTIONS = {
+const TEMPLATE_MINIFY_OPTIONS = {
     decodeEntities: true,
     collapseWhitespace: true,
     removeComments: true,
@@ -106,7 +110,6 @@ export function sendError(
     res.status(!isUserDiscordbot(req) ? code : 200);
 
     const errorData = {
-        me: MY_NAME,
         code: code,
         message: message,
         data: data.stack
@@ -114,7 +117,6 @@ export function sendError(
             : data.toString() == "[object Object]"
               ? JSON.stringify(data)
               : data,
-        issues_url: PROJECT_ISSUES_URL,
     };
 
     switch (responseType) {
@@ -130,10 +132,12 @@ export function sendError(
             minify(
                 render(ERROR_TEMPLATE, {
                     ...errorData,
+                    me: MY_NAME,
+                    issues_url: PROJECT_ISSUES_URL,
                     dataShort: getCompatDescription(data, 160),
                     here: getRequestedURL(req).href,
                 }),
-                MINIFY_OPTIONS,
+                TEMPLATE_MINIFY_OPTIONS,
             ).then((out) => {
                 res.send(out);
             });
@@ -146,7 +150,7 @@ export function sendTemplate(res, req, responseType, file = "video", data) {
         .catch(function (err) {
             sendError(res, req, "生成 embed 时发生错误", err, responseType);
         })
-        .then((out) => minify(out, MINIFY_OPTIONS))
+        .then((out) => minify(out, TEMPLATE_MINIFY_OPTIONS))
         .then((out) => {
             res.send(out);
         });
