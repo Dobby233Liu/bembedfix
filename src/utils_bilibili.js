@@ -229,9 +229,7 @@ export async function getVideoData(info, getVideoURL, dropCobaltErrs) {
     const idType = id.startsWith("BV") ? "bvid" : "aid";
     requestURL.searchParams.append(idType, id.slice(2));
 
-    console.log(Date.now() - startTime, "getVideoData req start");
     const response = await fetch(requestURL.href);
-    console.log(Date.now() - startTime, "getVideoData req end");
     const errorMsg = `对 ${requestURL} 的请求失败。（HTTP 状态码为 ${response.status}）请检查您的链接。`;
     const dataRaw = await response.text();
     let res = {};
@@ -272,10 +270,6 @@ export async function getVideoData(info, getVideoURL, dropCobaltErrs) {
     );
     let videoStreamURL;
     if (COBALT_API_INSTANCE && getVideoURL) {
-        console.log(
-            Date.now() - startTime,
-            "obtainVideoStreamFromCobalt start",
-        );
         try {
             videoStreamURL = await obtainVideoStreamFromCobalt(
                 videoPageURL,
@@ -287,11 +281,6 @@ export async function getVideoData(info, getVideoURL, dropCobaltErrs) {
             } else {
                 throw e;
             }
-        } finally {
-            console.log(
-                Date.now() - startTime,
-                "obtainVideoStreamFromCobalt end",
-            );
         }
     }
     let embedPlayerURL = makeEmbedPlayerURL(
@@ -312,7 +301,6 @@ export async function getVideoData(info, getVideoURL, dropCobaltErrs) {
         pic.pathname += encodeURIComponent(`@${tWidth}w_${tHeight}h_1c`);
     }
 
-    console.log(Date.now() - startTime, "getVideoData end");
     return {
         url: videoPageURL,
         bvid: resInfo.bvid,
