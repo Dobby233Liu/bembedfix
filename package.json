@@ -19,7 +19,8 @@
         "@types/xml2js": "^0.4.11",
         "eslint": "^8.35.0",
         "prettier": "3.3.3",
-        "prettier-plugin-ejs": "^1.0.3"
+        "prettier-plugin-ejs": "^1.0.3",
+        "vercel": "^37.4.2"
     },
     "packageManager": "yarn@4.4.1"
 }
