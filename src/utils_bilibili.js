@@ -118,7 +118,7 @@ function errorFromBilibili(e, data) {
         myCode = 500;
     }
 
-    if (myCode == 352) {
+    if (myCode == 352 || myCode == 412) {
         e.message += "\n请求疑似被 bilibili 风控系统拦截，请稍后再试。";
     }
 
