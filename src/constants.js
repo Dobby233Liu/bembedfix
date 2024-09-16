@@ -7,32 +7,6 @@ export const PROJECT_URL =
 export const PROJECT_ISSUES_URL =
     "https://github.com/Dobby233Liu/bembedfix/issues/new";
 
-// TODO: Maybe make some of these RegExes in case of oddballs like The Lounge IRC Client (like Twitterbot)
-export const CRAWLER_UAS = [
-    "facebookexternalhit/1.1",
-    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_1) AppleWebKit/601.2.4 (KHTML, like Gecko) Version/9.0.1 Safari/601.2.4 facebookexternalhit/1.1 Facebot Twitterbot/1.0",
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.67 Safari/537.36 Twitterbot/1.0",
-    "Twitterbot/1.0",
-    "Slackbot-LinkExpanding 1.0 (+https://api.slack.com/robots)",
-    "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.57 Safari/537.36",
-    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:38.0) Gecko/20100101 Firefox/38.0",
-    "Mozilla/5.0 (compatible; Discordbot/2.0; +https://discordapp.com)",
-    "TelegramBot (like TwitterBot)",
-    "Mozilla/5.0 (compatible; January/1.0; +https://gitlab.insrt.uk/revolt/january)",
-    "Mozilla/5.0 (compatible; January/1.0; +https://github.com/revoltchat/january)",
-    "Mozilla/5.0 (Windows; U; Windows NT 10.0; en-US; Valve Steam Client/default/1596241936; ) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.117 Safari/537.36",
-    "Mozilla/5.0 (Windows; U; Windows NT 10.0; en-US; Valve Steam Client/default/0; ) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.117 Safari/537.36",
-    "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; Valve Steam FriendsUI Tenfoot/0; ) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.105 Safari/537.36",
-    "BembedfixMetaTagDebugging (like test)",
-    "Mozilla/5.0 (compatible; Schema-Markup-Validator; +https://validator.schema.org/)",
-];
-
-// Set to null to disable
-// Certain instances require JWT auth which is not implemented yet
-export const COBALT_API_INSTANCE = null; // "https://cal1.coapi.ggtyler.dev";
-// 7, 10
-export const COBALT_API_VERSION = 10;
-
 export const ERROR_TEMPLATE = `<!DOCTYPE HTML>
 <html>
 <head>
@@ -54,3 +28,33 @@ export const ERROR_TEMPLATE = `<!DOCTYPE HTML>
 </body>
 </html>
 `;
+
+// TODO: Maybe make some of these RegExes in case of oddballs like The Lounge IRC Client (like Twitterbot)
+export const CRAWLER_UAS = [
+    "facebookexternalhit/1.1",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_1) AppleWebKit/601.2.4 (KHTML, like Gecko) Version/9.0.1 Safari/601.2.4 facebookexternalhit/1.1 Facebot Twitterbot/1.0",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.67 Safari/537.36 Twitterbot/1.0",
+    "Twitterbot/1.0",
+    "Slackbot-LinkExpanding 1.0 (+https://api.slack.com/robots)",
+    "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.57 Safari/537.36",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:38.0) Gecko/20100101 Firefox/38.0",
+    "Mozilla/5.0 (compatible; Discordbot/2.0; +https://discordapp.com)",
+    "TelegramBot (like TwitterBot)",
+    "Mozilla/5.0 (compatible; January/1.0; +https://gitlab.insrt.uk/revolt/january)",
+    "Mozilla/5.0 (compatible; January/1.0; +https://github.com/revoltchat/january)",
+    "Mozilla/5.0 (Windows; U; Windows NT 10.0; en-US; Valve Steam Client/default/1596241936; ) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.117 Safari/537.36",
+    "Mozilla/5.0 (Windows; U; Windows NT 10.0; en-US; Valve Steam Client/default/0; ) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.117 Safari/537.36",
+    "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; Valve Steam FriendsUI Tenfoot/0; ) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.105 Safari/537.36",
+    "BembedfixMetaTagDebugging (like test)",
+    "Mozilla/5.0 (compatible; Schema-Markup-Validator; +https://validator.schema.org/)",
+];
+
+// This is the user agent we spoof as for bilibili API requests
+export const FAKE_CLIENT_UA =
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36 Edg/128.0.0.0";
+
+// Set to null to disable
+// Certain instances require JWT auth which is not implemented yet
+export const COBALT_API_INSTANCE = null; // "https://cal1.coapi.ggtyler.dev";
+// 7, 10
+export const COBALT_API_VERSION = 10;
