@@ -13,18 +13,11 @@ export async function wbiGetKeys(
     fetchCookie,
     referer = "https://www.bilibili.com",
 ) {
-    referer = referer instanceof URL ? referer : new URL(referer);
     const response = await fetchCookie(
         "https://api.bilibili.com/x/web-interface/nav",
         {
-            headers: {
-                ...FAKE_CLIENT_UA_HEADERS,
-                // Using genSpoofHeaders here would cause a circular reference
-                Referer:
-                    referer.origin == "https://api.bilibili.com"
-                        ? referer.origin
-                        : referer.href,
-            },
+            headers: FAKE_CLIENT_UA_HEADERS,
+            referer: referer instanceof URL ? referer.href : referer,
             referrerPolicy: "strict-origin-when-cross-origin",
         },
     );

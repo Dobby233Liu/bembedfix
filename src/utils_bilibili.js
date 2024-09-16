@@ -136,16 +136,9 @@ function errorFromBilibili(e, data) {
 /**
  * @param {string?} destOrigin Used to mimic strict-origin-when-cross-origin behavior. If you don't intend to, leave this as null.
  */
-function genSpoofHeaders(referer = null, destOrigin) {
-    if (referer) {
-        referer = referer instanceof URL ? referer : new URL(referer);
-        if (destOrigin && referer.origin != destOrigin)
-            referer = referer.origin;
-        else referer = referer.href;
-    }
+function genSpoofHeaders() {
     return {
         ...FAKE_CLIENT_UA_HEADERS,
-        Referer: referer,
     };
 }
 
@@ -193,10 +186,9 @@ async function getOriginalURLOfB23TvRedir(fetchCookie, url) {
                 "\n" +
                 responseData,
         );
-    } else {
-        response.body.cancel();
     }
 
+    response.body.cancel();
     return new URL(response.url);
 }
 
@@ -305,7 +297,8 @@ export async function getVideoData(info, getVideoURL, dropCobaltErrs) {
     const fetchCookie = info.fetchCookie;
 
     const response = await fetchCookie(requestURL.href, {
-        headers: genSpoofHeaders(videoPageURL, "https://api.bilibili.com"),
+        headers: genSpoofHeaders(),
+        referer: videoPageURL,
         referrerPolicy: "strict-origin-when-cross-origin",
     });
     const errorMsg = `对 ${requestURL} 的请求失败。（HTTP 状态码为 ${response.status}）请检查您的链接。`;
