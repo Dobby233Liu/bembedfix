@@ -11,13 +11,13 @@ import * as crypto from "node:crypto";
 // FIXME: We'd want to cache this for a day (in BJT) long somehow
 export async function wbiGetKeys(
     fetchCookie,
-    referer = "https://www.bilibili.com",
+    referrer = "https://www.bilibili.com",
 ) {
     const response = await fetchCookie(
         "https://api.bilibili.com/x/web-interface/nav",
         {
             headers: FAKE_CLIENT_UA_HEADERS,
-            referer: referer instanceof URL ? referer.href : referer,
+            referrer: referrer instanceof URL ? referrer.href : referrer,
             referrerPolicy: "strict-origin-when-cross-origin",
         },
     );
