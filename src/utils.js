@@ -256,3 +256,22 @@ export async function obtainVideoStreamFromCobalt(videoPageURL, page = 1) {
         return item.url;
     }
 }
+
+// This lets nullish operators work
+export function parseIntSafe(value, radix) {
+    let ret = parseInt(value, radix);
+    if (isNaN(ret)) return null;
+    return ret;
+}
+
+export function applySearchParams(url, newParams) {
+    if (!newParams) return url;
+    // I hate my job
+    for (const [k, v] of newParams instanceof URLSearchParams
+        ? newParams.entries()
+        : Object.entries(newParams)) {
+        if (v === null || v === undefined) continue;
+        url.searchParams.set(k, v);
+    }
+    return url;
+}

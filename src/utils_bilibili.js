@@ -8,10 +8,12 @@ import {
     DEFAULT_WIDTH,
     DEFAULT_HEIGHT,
     obtainVideoStreamFromCobalt,
+    parseIntSafe,
+    applySearchParams,
 } from "./utils.js";
 import { FAKE_CLIENT_UA_HEADERS, COBALT_API_INSTANCE } from "./constants.js";
 import makeFetchCookie from "fetch-cookie";
-import * as crypto from "node:crypto";
+import { wbiGetKeys, wbiSignURLSearchParams } from "./utils_bilibili_crypto.js";
 
 // Group 4 is the ID of the video
 const MAIN_SITE_VIDEO_PAGE_PATHNAME_REGEX =
@@ -27,23 +29,16 @@ export const isURLBilibiliVideo = (u) =>
 export const getVideoIdByPath = (p) =>
     MAIN_SITE_VIDEO_PAGE_PATHNAME_REGEX.exec(stripTrailingSlashes(p))[1];
 
-// I hate my job
-const searchParamEntries = (searchParams) =>
-    searchParams instanceof URLSearchParams
-        ? searchParams.entries()
-        : Object.entries(searchParams);
-
 export function makeVideoPage(vid, page = 1, searchParams) {
+    assert(vid);
     const ret = new URL(vid, "https://www.bilibili.com/video/");
     if (page != 1) ret.searchParams.set("p", page);
-    if (searchParams) {
-        for (const [k, v] of searchParamEntries(searchParams))
-            ret.searchParams.set(k, v);
-    }
+    applySearchParams(ret, searchParams);
     return ret.href;
 }
 
 export function makeEmbedPlayerURL(vid, cid, page = 1, searchParams) {
+    assert(vid && cid);
     // //player.bilibili.com/player.html?aid=429619610&bvid=BV1GG411b7sc&cid=805522554&page=1
     const ret = new URL("https://player.bilibili.com/player.html");
     if (vid.startsWith("BV")) {
@@ -53,10 +48,7 @@ export function makeEmbedPlayerURL(vid, cid, page = 1, searchParams) {
     }
     ret.searchParams.set("cid", cid);
     ret.searchParams.set("page", page);
-    if (searchParams) {
-        for (const [k, v] of searchParamEntries(searchParams))
-            ret.searchParams.set(k, v);
-    }
+    applySearchParams(ret, searchParams);
     return ret.href;
 }
 
@@ -142,113 +134,6 @@ function genSpoofHeaders(referer = null, destOrigin) {
     };
 }
 
-// XREF: https://socialsisteryi.github.io/bilibili-API-collect/docs/misc/sign/wbi.html#javascript
-
-/**
- * @param {import("fetch-cookie").FetchCookieImpl} fetchCookie
- */
-// FIXME: We'd want to cache this somehow
-async function getWbiKeys(fetchCookie, referer) {
-    const response = await fetchCookie(
-        "https://api.bilibili.com/x/web-interface/nav",
-        {
-            headers: genSpoofHeaders(referer, "api.bilibili.com"),
-            referrerPolicy: "strict-origin-when-cross-origin",
-        },
-    );
-
-    let responseDataRaw;
-    try {
-        responseDataRaw = await response.text();
-    } catch (e) {
-        e.message =
-            `请求 WBI 签名口令失败。（HTTP 状态码为 ${response.status}）` +
-            "\n" +
-            e.message;
-        throw e;
-    }
-
-    let responseData = {};
-    try {
-        responseData = JSON.parse(responseDataRaw);
-    } catch (_) {
-        // pass
-    }
-    if (
-        !response.ok ||
-        (responseData.code && ![0, -101].includes(responseData.code))
-    ) {
-        throw errorFromBilibili(
-            new Error(
-                `请求 WBI 签名口令失败。（HTTP 状态码为 ${response.status}）` +
-                    "\n" +
-                    responseDataRaw,
-            ),
-            responseData,
-        );
-    }
-
-    function getKeyFromFakeBfsPath(path) {
-        // Future-proof
-        let paramLoc = path.indexOf("@");
-        path = path.slice(
-            path.lastIndexOf("/") + 1,
-            paramLoc >= 0 ? paramLoc : path.length,
-        );
-        path = path.slice(0, path.lastIndexOf("."));
-        assert(path.length >= 32);
-        return path;
-    }
-
-    return {
-        img: getKeyFromFakeBfsPath(
-            new URL(responseData.data.wbi_img.img_url).pathname,
-        ),
-        sub: getKeyFromFakeBfsPath(
-            new URL(responseData.data.wbi_img.sub_url).pathname,
-        ),
-    };
-}
-
-const WBI_MIXIN_KEY_SHUFFLE_ORDER = [
-    46, 47, 18, 2, 53, 8, 23, 32, 15, 50, 10, 31, 58, 3, 45, 35, 27, 43, 5, 49,
-    33, 9, 42, 19, 29, 28, 14, 39, 12, 38, 41, 13, 37, 48, 7, 16, 24, 55, 40,
-    61, 26, 17, 0, 1, 60, 51, 30, 4, 22, 25, 54, 21, 56, 59, 6, 63, 57, 62, 11,
-    36, 20, 34, 44, 52,
-];
-
-const WBI_SIGN_CHAR_FILTER_REGEX = /[!'()*]/g;
-
-/**
- * @param {URL} url
- */
-function wbiSignURLSearchParams(url, img, sub) {
-    const fullKey = img + sub;
-    const mixinKey = WBI_MIXIN_KEY_SHUFFLE_ORDER.map((i) => fullKey.charAt(i))
-        .join("")
-        .slice(0, 32);
-    const timestamp = Math.round(Date.now() / 1000);
-
-    url.searchParams.set("wts", timestamp);
-    url.searchParams.sort();
-    url.searchParams.forEach((value, key) => {
-        url.searchParams.set(
-            key,
-            value.replace(WBI_SIGN_CHAR_FILTER_REGEX, ""),
-        );
-    });
-    let query = "?" + url.searchParams.toString();
-
-    const signature = crypto
-        .createHash("md5")
-        .update(query + mixinKey)
-        .digest("hex");
-    query += `&w_rid=${signature}`;
-
-    url.search = query;
-    return url;
-}
-
 /**
  * @param {import("fetch-cookie").FetchCookieImpl} fetchCookie
  */
@@ -309,8 +194,8 @@ export async function getRequestedInfo(path, search) {
         id: null,
         page: null,
         searchParams: {
-            videoPage: {},
-            embedPlayer: {},
+            videoPage: new URLSearchParams(),
+            embedPlayer: new URLSearchParams(),
         },
     };
 
@@ -346,7 +231,7 @@ export async function getRequestedInfo(path, search) {
 
     ret.id = getVideoIdByPath(url.pathname);
     assert(ret.id, "无法从 URL 中提取视频 ID");
-    ret.page = parseInt(search.get("p") ?? "1") ?? 1;
+    ret.page = parseIntSafe(search.get("p")) ?? 1;
 
     const fakeReferer = makeVideoPage(
         ret.id,
@@ -370,14 +255,15 @@ export async function getRequestedInfo(path, search) {
 
     // web / b23.tv
     let startProgress =
-        parseInt(search.get("t")) || parseInt(search.get("start_progress"));
+        parseIntSafe(search.get("t")) ??
+        parseIntSafe(search.get("start_progress"));
     if (startProgress) {
-        ret.searchParams.videoPage["t"] = startProgress;
+        ret.searchParams.videoPage.set("t", startProgress);
         // this has to be t for the embed player, start_progress will not work
-        ret.searchParams.embedPlayer["t"] = startProgress;
+        ret.searchParams.embedPlayer.set("t", startProgress);
     }
 
-    ret.wbiKeys = await getWbiKeys(fetchCookie, fakeReferer);
+    ret.wbiKeys = await wbiGetKeys(fetchCookie, fakeReferer);
     // TODO: buvid4; bili_ticket (for space). Doesn't seem so important right now
 
     return ret;
@@ -420,7 +306,11 @@ export async function getVideoData(info, getVideoURL, dropCobaltErrs) {
     const resInfo = res.data;
 
     page = page <= resInfo.pages.length ? page : 1;
-    videoPageURL = makeVideoPage(resInfo.id, page, info.searchParams.videoPage);
+    videoPageURL = makeVideoPage(
+        resInfo.bvid,
+        page,
+        info.searchParams.videoPage,
+    );
     let cid = resInfo.pages[page - 1].cid ?? resInfo.cid;
     let title = resInfo.title;
     // TODO

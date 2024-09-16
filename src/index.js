@@ -10,6 +10,7 @@ import {
     shouldNotAddRedirectMetaprop,
     oembedAddExtraMetadata,
     isUserAStupidKidAndTryingToAccessAWordpressApi,
+    applySearchParams,
 } from "./utils.js";
 import {
     getRequestedInfo,
@@ -108,13 +109,14 @@ export default async function handler(req, res) {
 
         data.provider = PROVIDER_NAME;
         // FIXME: preferredly do this in some other way or somewhere else
-        let oembedJson = new URL("oembed.json", getMyBaseURL(req));
-        let oembedXml = new URL("oembed.xml", getMyBaseURL(req));
-        for (let [k, v] of Object.entries(data.oembedAPIQueries)) {
-            if (v == null) continue;
-            oembedJson.searchParams.set(k, v);
-            oembedXml.searchParams.set(k, v);
-        }
+        let oembedJson = applySearchParams(
+            new URL("oembed.json", getMyBaseURL(req)),
+            data.oembedAPIQueries,
+        );
+        let oembedXml = applySearchParams(
+            new URL("oembed.xml", getMyBaseURL(req)),
+            data.oembedAPIQueries,
+        );
         data.oembed_json = oembedJson;
         data.oembed_xml = oembedXml;
         data.lie_about_embed_player = !html5EmbedWorks;
