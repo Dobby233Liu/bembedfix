@@ -140,7 +140,7 @@ function genSpoofHeaders(referer = null, destOrigin) {
     if (referer) {
         referer = referer instanceof URL ? referer : new URL(referer);
         if (destOrigin && referer.origin != destOrigin)
-            referer = referer.protocol + "//" + referer.origin;
+            referer = referer.origin;
         else referer = referer.href;
     }
     return {
@@ -305,7 +305,7 @@ export async function getVideoData(info, getVideoURL, dropCobaltErrs) {
     const fetchCookie = info.fetchCookie;
 
     const response = await fetchCookie(requestURL.href, {
-        headers: genSpoofHeaders(videoPageURL, "api.bilibili.com"),
+        headers: genSpoofHeaders(videoPageURL, "https://api.bilibili.com"),
         referrerPolicy: "strict-origin-when-cross-origin",
     });
     const errorMsg = `对 ${requestURL} 的请求失败。（HTTP 状态码为 ${response.status}）请检查您的链接。`;
