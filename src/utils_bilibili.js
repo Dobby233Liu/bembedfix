@@ -1,4 +1,4 @@
-import { formatISODuration } from "date-fns";
+import * as duration from "duration-fns";
 import {
     checkIfURLIsUnderDomain,
     stripTrailingSlashes,
@@ -330,9 +330,11 @@ export async function getVideoData(info, getVideoURL, dropCobaltErrs) {
         thumbnail_height: tHeight,
         width: width,
         height: height,
-        duration: formatISODuration({
-            seconds: resInfo.pages[page - 1].duration,
-        }),
+        duration: duration.toString(
+            duration.normalize({
+                seconds: resInfo.pages[page - 1].duration,
+            }),
+        ),
         oembedData: {
             type: "video",
             url: videoPageURL,

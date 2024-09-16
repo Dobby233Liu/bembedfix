@@ -854,7 +854,7 @@ __metadata:
     "@types/ejs": "npm:^3.1.5"
     "@types/html-minifier-terser": "npm:^7.0.2"
     "@types/xml2js": "npm:^0.4.14"
-    date-fns: "npm:^4.0.0"
+    duration-fns: "npm:^3.0.2"
     ejs: "npm:^3.1.10"
     eslint: "npm:^9.10.0"
     html-minifier-terser: "npm:^7.2.0"
@@ -1125,13 +1125,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"date-fns@npm:^4.0.0":
-  version: 4.0.0
-  resolution: "date-fns@npm:4.0.0"
-  checksum: 10c0/c706d29f05c28fdaea939068d688489bbc3096ef2486d1fe4a56d209c3a061ba99febae943b9562bb8ac08fe61257cf11fe74adad164adb7ba6df994e09cb99b
-  languageName: node
-  linkType: hard
-
 "debug@npm:4, debug@npm:^4.3.4":
   version: 4.3.7
   resolution: "debug@npm:4.3.7"
@@ -1207,6 +1200,13 @@ __metadata:
     no-case: "npm:^3.0.4"
     tslib: "npm:^2.0.3"
   checksum: 10c0/5b859ea65097a7ea870e2c91b5768b72ddf7fa947223fd29e167bcdff58fe731d941c48e47a38ec8aa8e43044c8fbd15cd8fa21689a526bc34b6548197cd5b05
+  languageName: node
+  linkType: hard
+
+"duration-fns@npm:^3.0.2":
+  version: 3.0.2
+  resolution: "duration-fns@npm:3.0.2"
+  checksum: 10c0/9488be20171815b7614b28bd6e3babc0ee169d2ec100d9816dd8fd61db04d32c9f09a3efc9ee4ffb116899db160679a248546b9c121403ea9f08e136f2b026de
   languageName: node
   linkType: hard
 
