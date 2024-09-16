@@ -9,7 +9,10 @@ import * as crypto from "node:crypto";
  * @param {import("fetch-cookie").FetchCookieImpl} fetchCookie
  */
 // FIXME: We'd want to cache this for a day (in BJT) long somehow
-export async function wbiGetKeys(fetchCookie, referer) {
+export async function wbiGetKeys(
+    fetchCookie,
+    referer = "https://www.bilibili.com",
+) {
     referer = referer instanceof URL ? referer : new URL(referer);
     const response = await fetchCookie(
         "https://api.bilibili.com/x/web-interface/nav",
@@ -18,8 +21,8 @@ export async function wbiGetKeys(fetchCookie, referer) {
                 ...FAKE_CLIENT_UA_HEADERS,
                 // Using genSpoofHeaders here would cause a circular reference
                 Referer:
-                    referer.origin == "api.bilibili.com"
-                        ? referer.protocol + "//" + referer.origin
+                    referer.origin == "https://api.bilibili.com"
+                        ? referer.origin
                         : referer.href,
             },
             referrerPolicy: "strict-origin-when-cross-origin",
