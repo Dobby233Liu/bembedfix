@@ -132,6 +132,7 @@ function genSpoofHeaders(referer = null) {
 /**
  * @param {import("fetch-cookie").FetchCookieImpl} fetchCookie
  */
+// TODO: We'd want to cache this somehow
 async function getWbiKeys(fetchCookie, referer) {
     const response = await fetchCookie(
         "https://api.bilibili.com/x/web-interface/nav",
