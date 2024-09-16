@@ -8,7 +8,7 @@
         "start": "vercel dev"
     },
     "dependencies": {
-        "date-fns": "^4.0.0",
+        "duration-fns": "^3.0.2",
         "ejs": "^3.1.10",
         "html-minifier-terser": "^7.2.0",
         "xml2js": "^0.6.2"
