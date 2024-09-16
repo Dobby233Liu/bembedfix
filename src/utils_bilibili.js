@@ -9,7 +9,7 @@ import {
     DEFAULT_HEIGHT,
     obtainVideoStreamFromCobalt,
 } from "./utils.js";
-import { FAKE_CLIENT_UA, COBALT_API_INSTANCE } from "./constants.js";
+import { FAKE_CLIENT_UA_HEADERS, COBALT_API_INSTANCE } from "./constants.js";
 import makeFetchCookie from "fetch-cookie";
 import * as crypto from "node:crypto";
 
@@ -126,9 +126,18 @@ function errorFromBilibili(e, data) {
     return e;
 }
 
-function genSpoofHeaders(referer = null) {
+/**
+ * @param {string?} destOrigin Used to mimic strict-origin-when-cross-origin behavior. If you don't intend to, leave this as null.
+ */
+function genSpoofHeaders(referer = null, destOrigin) {
+    if (referer) {
+        referer = referer instanceof URL ? referer : new URL(referer);
+        if (destOrigin && referer.origin != destOrigin)
+            referer = referer.protocol + "//" + referer.origin;
+        else referer = referer.href;
+    }
     return {
-        "User-Agent": FAKE_CLIENT_UA,
+        ...FAKE_CLIENT_UA_HEADERS,
         Referer: referer,
     };
 }
@@ -143,7 +152,8 @@ async function getWbiKeys(fetchCookie, referer) {
     const response = await fetchCookie(
         "https://api.bilibili.com/x/web-interface/nav",
         {
-            headers: genSpoofHeaders(referer),
+            headers: genSpoofHeaders(referer, "api.bilibili.com"),
+            referrerPolicy: "strict-origin-when-cross-origin",
         },
     );
 
@@ -178,12 +188,26 @@ async function getWbiKeys(fetchCookie, referer) {
         );
     }
 
-    let img = new URL(responseData.data.wbi_img.img_url).pathname,
-        sub = new URL(responseData.data.wbi_img.sub_url).pathname;
-    img = img.slice(img.lastIndexOf("/") + 1, img.lastIndexOf("."));
-    sub = sub.slice(sub.lastIndexOf("/") + 1, sub.lastIndexOf("."));
+    function getKeyFromFakeBfsPath(path) {
+        // Future-proof
+        let paramLoc = path.indexOf("@");
+        path = path.slice(
+            path.lastIndexOf("/") + 1,
+            paramLoc >= 0 ? paramLoc : path.length,
+        );
+        path = path.slice(0, path.lastIndexOf("."));
+        assert(path.length >= 32);
+        return path;
+    }
 
-    return { img, sub };
+    return {
+        img: getKeyFromFakeBfsPath(
+            new URL(responseData.data.wbi_img.img_url).pathname,
+        ),
+        sub: getKeyFromFakeBfsPath(
+            new URL(responseData.data.wbi_img.sub_url).pathname,
+        ),
+    };
 }
 
 const WBI_MIXIN_KEY_SHUFFLE_ORDER = [
@@ -231,6 +255,7 @@ function wbiSignURLSearchParams(url, img, sub) {
 async function getOriginalURLOfB23TvRedir(fetchCookie, url) {
     const response = await fetchCookie(url.href, {
         headers: genSpoofHeaders(),
+        referrerPolicy: "strict-origin-when-cross-origin",
     });
 
     if (!response.redirected) {
@@ -353,6 +378,7 @@ export async function getRequestedInfo(path, search) {
     }
 
     ret.wbiKeys = await getWbiKeys(fetchCookie, fakeReferer);
+    // TODO: buvid4; bili_ticket (for space). Doesn't seem so important right now
 
     return ret;
 }
@@ -373,7 +399,8 @@ export async function getVideoData(info, getVideoURL, dropCobaltErrs) {
     const fetchCookie = info.fetchCookie;
 
     const response = await fetchCookie(requestURL.href, {
-        headers: genSpoofHeaders(videoPageURL),
+        headers: genSpoofHeaders(videoPageURL, "api.bilibili.com"),
+        referrerPolicy: "strict-origin-when-cross-origin",
     });
     const errorMsg = `对 ${requestURL} 的请求失败。（HTTP 状态码为 ${response.status}）请检查您的链接。`;
     const dataRaw = await response.text();
