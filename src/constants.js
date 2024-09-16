@@ -29,7 +29,7 @@ export const CRAWLER_UAS = [
 
 // Set to null to disable
 // Certain instances require JWT auth which is not implemented yet
-export const COBALT_API_INSTANCE = "https://cal1.coapi.ggtyler.dev";
+export const COBALT_API_INSTANCE = null; // "https://cal1.coapi.ggtyler.dev";
 // 7, 10
 export const COBALT_API_VERSION = 10;
 
