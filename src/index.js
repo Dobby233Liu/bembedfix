@@ -16,7 +16,7 @@ import {
     getVideoData,
     loadOembedDataFromQuerystring,
 } from "./utils_bilibili.js";
-import { PROJECT_URL, PROVIDER_NAME } from "./constants.js";
+import { PROJECT_HOMEPAGE_URL, PROVIDER_NAME } from "./constants.js";
 
 export default async function handler(req, res) {
     let requestedURL = getRequestedURL(req);
@@ -28,7 +28,7 @@ export default async function handler(req, res) {
     }
     if (stripTrailingSlashes(requestedURL.pathname) == "/") {
         res.setHeader("Cache-Control", "max-age=10800, s-maxage=10800");
-        res.redirect(308, PROJECT_URL);
+        res.redirect(308, PROJECT_HOMEPAGE_URL);
         return;
     }
     if (requestedURL.pathname == "/favicon.ico") {
