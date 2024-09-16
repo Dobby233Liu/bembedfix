@@ -10,6 +10,7 @@ import {
     obtainVideoStreamFromCobalt,
 } from "./utils.js";
 import { FAKE_CLIENT_UA, COBALT_API_INSTANCE } from "./constants.js";
+import makeFetchCookie from "fetch-cookie";
 import * as crypto from "node:crypto";
 
 // Group 4 is the ID of the video
@@ -128,8 +129,11 @@ function genSpoofHeaders(referer = null) {
 
 // XREF: https://socialsisteryi.github.io/bilibili-API-collect/docs/misc/sign/wbi.html#javascript
 
-async function getWbiKeys(referer) {
-    const response = await fetch(
+/**
+ * @param {import("fetch-cookie").FetchCookieImpl} fetchCookie
+ */
+async function getWbiKeys(fetchCookie, referer) {
+    const response = await fetchCookie(
         "https://api.bilibili.com/x/web-interface/nav",
         {
             headers: genSpoofHeaders(referer),
@@ -215,8 +219,11 @@ function wbiSignURLSearchParams(url, img, sub) {
     return url;
 }
 
-async function getOriginalURLOfB23TvRedir(url) {
-    const response = await fetch(url.href, {
+/**
+ * @param {import("fetch-cookie").FetchCookieImpl} fetchCookie
+ */
+async function getOriginalURLOfB23TvRedir(fetchCookie, url) {
+    const response = await fetchCookie(url.href, {
         headers: genSpoofHeaders(),
     });
 
@@ -265,6 +272,7 @@ async function getOriginalURLOfB23TvRedir(url) {
 }
 
 export async function getRequestedInfo(path, search) {
+    // Do not expose to user
     let ret = {
         type: "video",
         id: null,
@@ -275,10 +283,13 @@ export async function getRequestedInfo(path, search) {
         },
     };
 
+    const fetchCookie = (ret.fetchCookie = makeFetchCookie(fetch));
+
     // default domain for later
     let url = new URL(path, "https://b23.tv"),
         originalURL = url;
 
+    let requestedPage = false;
     // url for video pages on www|m.bilibili.com has a specific pattern
     if (!isPathMainSiteVideoPage(url.pathname)) {
         let notAVideoProlog =
@@ -291,7 +302,8 @@ export async function getRequestedInfo(path, search) {
                 );
         }
         // must've a b23.tv shortlink
-        url = await getOriginalURLOfB23TvRedir(url);
+        url = await getOriginalURLOfB23TvRedir(fetchCookie, url);
+        requestedPage = true;
         if (!isURLBilibiliVideo(url)) {
             throw new Error(
                 notAVideoProlog +
@@ -304,6 +316,19 @@ export async function getRequestedInfo(path, search) {
     assert(ret.id, "无法从 URL 中提取视频 ID");
     ret.page = parseInt(search.get("p")) ?? 1;
 
+    const fakeReferer = makeVideoPage(
+        ret.id,
+        ret.page,
+        ret.searchParams.videoPage,
+    );
+    if (!requestedPage) {
+        // This is just so we gain the cookies
+        const fakeRefererRep = await fetchCookie(fakeReferer, {
+            headers: genSpoofHeaders(),
+        });
+        fakeRefererRep.body.cancel();
+    }
+
     // web / b23.tv
     let startProgress =
         parseInt(search.get("t")) || parseInt(search.get("start_progress"));
@@ -313,12 +338,7 @@ export async function getRequestedInfo(path, search) {
         ret.searchParams.embedPlayer["t"] = startProgress;
     }
 
-    const fakeReferer = makeVideoPage(
-        ret.id,
-        ret.page,
-        ret.searchParams.videoPage,
-    );
-    ret.wbiKeys = await getWbiKeys(fakeReferer);
+    ret.wbiKeys = await getWbiKeys(fetchCookie, fakeReferer);
 
     return ret;
 }
@@ -335,7 +355,10 @@ export async function getVideoData(info, getVideoURL, dropCobaltErrs) {
     requestURL.searchParams.append(idType, id.slice("BV".length));
     wbiSignURLSearchParams(requestURL, info.wbiKeys.img, info.wbiKeys.sub);
 
-    const response = await fetch(requestURL.href, {
+    /** @type {import("fetch-cookie").FetchCookieImpl} */
+    const fetchCookie = info.fetchCookie;
+
+    const response = await fetchCookie(requestURL.href, {
         headers: genSpoofHeaders(videoPageURL),
     });
     const errorMsg = `对 ${requestURL} 的请求失败。（HTTP 状态码为 ${response.status}）请检查您的链接。`;
