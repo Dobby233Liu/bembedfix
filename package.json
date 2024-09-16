@@ -8,17 +8,17 @@
         "start": "vercel dev"
     },
     "dependencies": {
-        "date-fns": "^2.29.3",
-        "ejs": "^3.1.8",
+        "date-fns": "^4.0.0",
+        "ejs": "^3.1.10",
         "html-minifier-terser": "^7.2.0",
-        "xml2js": "^0.4.23"
+        "xml2js": "^0.6.2"
     },
     "devDependencies": {
-        "@types/ejs": "^3.1.2",
+        "@types/ejs": "^3.1.5",
         "@types/html-minifier-terser": "^7.0.2",
-        "@types/xml2js": "^0.4.11",
-        "eslint": "^8.35.0",
-        "prettier": "3.3.3",
+        "@types/xml2js": "^0.4.14",
+        "eslint": "^9.10.0",
+        "prettier": "^3.3.3",
         "prettier-plugin-ejs": "^1.0.3",
         "vercel": "^37.4.2"
     },
