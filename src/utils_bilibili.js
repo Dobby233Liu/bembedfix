@@ -132,7 +132,7 @@ function genSpoofHeaders(referer = null) {
 /**
  * @param {import("fetch-cookie").FetchCookieImpl} fetchCookie
  */
-// TODO: We'd want to cache this somehow
+// FIXME: We'd want to cache this somehow
 async function getWbiKeys(fetchCookie, referer) {
     const response = await fetchCookie(
         "https://api.bilibili.com/x/web-interface/nav",
@@ -284,6 +284,7 @@ export async function getRequestedInfo(path, search) {
         },
     };
 
+    // FIXME: Is it wise to create one for every request?
     const fetchCookie = (ret.fetchCookie = makeFetchCookie(fetch));
 
     // default domain for later
