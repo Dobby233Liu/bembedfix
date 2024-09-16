@@ -322,7 +322,7 @@ export async function getRequestedInfo(path, search) {
 
     ret.id = getVideoIdByPath(url.pathname);
     assert(ret.id, "无法从 URL 中提取视频 ID");
-    ret.page = parseInt(search.get("p")) ?? 1;
+    ret.page = parseInt(search.get("p") ?? "1") ?? 1;
 
     const fakeReferer = makeVideoPage(
         ret.id,
