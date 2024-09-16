@@ -83,9 +83,15 @@ export function shouldNotAddRedirectMetaprop(req) {
     );
 }
 
-export function shortenDescription(desc = "", length = 160) {
+export function shortenDescription(
+    desc = "",
+    length = 160,
+    substNewlines = true,
+) {
     const elipsis = "……";
-    let ret = desc.replace(/\r\n/g, "").replace(/\n/g, "").trim();
+    let ret = desc;
+    if (substNewlines) ret = ret.replace(/\r\n/g, "").replace(/\n/g, "");
+    ret = ret.trim();
     if (ret.length > length) {
         return ret.slice(0, length - elipsis.length) + elipsis;
     }
@@ -134,7 +140,7 @@ export function sendError(
                     ...errorData,
                     me: MY_NAME,
                     issues_url: PROJECT_ISSUES_URL,
-                    dataShort: shortenDescription(errorData.data),
+                    dataShort: shortenDescription(errorData.data, 240, false),
                     here: getRequestedURL(req).href,
                 }),
                 TEMPLATE_MINIFY_OPTIONS,
