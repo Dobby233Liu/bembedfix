@@ -83,7 +83,7 @@ export function shouldNotAddRedirectMetaprop(req) {
     );
 }
 
-export function getCompatDescription(desc = "", length = 160) {
+export function shortenDescription(desc = "", length = 160) {
     const elipsis = "……";
     let ret = desc.replace(/\r\n/g, "").replace(/\n/g, "").trim();
     if (ret.length > length) {
@@ -134,7 +134,7 @@ export function sendError(
                     ...errorData,
                     me: MY_NAME,
                     issues_url: PROJECT_ISSUES_URL,
-                    dataShort: getCompatDescription(data, 160),
+                    dataShort: shortenDescription(data),
                     here: getRequestedURL(req).href,
                 }),
                 TEMPLATE_MINIFY_OPTIONS,
