@@ -112,7 +112,9 @@ export function sendError(
     responseType = "html",
     code = data ? (data.httpError ?? 500) : 500,
 ) {
-    res.setHeader("Cache-Control", "no-cache");
+    // If a video vanished, it might just be vanished forever
+    if (code != 404) res.setHeader("Cache-Control", "private, no-cache");
+    else res.setHeader("Cache-Control", "s-maxage=10800");
 
     // We kinda have to pretend it was successful for Discord
     res.status(!isUserDiscordbot(req) ? code : 200);

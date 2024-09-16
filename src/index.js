@@ -29,17 +29,19 @@ export default async function handler(req, res) {
         return;
     }
     if (stripTrailingSlashes(requestedURL.pathname) == "/") {
-        res.setHeader("Cache-Control", "max-age=10800, s-maxage=10800");
+        res.setHeader("Cache-Control", "s-maxage=10800");
         res.redirect(308, PROJECT_HOMEPAGE_URL);
         return;
     }
     if (requestedURL.pathname == "/favicon.ico") {
-        res.setHeader("Cache-Control", "max-age=86400, s-maxage=86400");
+        res.setHeader("Cache-Control", "s-maxage=86400");
         res.redirect(308, "https://www.bilibili.com/favicon.ico");
         return;
     }
 
-    res.setHeader("Cache-Control", "s-maxage=1, stale-while-revalidate");
+    // Videos don't get edited often, so 1 minute TTL is fine ig
+    // TODO: s-maxage implies public - is any sensitive info involved in The Process?
+    res.setHeader("Cache-Control", "s-maxage=1, stale-while-revalidate=59");
 
     let doOembed = false;
     let responseType = "html";
@@ -116,9 +118,11 @@ export default async function handler(req, res) {
 
     try {
         if (isUAEndUser(req)) {
+            // TODO: For the actual page max-age appears to be 0?
+            // DevTools is weird
             res.setHeader(
                 "Cache-Control",
-                "private, max-age=1, stale-while-revalidate",
+                "private, max-age=1, stale-while-revalidate=59",
             );
             // redirect the client to the real video URL
             res.redirect(302, data.url);
