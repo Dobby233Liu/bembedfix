@@ -8,7 +8,7 @@ import * as crypto from "node:crypto";
 /**
  * @param {import("fetch-cookie").FetchCookieImpl} fetchCookie
  */
-// FIXME: We'd want to cache this somehow
+// FIXME: We'd want to cache this for a day (in BJT) long somehow
 export async function wbiGetKeys(fetchCookie, referer) {
     referer = referer instanceof URL ? referer : new URL(referer);
     const response = await fetchCookie(
@@ -74,14 +74,14 @@ export async function wbiGetKeys(fetchCookie, referer) {
         return path;
     }
 
-    return {
-        img: getKeyFromFakeBfsPath(
+    const img = getKeyFromFakeBfsPath(
             new URL(responseData.data.wbi_img.img_url).pathname,
         ),
-        sub: getKeyFromFakeBfsPath(
+        sub = getKeyFromFakeBfsPath(
             new URL(responseData.data.wbi_img.sub_url).pathname,
         ),
-    };
+        mixin = wbiGenMixinKey(img, sub);
+    return { img, sub, mixin };
 }
 
 const WBI_MIXIN_KEY_SHUFFLE_ORDER = [
@@ -91,19 +91,20 @@ const WBI_MIXIN_KEY_SHUFFLE_ORDER = [
     36, 20, 34, 44, 52,
 ];
 
+function wbiGenMixinKey(img, sub) {
+    const fullKey = img + sub;
+    return WBI_MIXIN_KEY_SHUFFLE_ORDER.map((i) => fullKey.charAt(i))
+        .join("")
+        .slice(0, 32);
+}
+
 const WBI_SIGN_CHAR_FILTER_REGEX = /[!'()*]/g;
 
 /**
  * @param {URL} url
  */
-export function wbiSignURLSearchParams(url, img, sub) {
-    const fullKey = img + sub;
-    const mixinKey = WBI_MIXIN_KEY_SHUFFLE_ORDER.map((i) => fullKey.charAt(i))
-        .join("")
-        .slice(0, 32);
-    const timestamp = Math.round(Date.now() / 1000);
-
-    url.searchParams.set("wts", timestamp);
+export function wbiSignURLSearchParams(url, mixinKey) {
+    url.searchParams.set("wts", Math.round(Date.now() / 1000));
     url.searchParams.sort();
     url.searchParams.forEach((value, key) => {
         url.searchParams.set(

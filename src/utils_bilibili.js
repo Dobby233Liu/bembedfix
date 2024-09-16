@@ -291,7 +291,7 @@ export async function getVideoData(info, getVideoURL, dropCobaltErrs) {
     );
     const idType = id.startsWith("BV") ? "bvid" : "aid";
     requestURL.searchParams.set(idType, id.slice("BV".length));
-    wbiSignURLSearchParams(requestURL, info.wbiKeys.img, info.wbiKeys.sub);
+    wbiSignURLSearchParams(requestURL, info.wbiKeys.mixin);
 
     /** @type {import("fetch-cookie").FetchCookieImpl} */
     const fetchCookie = info.fetchCookie;
