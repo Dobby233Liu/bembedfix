@@ -64,8 +64,12 @@ export function isUAEndUser(req) {
     );
 }
 
+export function isUserDiscordbot(req) {
+    return req.headers["user-agent"].includes("Discordbot");
+}
+
 export function doesHTML5EmbedFunctionOnClient(req) {
-    return !req.headers["user-agent"].includes("Discordbot");
+    return !isUserDiscordbot(req);
 }
 
 export function shouldNotAddRedirectMetaprop(req) {
@@ -98,7 +102,8 @@ export function sendError(
     responseType = "html",
     code = data ? (data.httpError ?? 500) : 500,
 ) {
-    res.status(code);
+    // We kinda have to pretend it was successful for Discord
+    res.status(!isUserDiscordbot(req) ? code : 200);
 
     const errorData = {
         me: MY_NAME,
@@ -125,6 +130,7 @@ export function sendError(
             minify(
                 render(ERROR_TEMPLATE, {
                     ...errorData,
+                    dataShort: getCompatDescription(data, 160),
                     here: getRequestedURL(req).href,
                 }),
                 MINIFY_OPTIONS,
