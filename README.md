@@ -6,8 +6,10 @@
 
 ![demo](demo.jpg)
 
+<!--
 > [!IMPORTANT]
 > 由于本人目前对除视频以外的内容渲染没有需求，本应用的开发目前处于**维护模式**。
+-->
 
 ## 用法
 
@@ -26,11 +28,16 @@ bembedfix 目前提供三种元数据：
 -   [Twitter Cards](https://developer.x.com/en/docs/twitter-for-websites/cards/overview/abouts-cards)
 
 > [!WARNING]
-> 如果用户代理为 Discordbot，Twitter Cards 元数据中提供的 player MIME 类型会被谎报为 video/mp4。
-> 表现为客户端里视频封面上有播放按钮但是不能直接播放。
+> 如果用户代理为 Discordbot，Twitter Cards 元数据中提供的 player MIME 类型会被谎报为 video/mp4，
+> 其表现为客户端里视频封面上有播放按钮但是不能直接播放。
+>
+> 自行运营此代码库的用户可以将 `src/constants.js` 中的 `COBALT_API_INSTANCE` 改为一个可用的
+> [cobalt](https://github.com/imputnet/cobalt) API 实例以让它提供视频流。鉴于一个神奇的响应速度问题，
+> 加上 cobalt 不能正确解析多P视频，这个功能目前在 `bembedfix.vercel.app` 被禁用。
+>
 > 详情见 [#26][issue-26]
 
-值得注意的是，本服务目前只在 Discord 和 Twitter 上正式受测试过。
+注意，本服务目前只在 Discord 和 Twitter 上正式受测试过。
 
 [issue-26]: https://github.com/Dobby233Liu/bembedfix/issues/26
 
