@@ -11,11 +11,12 @@ import {
     oembedAddExtraMetadata,
     isUserAStupidKidAndTryingToAccessAWordpressApi,
     applySearchParams,
+    assert,
 } from "./utils.js";
 import {
     getRequestedInfo,
     getVideoData,
-    loadOembedDataFromQuerystring,
+    loadOembedDataFromQueryString,
 } from "./utils_bilibili.js";
 import { PROJECT_HOMEPAGE_URL, PROVIDER_NAME } from "./constants.js";
 
@@ -57,7 +58,7 @@ export default async function handler(req, res) {
     }
 
     if (doOembed && !req.query.url) {
-        sendOembed(res, loadOembedDataFromQuerystring(req.query), responseType);
+        sendOembed(res, loadOembedDataFromQueryString(req.query), responseType);
         return;
     }
 
@@ -75,15 +76,32 @@ export default async function handler(req, res) {
     let html5EmbedWorks =
         doesHTML5EmbedFunctionOnClient(req) &&
         !req.query.__bef_disable_html5_embed;
+
     try {
-        // TODO: Uncommenting the following enables interaction with the Cobalt API
-        data = await getVideoData(
-            info,
-            !html5EmbedWorks,
-            !req.query.__bef_report_cobalt_errs,
-        );
+        switch (info.type) {
+            case "video":
+                data = await getVideoData(
+                    info,
+                    !html5EmbedWorks,
+                    !req.query.__bef_report_cobalt_errs,
+                );
+                break;
+
+            default:
+                assert(
+                    false,
+                    "这似乎不是一个视频——本服务目前只支持对视频页面进行 embed 修正。",
+                );
+                break;
+        }
     } catch (e) {
-        sendError(res, req, "获取视频信息时发生错误", e, responseType);
+        sendError(
+            res,
+            req,
+            "获取 " + info.type + " 信息时发生错误",
+            e,
+            responseType,
+        );
         return;
     }
 
@@ -119,10 +137,15 @@ export default async function handler(req, res) {
         );
         data.oembed_json = oembedJson;
         data.oembed_xml = oembedXml;
-        data.lie_about_embed_player = !html5EmbedWorks;
         data.do_not_add_redirect_metaprop = shouldNotAddRedirectMetaprop(req);
 
-        sendTemplate(res, req, responseType, "video", data);
+        switch (info.type) {
+            case "video":
+                data.lie_about_embed_player = !html5EmbedWorks;
+                break;
+        }
+
+        sendTemplate(res, req, responseType, info.type, data);
     } catch (e) {
         sendError(res, req, "生成 embed 时发生错误", e, responseType);
         return;

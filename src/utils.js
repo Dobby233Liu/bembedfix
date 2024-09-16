@@ -20,7 +20,7 @@ const xmlBuilder = new XMLBuilder({ renderOpts: { pretty: false } });
 
 export function assert(cond, msg = "") {
     if (!cond) {
-        throw new Error("断言失败" + msg ? `：${msg}` : "");
+        throw new Error("断言失败" + (msg ? `：${msg}` : ""));
     }
 }
 
@@ -151,7 +151,7 @@ export function sendError(
     }
 }
 
-export function sendTemplate(res, req, responseType, file = "video", data) {
+export function sendTemplate(res, req, responseType, file, data) {
     renderFile(joinPath(process.cwd(), `src/templates/${file}.html`), data)
         .catch(function (err) {
             sendError(res, req, "生成 embed 时发生错误", err, responseType);
@@ -178,14 +178,23 @@ export function oembedAddExtraMetadata(data, query = {}) {
         provider_name: PROVIDER_NAME,
         provider_url: PROVIDER_URL,
     };
-    assert(ret.type == "video");
-    // The embed player probably honors it, so don't bother that much
-    ret.width = query.maxwidth
-        ? Math.min(+query.maxwidth, ret.width)
-        : ret.width;
-    ret.height = query.maxheight
-        ? Math.min(+query.maxheight, ret.height)
-        : ret.height;
+
+    switch (ret.type) {
+        case "video":
+            // The embed player probably honors it, so don't bother that much
+            ret.width = query.maxwidth
+                ? Math.min(+query.maxwidth, ret.width)
+                : ret.width;
+            ret.height = query.maxheight
+                ? Math.min(+query.maxheight, ret.height)
+                : ret.height;
+            break;
+
+        default:
+            assert(false, "未知 OEmbed 对象类型 " + ret.type);
+            break;
+    }
+
     return ret;
 }
 
@@ -231,7 +240,8 @@ export async function obtainVideoStreamFromCobalt(videoPageURL, page = 1) {
     let cobaltRepParsed;
     try {
         cobaltRepParsed = JSON.parse(cobaltRepRaw);
-    } catch (_) {
+    } catch (e) {
+        e;
         throw cobaltRepRaw;
     }
     if (
