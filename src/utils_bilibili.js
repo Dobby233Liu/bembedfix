@@ -198,7 +198,7 @@ function wbiSignURLSearchParams(url, img, sub) {
         .slice(0, 32);
     const timestamp = Math.round(Date.now() / 1000);
 
-    url.searchParams.append("wts", timestamp);
+    url.searchParams.set("wts", timestamp);
     // FIXME: This could be the wrong way to sort the query string.
     url.searchParams.sort();
     url.searchParams.forEach((value, key) => {
@@ -352,7 +352,7 @@ export async function getVideoData(info, getVideoURL, dropCobaltErrs) {
         "https://api.bilibili.com/x/web-interface/wbi/view",
     );
     const idType = id.startsWith("BV") ? "bvid" : "aid";
-    requestURL.searchParams.append(idType, id.slice("BV".length));
+    requestURL.searchParams.set(idType, id.slice("BV".length));
     wbiSignURLSearchParams(requestURL, info.wbiKeys.img, info.wbiKeys.sub);
 
     /** @type {import("fetch-cookie").FetchCookieImpl} */
