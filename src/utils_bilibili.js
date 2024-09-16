@@ -62,6 +62,21 @@ export function makeUserPage(mid) {
     return new URL(mid, "https://space.bilibili.com").href;
 }
 
+function isRequestLikelyFailed(response, toleratedFailureCodes) {
+    let ret =
+        "code" in response
+            ? ![0, ...(toleratedFailureCodes || [])].includes(response.code)
+            : true;
+    function isNullOrUndefined(x) {
+        return x === null || x === undefined;
+    }
+    ret = ret || isNullOrUndefined(response.data);
+    if (response.data) {
+        ret = ret || "v_voucher" in response.data;
+    }
+    return ret;
+}
+
 function errorFromBilibili(e, data) {
     if (!("code" in data)) return e;
 
@@ -162,10 +177,7 @@ async function getOriginalURLOfB23TvRedir(fetchCookie, url) {
             responseDataJson = {};
         }
 
-        if (
-            !response.ok ||
-            (responseDataJson.code && responseDataJson.code != 0)
-        ) {
+        if (!response.ok || isRequestLikelyFailed(responseDataJson)) {
             throw errorFromBilibili(
                 new Error(
                     `解析短链 ${url} 失败。（HTTP 状态码为 ${response.status}）请检查您的链接。` +
@@ -300,7 +312,7 @@ export async function getVideoData(info, getVideoURL, dropCobaltErrs) {
         e.message = msgHere + "\n" + e.message + "\n" + dataRaw;
         throw e;
     }
-    if (!response.ok || (res.code && res.code != 0))
+    if (!response.ok || isRequestLikelyFailed(res))
         throw errorFromBilibili(new Error(errorMsg + "\n" + dataRaw), res);
 
     const resInfo = res.data;
