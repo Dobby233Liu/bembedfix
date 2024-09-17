@@ -39,6 +39,8 @@ export default async function handler(req, res) {
         return;
     }
 
+    res.setHeader("Vary", "User-Agent");
+
     // Videos don't get edited often, so 1 minute TTL is fine ig
     // TODO: s-maxage implies public - is any sensitive info involved in The Process?
     res.setHeader("Cache-Control", "s-maxage=1, stale-while-revalidate=59");
@@ -57,6 +59,8 @@ export default async function handler(req, res) {
                 requestedURL.pathname.endsWith(".xml") ||
                 req.query.format == "xml";
         responseType = isXMLRequested ? "xml" : "json";
+        res.setHeader("Access-Control-Allow-Origin", "*");
+        if (req.method == "OPTIONS") return res.status(200).send();
     }
 
     if (doOembed && !req.query.url) {
