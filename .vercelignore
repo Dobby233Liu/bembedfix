@@ -1,7 +1,10 @@
 .editorconfig
-.eslintrc.cjs
+eslint.config.mjs
 .gitattributes
 .vscode/
 .yarn/
-README.md
+*.md
 demo.jpg
+.git-blame-ignore-revs
+.markdownlint.json
+.prettierrc.json
