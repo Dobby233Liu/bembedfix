@@ -144,7 +144,7 @@ export function sendError(
                     ...errorData,
                     me: MY_NAME,
                     issues_url: PROJECT_ISSUES_URL,
-                    dataShort: shortenDescription(errorData.data, 240, false),
+                    dataShort: shortenDescription(errorData.data, 300, false),
                     here: getRequestedURL(req).href,
                 }),
                 TEMPLATE_MINIFY_OPTIONS,
