@@ -109,7 +109,7 @@ export function wbiSignURLSearchParams(url, mixinKey) {
             value.replace(WBI_SIGN_CHAR_FILTER_REGEX, ""),
         );
     });
-    let query = "?" + url.searchParams.toString();
+    let query = url.searchParams.toString();
 
     const signature = crypto
         .createHash("md5")
