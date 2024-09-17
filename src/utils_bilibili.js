@@ -387,7 +387,8 @@ export async function getVideoData(info, getVideoURL, dropCobaltErrs) {
         author: resInfo.owner.name,
         author_mid: resInfo.owner.mid,
         author_url: makeUserPage(resInfo.owner.mid),
-        compat_description: shortenDescription(resInfo.desc),
+        compat_description:
+            resInfo.desc != "-" ? shortenDescription(resInfo.desc) : undefined,
         thumbnail: pic.href,
         thumbnail_width: tWidth,
         thumbnail_height: tHeight,
