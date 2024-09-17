@@ -134,7 +134,7 @@ export function sendError(
             res.json(errorData);
             break;
         case "xml":
-            res.setHeader("Content-Type", "text/xml");
+            res.setHeader("Content-Type", "text/xml; charset=UTF-8");
             res.send(xmlBuilder.buildObject({ bembedfix_error: errorData }));
             break;
         default:
@@ -162,6 +162,7 @@ export function sendTemplate(res, req, responseType, file, data) {
         })
         .then((out) => minify(out, TEMPLATE_MINIFY_OPTIONS))
         .then((out) => {
+            res.setHeader("Content-Type", "text/html; charset=UTF-8");
             res.send(out);
         });
 }
@@ -170,7 +171,7 @@ export function sendOembed(res, data, type) {
     if (type == "json") {
         res.json(data);
     } else {
-        res.setHeader("Content-Type", "text/xml");
+        res.setHeader("Content-Type", "text/xml; charset=UTF-8");
         res.send(xmlBuilder.buildObject({ oembed: data }));
     }
 }
