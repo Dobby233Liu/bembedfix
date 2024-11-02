@@ -22,13 +22,14 @@ import { PROJECT_HOMEPAGE_URL, PROVIDER_NAME } from "./constants.js";
 
 export default async function handler(req, res) {
     let requestedURL = getRequestedURL(req);
+    let pathname = decodeURIComponent(requestedURL);
 
     // special routes
     if (isUserAStupidKidAndTryingToAccessAWordpressApi(requestedURL)) {
         res.status(204).send();
         return;
     }
-    if (stripTrailingSlashes(requestedURL.pathname) == "/") {
+    if (stripTrailingSlashes(pathname) == "/") {
         res.setHeader("Cache-Control", "s-maxage=10800");
         res.redirect(308, PROJECT_HOMEPAGE_URL);
         return;
@@ -48,16 +49,15 @@ export default async function handler(req, res) {
     let doOembed = false;
     let responseType = "html";
     if (
-        stripTrailingSlashes(requestedURL.pathname) == "/oembed" ||
-        requestedURL.pathname == "/oembed.json" ||
-        requestedURL.pathname == "/oembed.xml"
+        stripTrailingSlashes(pathname) == "/oembed" ||
+        pathname == "/oembed.json" ||
+        pathname == "/oembed.xml"
     ) {
         doOembed = true;
         let isXMLRequested = false;
-        if (!requestedURL.pathname.endsWith(".json"))
-            isXMLRequested =
-                requestedURL.pathname.endsWith(".xml") ||
-                req.query.format == "xml";
+        if (!pathname.endsWith(".json"))
+            isXMLRequested = pathname.endsWith(".xml")
+                || req.query.format == "xml";
         responseType = isXMLRequested ? "xml" : "json";
         res.setHeader("Access-Control-Allow-Origin", "*");
         if (req.method == "OPTIONS") return res.status(200).send();
@@ -70,8 +70,11 @@ export default async function handler(req, res) {
 
     let info, data;
     try {
+        let requestedItemURL = !doOembed
+            ? requestedURL
+            : new URL(req.query.url);
         info = await getRequestedInfo(
-            (!doOembed ? requestedURL : new URL(req.query.url)).pathname,
+            decodeURIComponent(requestedItemURL.pathname),
             requestedURL.searchParams,
         );
     } catch (e) {
