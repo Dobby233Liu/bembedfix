@@ -69,7 +69,9 @@ export default async function handler(req, res) {
     }
 
     // HACK: Get rid of Discord's spoiler tag bars.
-    pathname = pathname.substring(0, pathname.lastIndexOf("||"));
+    let spoilerBarLocation = pathname.lastIndexOf("||");
+    if (spoilerBarLocation >= 0)
+        pathname = pathname.substring(0, spoilerBarLocation);
 
     let info, data;
     try {
