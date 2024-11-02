@@ -68,13 +68,15 @@ export default async function handler(req, res) {
         return;
     }
 
+    // HACK: Get rid of Discord's spoiler tag bars.
+    pathname = pathname.substring(0, pathname.lastIndexOf("||"));
+
     let info, data;
     try {
-        let requestedItemURL = !doOembed
-            ? requestedURL
-            : new URL(req.query.url);
+        let requestedItemPathname = !doOembed ? pathname
+            : decodeURIComponent(new URL(req.query.url).pathname);
         info = await getRequestedInfo(
-            decodeURIComponent(requestedItemURL.pathname),
+            requestedItemPathname,
             requestedURL.searchParams,
         );
     } catch (e) {
