@@ -49,8 +49,8 @@ bembedfix 目前提供三种元数据：
 > 其表现为客户端里视频封面上有播放按钮但是不能直接播放。
 >
 > 自行运营此代码库的用户可以将 `src/constants.js` 中的 `COBALT_API_INSTANCE` 改为一个可用的
-> [cobalt](https://github.com/imputnet/cobalt) API 实例以让它提供视频流。鉴于一个神奇的响应速度问题，
-> 加上 cobalt 不能正确解析多P视频，这个功能目前在 `bembedfix.vercel.app` 被禁用。
+> [cobalt](https://github.com/imputnet/cobalt) API 实例以让它提供视频流。
+> `bembedfix.vercel.app` 目前不考虑使用此项功能。
 >
 > 详情见 [#26][issue-26]
 
