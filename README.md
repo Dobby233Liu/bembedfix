@@ -13,7 +13,7 @@
 
 ## 用法
 
-> [!NOTE]
+> [!IMPORTANT]
 > 本服务目前只支持修复视频，而且不会保留大多数网址参数；本服务也不能处理需要登录才能显示的视频。
 
 您可以任选一种方法：
@@ -60,14 +60,20 @@ bembedfix 目前提供三种元数据：
 
 ## 特别鸣谢
 
--   本项目灵感来源于 [TwitFix](https://github.com/dylanpdx/BetterTwitFix)，我也对其代码做了参考。
--   与 B 站 API 交互的代码参考了 [哔哩哔哩-API 收集整理](https://github.com/SocialSisterYi/bilibili-API-collect)。
--   [@狸花十七](https://space.bilibili.com/5490502) 的视频——确切来说是上图中的那则视频——导致我产生了开坑这个项目的想法。
--   [BEMYPET][bemypet-kr]（[似了的 bilibili 账号][bemypet-cn-bili]）产生的内容在本项目开发过程中对我造成了一定心理创伤。（误）
+-   本项目灵感来源于 TwitFix/[vxTwitter][vxtwitter]，我也对其代码做了参考。
+-   [@狸花十七][s17] 的视频——确切来说是上图中的那则视频——导致我产生了开坑这个项目的想法。
+-   与 B 站 API 交互的代码参考了 [哔哩哔哩-API 收集整理][bac]。
+-   在本项目开发早期，[BEMYPET][bemypet-kr]（[似了的 bilibili 账号][bemypet-cn-bili]）产生的内容在某种程度上推动了进度。
+-   感谢 [cobalt][cobalt] 为方便人们下载音视频所作出的贡献。虽然我更喜欢用 [yt-dlp][yt-dlp]。
 -   我还可以加人吗？
 
+[vxtwitter]: https://github.com/dylanpdx/BetterTwitFix
+[bac]: https://github.com/SocialSisterYi/bilibili-API-collect
+[s17]: https://space.bilibili.com/5490502
 [bemypet-kr]: https://www.youtube.com/@bemypet
 [bemypet-cn-bili]: https://space.bilibili.com/1677731862
+[cobalt]: https://cobalt.tools/
+[yt-dlp]: https://github.com/yt-dlp/yt-dlp
 
 ## 许可证
 
