@@ -174,7 +174,7 @@ async function getOriginalURLOfB23TvRedir(fetchCookie, url) {
         if (!response.ok || isRequestLikelyFailed(responseDataJson)) {
             throw errorFromBilibili(
                 new Error(
-                    `解析短链 ${url} 失败。（HTTP 状态码为 ${response.status}）请检查您的链接。` +
+                    `解析短链 ${url} 失败，其可能已经失效。（HTTP 状态码为 ${response.status}）请检查您的链接。` +
                         "\n" +
                         responseData,
                 ),
