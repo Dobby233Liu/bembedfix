@@ -17,9 +17,11 @@
 > 本服务目前只支持修复视频，而且不会保留大多数网址参数；本服务也不能处理需要登录才能显示的视频。
 
 您可以任选一种方法：
--   将想要嵌入的视频的链接中的 `www.bilibili.com` 或 `b23.tv`（对于移动端分享短链而言）
+
+1.  将想要嵌入的视频的链接中的 `www.bilibili.com` 或 `b23.tv`（对于移动端分享短链而言）
     替换为 `bembedfix.vercel.app`；
--   在 `https://bembedfix.vercel.app/` 后面附上要嵌入的视频的 `BV` 或 `av` 号；
+2.  在 `https://bembedfix.vercel.app/` 后面附上要嵌入的视频的 `BV` 或 `av` 号；
+
 然后在您所在的平台上发送新获得的链接，bembedfix 就会起作用啦。（但愿如此。）
 
 > [!WARNING]
