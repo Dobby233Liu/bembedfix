@@ -30,12 +30,12 @@ export default async function handler(req, res) {
         return;
     }
     if (stripTrailingSlashes(pathname) == "/") {
-        res.setHeader("Cache-Control", "s-maxage=10800");
+        res.setHeader("Cache-Control", "s-maxage=1296000");
         res.redirect(308, PROJECT_HOMEPAGE_URL);
         return;
     }
     if (requestedURL.pathname == "/favicon.ico") {
-        res.setHeader("Cache-Control", "s-maxage=86400");
+        res.setHeader("Cache-Control", "s-maxage=2592000");
         res.redirect(308, "https://www.bilibili.com/favicon.ico");
         return;
     }
