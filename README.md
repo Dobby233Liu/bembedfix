@@ -13,10 +13,25 @@
 
 ## 用法
 
-使用很简单，只需要将您的视频链接中的 `www.bilibili.com` 或 `b23.tv` 换成 `bembedfix.vercel.app`，就可以啦。
-
 > [!NOTE]
 > 本服务目前只支持修复视频，而且不会保留大多数网址参数；本服务也不能处理需要登录才能显示的视频。
+
+您可以任选一种方法：
+-   将想要嵌入的视频的链接中的 `www.bilibili.com` 或 `b23.tv`（对于移动端分享短链而言）
+    替换为 `bembedfix.vercel.app`；
+-   在 `https://bembedfix.vercel.app/` 后面附上要嵌入的视频的 `BV` 或 `av` 号；
+然后在您所在的平台上发送新获得的链接，bembedfix 就会起作用啦。（但愿如此。）
+
+> [!WARNING]
+> 鉴于 `b23.tv` 短链[有时效限制][bac-b23tv-summary]，通过它们生成的 bembedfix
+> 链接也极可能同样失效。因此对于需要经常访问的链接，强烈建议**不要**采用这种形式。
+
+> [!TIP]
+> 在 Android 客户端的视频详情页，您可以点击视频标题以展开简介。
+> 这时长按标题下方的 `BVxxxxxxxxxx` 或 `avxxxxxxxxxx` 字符串，
+> 可以复制当前视频对应的 `BV` 或 `av` 号。
+
+[bac-b23tv-summary]: https://socialsisteryi.github.io/bilibili-API-collect/docs/misc/b23tv.html#简述
 
 ## 元数据类型
 
