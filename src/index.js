@@ -22,7 +22,7 @@ import { PROJECT_HOMEPAGE_URL, PROVIDER_NAME } from "./constants.js";
 
 export default async function handler(req, res) {
     let requestedURL = getRequestedURL(req);
-    let pathname = decodeURIComponent(requestedURL);
+    let pathname = decodeURIComponent(requestedURL.pathname);
 
     // special routes
     if (isUserAStupidKidAndTryingToAccessAWordpressApi(requestedURL)) {
@@ -34,7 +34,7 @@ export default async function handler(req, res) {
         res.redirect(308, PROJECT_HOMEPAGE_URL);
         return;
     }
-    if (requestedURL.pathname == "/favicon.ico") {
+    if (pathname == "/favicon.ico") {
         res.setHeader("Cache-Control", "s-maxage=2592000");
         res.redirect(308, "https://www.bilibili.com/favicon.ico");
         return;
