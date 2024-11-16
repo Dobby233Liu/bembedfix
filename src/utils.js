@@ -240,7 +240,7 @@ export async function obtainVideoStreamFromCobalt(videoPageURL, page = 1) {
         ).href,
         {
             method: "POST",
-            headers: ,
+            headers: cobaltReqHeaders,
             body: JSON.stringify(cobaltReqBody),
             // FIXME
             // signal: AbortSignal.timeout(3000)
