@@ -10,7 +10,7 @@ import {
     CRAWLER_UAS,
     MY_NAME,
     COBALT_API_INSTANCE,
-    COBALT_API_VERSION,
+    COBALT_API_VERSION
 } from "./constants.js";
 
 export const DEFAULT_WIDTH = 1280;
@@ -217,13 +217,21 @@ export async function obtainVideoStreamFromCobalt(videoPageURL, page = 1) {
     if (COBALT_API_VERSION == 10) {
         cobaltReqBody = {
             ...cobaltReqBody,
-            videoQuality: "720",
+            videoQuality: "480",
         };
     } else {
         cobaltReqBody = {
             ...cobaltReqBody,
-            vQuality: 720,
+            vQuality: 480,
         };
+    }
+    let cobaltReqHeaders = {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+    };
+    const cobaltApiKey = process.env.COBALT_API_KEY;
+    if (cobaltApiKey) {
+        cobaltReqHeaders["Authorization"] = `Api-Key ${cobaltApiKey}`;
     }
     const cobaltRep = await fetch(
         new URL(
@@ -232,10 +240,7 @@ export async function obtainVideoStreamFromCobalt(videoPageURL, page = 1) {
         ).href,
         {
             method: "POST",
-            headers: {
-                Accept: "application/json",
-                "Content-Type": "application/json",
-            },
+            headers: ,
             body: JSON.stringify(cobaltReqBody),
             // FIXME
             // signal: AbortSignal.timeout(3000)
