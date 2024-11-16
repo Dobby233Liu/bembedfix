@@ -6,6 +6,8 @@ const PROJECT_URL = "https://github.com/Dobby233Liu/bembedfix";
 export const PROJECT_HOMEPAGE_URL = PROJECT_URL + "?tab=readme-ov-file#readme";
 export const PROJECT_ISSUES_URL = PROJECT_URL + "/issues/new";
 
+export const FRIENDLY_USER_AGENT = `bembedfix/0.0 (+${PROJECT_URL})`;
+
 export const ERROR_TEMPLATE = `<!DOCTYPE HTML>
 <html>
 <head>
@@ -22,9 +24,9 @@ export const ERROR_TEMPLATE = `<!DOCTYPE HTML>
     <meta name="theme-color" content="#FF0000">
 </head>
 <body>
-    <h1 id="message"><%= code %>: <%= message %></h1>
-    <p><pre id="error"><%= data %></pre></p>
-    <p id="report">如果你认为这个错误是我们的问题，请在<a href="<%= issues_url %>">这里</a>报告 bug。</p>
+    <h1><%= code %>: <%= message %></h1>
+    <p><pre><%= data %></pre></p>
+    <p>如果你认为这个错误是我们的问题，请在<a href="<%= issues_url %>">这里</a>报告它。</p>
 </body>
 </html>
 `;
@@ -61,7 +63,9 @@ export const FAKE_CLIENT_UA_HEADERS = {
 };
 
 // Set to null to disable
-// Certain instances require JWT auth which is not implemented yet
+// TODO: Relocate to env vars?
 export const COBALT_API_INSTANCE = null; // "https://cal1.coapi.ggtyler.dev";
 // 7, 10
 export const COBALT_API_VERSION = 10;
+// To set an API key for cobalt API interactions, set the environment variable
+// COBALT_API_KEY
