@@ -141,7 +141,7 @@ export default async function handler(req, res) {
         }
 
         data.provider = PROVIDER_NAME;
-        // FIXME: preferredly do this in some other way or somewhere else
+        // FIXME: preferably do this in some other way or somewhere else
         let oembedJson = applySearchParams(
             new URL("oembed.json", getMyBaseURL(req)),
             data.oembedAPIQueries,
@@ -156,7 +156,7 @@ export default async function handler(req, res) {
 
         switch (info.type) {
             case "video":
-                data.lie_about_embed_player = !html5EmbedWorks;
+                data.html5_embed_works = html5EmbedWorks;
                 break;
         }
 
