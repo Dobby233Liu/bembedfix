@@ -7,6 +7,7 @@ import {
     stripTrailingSlashes,
     isUAEndUser,
     doesHTML5EmbedFunctionOnClient,
+    isUserDiscordbot,
     shouldNotAddRedirectMetaprop,
     oembedAddExtraMetadata,
     isUserAStupidKidAndTryingToAccessAWordpressApi,
@@ -153,6 +154,7 @@ export default async function handler(req, res) {
         data.oembed_json = oembedJson;
         data.oembed_xml = oembedXml;
         data.do_not_add_redirect_metaprop = shouldNotAddRedirectMetaprop(req);
+        data.discordbot = isUserDiscordbot(req);
 
         switch (info.type) {
             case "video":
