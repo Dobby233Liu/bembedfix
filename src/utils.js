@@ -9,6 +9,7 @@ import {
     PROJECT_ISSUES_URL,
     CRAWLER_UAS,
     MY_NAME,
+    FRIENDLY_USER_AGENT,
     COBALT_API_INSTANCE,
     COBALT_API_VERSION
 } from "./constants.js";
@@ -63,7 +64,10 @@ export function isUserAStupidKidAndTryingToAccessAWordpressApi(url) {
 
 export function isUAEndUser(req) {
     return (
-        !CRAWLER_UAS.includes(req.headers["user-agent"]) &&
+        !CRAWLER_UAS.some(i => i instanceof RegExp
+            ? req.headers["user-agent"].match(i) !== null
+            : i == req.headers["user-agent"]
+        ) &&
         !req.query.__bef_tag_debug
     );
 }
@@ -226,6 +230,7 @@ export async function obtainVideoStreamFromCobalt(videoPageURL, page = 1) {
         };
     }
     let cobaltReqHeaders = {
+        "User-Agent": FRIENDLY_USER_AGENT,
         Accept: "application/json",
         "Content-Type": "application/json",
     };
