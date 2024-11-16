@@ -51,11 +51,13 @@
         <% if (html5_embed_works) { %>
         <meta property="twitter:card" content="player" />
         <% } else { %>
-        <meta property="twitter:card" content="summary_large_card" />
+        <meta property="twitter:card" content="summary_large_image" />
         <% } %>
         <meta property="twitter:url" content="<%= url %>" />
         <meta property="twitter:title" content="<%= title %>" />
+        <% if (!discordbot) { %>
         <meta name="twitter:description" content="<%= compat_description %>" />
+        <% } %>
         <meta property="twitter:image" content="<%= thumbnail %>" />
         <% if (html5_embed_works) { %>
         <meta property="twitter:player" content="<%= embed_url %>" />
