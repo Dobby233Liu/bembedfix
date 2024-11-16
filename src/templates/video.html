@@ -7,13 +7,13 @@
         <meta http-equiv="Refresh" content="0; url='<%= url %>'" />
         <% } %>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <meta property="application-name" content="<%= provider %>" />
         <meta property="og:site_name" content="<%= provider %>" />
         <meta name="theme-color" content="#de698c" />
         <link rel="canonical" href="<%= url %>" />
-        <meta name="title" content="<%= title %>" />
-        <meta name="language" content="zh_CN" />
+        <meta name="robots" content="noindex" />
+        <% if (!discordbot) { %>
         <meta name="description" content="<%= compat_description %>" />
+        <% } %>
         <link
             rel="alternate"
             type="application/json+oembed"
@@ -31,7 +31,9 @@
         <meta property="og:url" content="<%= url %>" />
         <meta property="og:author" content="<%= author %>" />
         <meta property="og:image" content="<%= thumbnail %>" />
+        <% if (!discordbot) { %>
         <meta property="og:description" content="<%= compat_description %>" />
+        <% } %>
         <meta property="og:image:width" content="<%= thumbnail_width %>" />
         <meta property="og:image:height" content="<%= thumbnail_height %>" />
         <% if (video_url) { %>
@@ -67,7 +69,9 @@
         <div itemscope itemid="" itemtype="http://schema.org/VideoObject">
             <link itemprop="url" href="<%= url %>" />
             <meta itemprop="name" content="<%= title %>" />
+            <% if (!discordbot) { %>
             <meta itemprop="description" content="<%= compat_description %>" />
+            <% } %>
             <meta itemprop="duration" content="<%= duration %>" />
             <span
                 itemprop="author"
