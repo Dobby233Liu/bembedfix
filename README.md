@@ -65,6 +65,7 @@ bembedfix 目前提供三种元数据：
 -   与 B 站 API 交互的代码参考了 [哔哩哔哩-API 收集整理][bac]。
 -   在本项目开发早期，[BEMYPET][bemypet-kr]（[似了的 bilibili 账号][bemypet-cn-bili]）产生的内容在某种程度上推动了进度。
 -   感谢 [cobalt][cobalt] 为方便人们下载音视频所作出的贡献。虽然我更喜欢用 [yt-dlp][yt-dlp]。
+-   [反正是sprins就对了][sprins1234]关于他[酥皮蛋挞大爹][spdt-new-lore]的[整活视频][spdt-ppying-it]使我意识到了一个[严重的无限循环问题][rookie-mistake]。
 -   我还可以加人吗？
 
 [vxtwitter]: https://github.com/dylanpdx/BetterTwitFix
@@ -74,6 +75,10 @@ bembedfix 目前提供三种元数据：
 [bemypet-cn-bili]: https://space.bilibili.com/1677731862
 [cobalt]: https://cobalt.tools/
 [yt-dlp]: https://github.com/yt-dlp/yt-dlp
+[sprins1234]: https://space.bilibili.com/650889396
+[spdt-new-lore]: https://www.bilibili.com/video/BV1nT4wecEBm
+[spdt-ppying-it]: https://www.bilibili.com/video/BV1n6421M7Kc
+[rookie-mistake]: https://github.com/Dobby233Liu/bembedfix/commit/6a39867f0a9375657ff539df407293031c6f0117
 
 ## 许可证
 
