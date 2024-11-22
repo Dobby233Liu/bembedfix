@@ -44,17 +44,17 @@ bembedfix 目前提供三种元数据：
     -   注意，本服务提供的 HTML 数据中调用 oEmbed API 的方式不符合标准
 -   [Twitter Cards](https://developer.x.com/en/docs/twitter-for-websites/cards/overview/abouts-cards)
 
-> [!WARNING]
-> 如果用户代理为 Discordbot，Twitter Cards 元数据中提供的 player MIME 类型会被谎报为 video/mp4，
-> 其表现为客户端里视频封面上有播放按钮但是不能直接播放。
+> [!IMPORTANT]
+> 本服务目前只在 Discord 和 Twitter 上正式受测试过。
+
+> [!IMPORTANT]
+> 由于平台限制，本服务向 Discordbot 提供的 Twitter Cards 数据不带播放器信息，因此您将不能在 Discord 上直接播放嵌入的视频。
 >
 > 自行运营此代码库的用户可以将 `src/constants.js` 中的 `COBALT_API_INSTANCE` 改为一个可用的
 > [cobalt](https://github.com/imputnet/cobalt) API 实例以让它提供视频流。
 > `bembedfix.vercel.app` 目前不考虑使用此项功能。
 >
 > 详情见 [#26][issue-26]
-
-注意，本服务目前只在 Discord 和 Twitter 上正式受测试过。
 
 [issue-26]: https://github.com/Dobby233Liu/bembedfix/issues/26
 
