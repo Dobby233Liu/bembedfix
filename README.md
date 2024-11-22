@@ -47,11 +47,11 @@ bembedfix 目前提供三种元数据：
 > [!IMPORTANT]
 > 本服务目前只在 Discord 和 Twitter 上正式受测试过。
 
-> [!IMPORTANT]
-> 由于平台限制，本服务向 Discordbot 提供的 Twitter Cards 数据不带播放器信息，因此您将不能在 Discord 上直接播放嵌入的视频。
+> [!NOTE]
+> Discord 会忽略 Twitter Cards 元数据中请求的 bilibili 嵌入式播放器，因此本服务向 Discordbot 提供的 Twitter Cards 数据默认使用“大图概要”模式。您将不能在 Discord 上直接播放嵌入的视频。
 >
 > 自行运营此代码库的用户可以将 `src/constants.js` 中的 `COBALT_API_INSTANCE` 改为一个可用的
-> [cobalt](https://github.com/imputnet/cobalt) API 实例以让它提供视频流。
+> [cobalt](https://github.com/imputnet/cobalt) API 实例以让它提供替代视频流。
 > `bembedfix.vercel.app` 目前不考虑使用此项功能。
 >
 > 详情见 [#26][issue-26]
