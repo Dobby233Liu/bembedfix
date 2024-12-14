@@ -10,6 +10,7 @@ import {
     obtainVideoStreamFromCobalt,
     parseIntSafe,
     applySearchParams,
+    createURLWithBaseUntrustable,
 } from "./utils.js";
 import { FAKE_CLIENT_UA_HEADERS, COBALT_API_INSTANCE } from "./constants.js";
 import makeFetchCookie from "fetch-cookie";
@@ -31,7 +32,7 @@ export const getVideoIdByPath = (p) =>
 
 export function makeVideoPage(vid, page = 1, searchParams) {
     assert(vid);
-    const ret = new URL(vid, "https://www.bilibili.com/video/");
+    const ret = createURLWithBaseUntrustable(vid, "https://www.bilibili.com/video/");
     if (page != 1) ret.searchParams.set("p", page);
     applySearchParams(ret, searchParams);
     return ret.href;
@@ -59,7 +60,7 @@ export function makeEmbedPlayer(...args) {
 }
 
 export function makeUserPage(mid) {
-    return new URL(mid, "https://space.bilibili.com").href;
+    return createURLWithBaseUntrustable(mid, "https://space.bilibili.com").href;
 }
 
 function isRequestLikelyFailed(response, toleratedFailureCodes) {
@@ -213,7 +214,7 @@ export async function getRequestedInfo(path, search) {
     const fetchCookie = (info.fetchCookie = makeFetchCookie(fetch));
 
     // default domain for later
-    let url = new URL(path, "https://b23.tv"),
+    let url = createURLWithBaseUntrustable(path, "https://b23.tv"),
         originalURL = url;
 
     let requestedPage = false;

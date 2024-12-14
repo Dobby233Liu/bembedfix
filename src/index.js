@@ -144,11 +144,11 @@ export default async function handler(req, res) {
         data.provider = PROVIDER_NAME;
         // FIXME: preferably do this in some other way or somewhere else
         let oembedJson = applySearchParams(
-            new URL("oembed.json", getMyBaseURL(req)),
+            new URL("/oembed.json", getMyBaseURL(req)),
             data.oembedAPIQueries,
         );
         let oembedXml = applySearchParams(
-            new URL("oembed.xml", getMyBaseURL(req)),
+            new URL("/oembed.xml", getMyBaseURL(req)),
             data.oembedAPIQueries,
         );
         data.oembed_json = oembedJson;
