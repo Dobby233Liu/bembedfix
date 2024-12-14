@@ -32,7 +32,7 @@ export function getRequestedURL(req) {
 export function getMyBaseURL(req) {
     const headers = req.headers;
     return new URL(
-        `${encodeURI(headers["x-forwarded-proto"] ?? "https")}://` +
+        `https://` +
             encodeURI(
                 headers["x-vercel-deployment-url"] ??
                     headers["x-forwarded-host"] ??
