@@ -29,6 +29,7 @@ export function createURLWithBaseUntrustable(url, base) {
     let ret = new URL(url, base);
     let baseObj = new URL(base);
     assert(ret.origin == baseObj.origin, "构建的 URL 的 origin 与理想不符！");
+    return ret;
 }
 
 export function getRequestedURL(req) {
