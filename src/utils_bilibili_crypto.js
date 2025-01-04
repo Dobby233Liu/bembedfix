@@ -101,18 +101,18 @@ const WBI_SIGN_CHAR_FILTER_REGEX = /[!'()*]/g;
  * @param {URL} url
  */
 export function wbiSignURLSearchParams(url, mixinKey) {
+    url.searchParams.delete("w_rid");
     url.searchParams.set("wts", Math.round(Date.now() / 1000));
-    url.searchParams.sort();
     url.searchParams.forEach((value, key) => {
         url.searchParams.set(
             key,
             value.replace(WBI_SIGN_CHAR_FILTER_REGEX, ""),
         );
     });
+    url.searchParams.sort();
     let query = url.searchParams.toString();
 
-    const signature = crypto
-        .createHash("md5")
+    const signature = crypto.createHash("md5")
         .update(query + mixinKey)
         .digest("hex");
     query += `&w_rid=${signature}`;
