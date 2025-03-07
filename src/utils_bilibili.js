@@ -376,6 +376,16 @@ export async function getVideoData(info, getVideoURL, dropCobaltErrs) {
         pic.pathname += encodeURIComponent(`@${tWidth}w_${tHeight}h_1c`);
     }
 
+    let authorName = resInfo.owner.name;
+    if (resInfo.staff && resInfo.staff.length > 1) {
+        authorName = resInfo.staff.slice(0, 3)
+                        .map(s => shortenDescription(s.name, 20))
+                        .join("、");
+        if (resInfo.staff.length > 3) {
+            authorName += ` 等${resInfo.staff.length}人`;
+        }
+    }
+
     return {
         url: videoPageURL,
         bvid: resInfo.bvid,
@@ -384,8 +394,8 @@ export async function getVideoData(info, getVideoURL, dropCobaltErrs) {
         embed_url: embedPlayerURL,
         video_url: videoStreamURL,
         title: title,
-        // TODO: Honor resInfo.staff, resInfo.disable_show_up_info?
-        author: resInfo.owner.name,
+        // TODO: Honor resInfo.disable_show_up_info?
+        author: authorName,
         author_mid: resInfo.owner.mid,
         author_url: makeUserPage(resInfo.owner.mid),
         compat_description:
@@ -409,7 +419,7 @@ export async function getVideoData(info, getVideoURL, dropCobaltErrs) {
             thumbnail_url: pic.href,
             thumbnail_width: tWidth,
             thumbnail_height: tHeight,
-            author_name: resInfo.owner.name,
+            author_name: authorName,
             author_url: makeUserPage(resInfo.owner.mid),
         },
         oembedAPIQueries: {
@@ -422,7 +432,7 @@ export async function getVideoData(info, getVideoURL, dropCobaltErrs) {
             pic: pic.href,
             twidth: width != tWidth ? tWidth : null,
             theight: height != tHeight ? tHeight : null,
-            author: resInfo.owner.name,
+            author: authorName,
             mid: resInfo.owner.mid,
             s_vp:
                 info.searchParams.videoPage.length > 0
