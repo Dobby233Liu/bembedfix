@@ -363,6 +363,11 @@ export async function getVideoData(info, getVideoURL, dropCobaltErrs) {
         cid,
         page,
         info.searchParams.embedPlayer,
+    ), embedPlayerHTML = makeEmbedPlayer(
+        resInfo.bvid,
+        cid,
+        page,
+        info.searchParams.embedPlayer,
     );
 
     const pic = new URL(resInfo.pic);
@@ -413,7 +418,7 @@ export async function getVideoData(info, getVideoURL, dropCobaltErrs) {
         oembedData: {
             type: oembedMediaType,
             url: videoPageURL,
-            html: embedPlayerURL,
+            html: embedPlayerHTML,
             width: width,
             height: height,
             thumbnail_url: pic.href,
