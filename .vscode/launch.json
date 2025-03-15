@@ -2,12 +2,10 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Start Service",
+            "command": "yarn start",
+            "name": "Run yarn start",
             "request": "launch",
-            "runtimeArgs": ["run", "start"],
-            "runtimeExecutable": "npm",
-            "skipFiles": ["<node_internals>/**"],
-            "type": "node"
+            "type": "node-terminal"
         }
     ]
 }
