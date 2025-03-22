@@ -55,9 +55,9 @@ export const CRAWLER_UAS = [
 // This is for spoofing as a browser for bilibili API requests
 export const FAKE_CLIENT_UA_HEADERS = {
     "User-Agent":
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36 Edg/128.0.0.0",
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36 Edg/134.0.0.0",
     "Sec-CH-UA":
-        '"Chromium";v="128", "Not;A=Brand";v="24", "Microsoft Edge";v="128"',
+        '"Chromium";v="134", "Not:A-Brand";v="24", "Microsoft Edge";v="134"',
     "Sec-CH-UA-Mobile": "?0",
     "Sec-CH-UA-Platform": '"Windows"',
 };
