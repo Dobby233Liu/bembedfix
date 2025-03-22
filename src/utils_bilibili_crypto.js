@@ -102,21 +102,28 @@ const WBI_SIGN_CHAR_FILTER_REGEX = /[!'()*]/g;
  */
 export function wbiSignURLSearchParams(url, mixinKey) {
     url.searchParams.delete("w_rid");
-    url.searchParams.set("wts", Math.round(Date.now() / 1000));
-    url.searchParams.forEach((value, key) => {
-        url.searchParams.set(
+    url.searchParams.delete("wts");
+
+    const searchParamsSign = new URLSearchParams(url.searchParams);
+    searchParamsSign.set("wts", Math.round(Date.now() / 1000));
+    searchParamsSign.sort();
+    searchParamsSign.forEach((value, key) => {
+        searchParamsSign.set(
             key,
             value.replace(WBI_SIGN_CHAR_FILTER_REGEX, ""),
         );
     });
-    url.searchParams.sort();
-    let query = url.searchParams.toString();
+    const searchParamsSignStr = searchParamsSign
+        .toString()
+        .replaceAll("+", "%20");
 
-    const signature = crypto.createHash("md5")
-        .update(query + mixinKey)
-        .digest("hex");
-    query += `&w_rid=${signature}`;
+    const signature = crypto
+        .createHash("md5")
+        .update(searchParamsSignStr + mixinKey)
+        .digest("hex")
+        .toLowerCase();
 
-    url.search = query;
+    url.searchParams.set("w_rid", signature);
+    url.searchParams.set("wts", searchParamsSign.get("wts"));
     return url;
 }
