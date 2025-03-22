@@ -107,12 +107,11 @@ export function wbiSignURLSearchParams(url, mixinKey) {
     const searchParamsSign = new URLSearchParams(url.searchParams);
     searchParamsSign.set("wts", Math.round(Date.now() / 1000));
     searchParamsSign.sort();
-    searchParamsSign.forEach((value, key) => {
+    for (const [value, key] in searchParamsSign.entries())
         searchParamsSign.set(
             key,
             value.replace(WBI_SIGN_CHAR_FILTER_REGEX, ""),
         );
-    });
     const searchParamsSignStr = searchParamsSign
         .toString()
         .replaceAll("+", "%20");
