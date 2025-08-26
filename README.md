@@ -2,10 +2,6 @@
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FDobby233Liu%2Fbembedfix)
 
-这是一个用于修复 bilibili 视频页面在 Discord 上的预览效果的小服务。效果如下图，一目了然，无需过多介绍。
-
-![demo](demo.jpg)
-
 > [!IMPORTANT]
 > 由于本人目前对除视频以外的内容渲染没有需求，本应用的开发目前处于**维护模式**。
 >
@@ -14,6 +10,10 @@
 > 本人精力有限，目前缺乏动力为本服务新增功能。但在我的 Vercel 免费账号允许的限度内，本服务仍将继续运作。
 >
 > 如果您有本项目未能满足的需求的话，可以考虑使用并支持 @watermelon1024 闭源的 [BiliFix](https://www.vxbilibili.com/)。
+
+这是一个用于修复 bilibili 视频页面在 Discord 上的预览效果的小服务。效果如下图，一目了然，无需过多介绍。
+
+![demo](demo.jpg)
 
 ## 用法
 
