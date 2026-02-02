@@ -253,15 +253,23 @@ export async function getRequestedInfo(path, search) {
         const fakeReferrerRep = await fetchCookie(fakeReferrer, {
             headers: genSpoofHeaders(),
         });
-        // We're kinda obliged to read it...
-        const fakeReferrerRepRaw = await fakeReferrerRep.text();
-        /*if (
-            fakeReferrerRep.status == 412 ||
-            fakeReferrerRepRaw.includes("由于触发哔哩哔哩安全风控策略")
-        )
+        let fakeReferrerRepBlocked = fakeReferrerRep.status == 412;
+        try {
+            // We're kinda obliged to read it...
+            const fakeReferrerRepRaw = await fakeReferrerRep.text();
+            if (fakeReferrerRepRaw.includes("由于触发哔哩哔哩安全风控策略"))
+                fakeReferrerRepBlocked = true;
+        } catch (err) {
+            void(err); // don't care
+            fakeReferrerRepBlocked = true;
+        }
+        // ignoring it is "fine" for now
+        /*
+        if (fakeReferrerRepBlocked)
             throw errorFromBilibili(new Error("由于触发风控措施，无法获取 buvid3 & b_nut。站长目前无力修复此类问题，请尝试 vxbilibili.com 等替代品。"), {
                 code: -352,
-            });*/
+            });
+        */
     }
 
     // web / b23.tv
