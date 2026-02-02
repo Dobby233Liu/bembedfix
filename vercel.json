@@ -1,8 +1,5 @@
 {
     "installCommand": "yarn workspaces focus -A --production",
-    "github": {
-        "silent": true
-    },
     "rewrites": [
         {
             "source": "/(.*)",
