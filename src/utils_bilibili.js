@@ -127,7 +127,7 @@ function errorFromBilibili(e, data) {
     }
 
     if (myCode == 352 || myCode == 412) {
-        e.message += "\n请求疑似被 bilibili 风控系统拦截，请稍后再试。";
+        e.message += "\n请求疑似被 bilibili 风控系统拦截。站长目前无力修复此类问题，请尝试 vxbilibili.com 等替代品。";
     }
 
     e.httpError = myCode;
@@ -259,7 +259,7 @@ export async function getRequestedInfo(path, search) {
             fakeReferrerRep.status == 412 ||
             fakeReferrerRepRaw.includes("由于触发哔哩哔哩安全风控策略")
         )
-            throw errorFromBilibili(new Error("由于触发风控，无法获取 buvid3 & b_nut。"), {
+            throw errorFromBilibili(new Error("由于触发风控措施，无法获取 buvid3 & b_nut。站长目前无力修复此类问题，请尝试 vxbilibili.com 等替代品。"), {
                 code: -352,
             });*/
     }
