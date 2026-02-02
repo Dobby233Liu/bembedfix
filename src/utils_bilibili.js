@@ -255,13 +255,13 @@ export async function getRequestedInfo(path, search) {
         });
         // We're kinda obliged to read it...
         const fakeReferrerRepRaw = await fakeReferrerRep.text();
-        if (
+        /*if (
             fakeReferrerRep.status == 412 ||
             fakeReferrerRepRaw.includes("由于触发哔哩哔哩安全风控策略")
         )
-            throw errorFromBilibili(new Error("获取 buvid3 & b_nut 失败。\n" + fakeReferrerRepRaw), {
+            throw errorFromBilibili(new Error("由于触发风控，无法获取 buvid3 & b_nut。"), {
                 code: -352,
-            });
+            });*/
     }
 
     // web / b23.tv
