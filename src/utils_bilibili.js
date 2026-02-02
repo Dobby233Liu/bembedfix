@@ -259,7 +259,7 @@ export async function getRequestedInfo(path, search) {
             fakeReferrerRep.status == 412 ||
             fakeReferrerRepRaw.includes("由于触发哔哩哔哩安全风控策略")
         )
-            throw errorFromBilibili(new Error("获取 buvid3 & b_nut 失败。"), {
+            throw errorFromBilibili(new Error("获取 buvid3 & b_nut 失败。\n" + fakeReferrerRepRaw), {
                 code: -352,
             });
     }
