@@ -16,9 +16,9 @@ import { FAKE_CLIENT_UA_HEADERS, COBALT_API_INSTANCE } from "./constants.js";
 import makeFetchCookie from "fetch-cookie";
 import { wbiGetKeys, wbiSignURLSearchParams } from "./utils_bilibili_crypto.js";
 
-// Group 4 is the ID of the video
+// Group 1 is the ID of the video
 const MAIN_SITE_VIDEO_PAGE_PATHNAME_REGEX =
-    /^\/(?:s\/)?(?:video\/)?(av[0-9]+|BV[A-Za-z0-9]+)$/;
+    /^\/(?:(?:(?:s|zh-Hans|zh-Hant|ja|th|ar|pt|es|id|ms|ru|tr|vi)\/|)?video\/)?(av[0-9]+|BV[A-Za-z0-9]{10})$/;
 
 export const isURLOnBilibiliMainSite = (u) =>
     checkDomainIsSubdomainOf(u.hostname, "bilibili.com");
