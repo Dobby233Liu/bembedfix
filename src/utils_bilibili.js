@@ -18,7 +18,7 @@ import { wbiGetKeys, wbiSignURLSearchParams } from "./utils_bilibili_crypto.js";
 
 // Group 1 is the ID of the video
 const MAIN_SITE_VIDEO_PAGE_PATHNAME_REGEX =
-    /^\/(?:(?:(?:s|zh-Hans|zh-Hant|ja|th|ar|pt|es|id|ms|ru|tr|vi)\/|)?video\/)?(av[0-9]+|BV[A-Za-z0-9]{10})$/;
+    /^\/(?:(?:(?:s|zh-Hans|zh-Hant|en|ja|th|ar|pt|es|id|ms|ru|tr|vi)\/)?video\/)?(av[0-9]+|BV[A-Za-z0-9]{10})$/;
 
 export const isURLOnBilibiliMainSite = (u) =>
     checkDomainIsSubdomainOf(u.hostname, "bilibili.com");
